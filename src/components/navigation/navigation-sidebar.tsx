@@ -11,7 +11,7 @@ import { UserButton } from '@clerk/nextjs';
 export async function NavigationSidebar() {
   const profile = await currentProfile();
 
-  if (!profile) {
+  if (profile === null) {
     return redirect('/');
   }
 

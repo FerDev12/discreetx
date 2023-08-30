@@ -18,7 +18,6 @@ export async function ServerSidebar({ serverId }: ServerSidebarProps) {
   const server = await db.server.findUnique({
     where: {
       id: serverId,
-      profileId: profile.id,
     },
     include: {
       channels: {
