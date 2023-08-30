@@ -7,11 +7,11 @@ export default async function MainLayout({
   children: ReactNode;
 }) {
   return (
-    <div className='h-full'>
-      <aside className='hidden md:flex h-full w-[72px] z-30 flex-col fixed inset-y-0'>
+    <div>
+      <aside className='hidden md:flex w-[72px] z-30 flex-col fixed inset-y-0'>
         <NavigationSidebar />
       </aside>
-      <main className='md:pl-[72px] h-full'>{children}</main>
+      <main className='md:pl-[72px]'>{children}</main>
     </div>
   );
 }
