@@ -99,6 +99,8 @@ export default function InitialModal() {
                           onChange={field.onChange}
                         />
                       </FormControl>
+
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
