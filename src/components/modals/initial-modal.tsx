@@ -111,8 +111,8 @@ export default function InitialModal() {
                 name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='uppercase text-xs font-bold '>
-                      Server text-secondary-foreground/90Name
+                    <FormLabel className='uppercase text-xs font-bold text-muted-foreground'>
+                      Server Name
                     </FormLabel>
 
                     <FormControl>
