@@ -18,6 +18,7 @@ import {
   Users,
 } from 'lucide-react';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
+import { useModalStore } from '@/hooks/use-modal-store';
 
 type ServerHeaderProps = {
   server: ServerWithMembersWithProfiles;
@@ -25,6 +26,7 @@ type ServerHeaderProps = {
 };
 
 export function ServerHeader({ server, role }: ServerHeaderProps) {
+  const { onOpen } = useModalStore();
   const isAdmin = role === MemberRole.ADMIN;
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
 
@@ -38,7 +40,10 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
 
       <DropdownMenuContent className='w-56 text-xs font-medium text-black dark:text-neutral-400 space-y-[2px]'>
         {isModerator ? (
-          <DropdownMenuItem className='text-teal-600 dark:text-teal-400 px-3 py-2 text-sm cursor-pointer'>
+          <DropdownMenuItem
+            onClick={() => onOpen('invite', { server })}
+            className='text-teal-600 dark:text-teal-400 px-3 py-2 text-sm cursor-pointer'
+          >
             Invite People
             <UserPlus className='w-4 h-4 ml-auto' />
           </DropdownMenuItem>
