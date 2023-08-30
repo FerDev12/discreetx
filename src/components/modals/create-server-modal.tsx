@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
 import { useModalStore } from '@/hooks/use-modal-store';
 import { Server } from '@prisma/client';
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
@@ -73,7 +74,7 @@ export default function CreateServerModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className=' p-0 overflow-hidden'>
+      <DialogContent className='bg-gradient-to-br from-zinc-950 via-teal-950 to-teal-600 p-0 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
             Customize your server
@@ -132,9 +133,19 @@ export default function CreateServerModal() {
               />
             </div>
 
-            <DialogFooter className=' px-6 py-4'>
-              <Button variant='primary' disabled={isLoading}>
-                Create
+            <DialogFooter className='flex flex-col-reverse gap-y-2 px-6 py-4 '>
+              <Button disabled={isLoading} type='button' onClick={handleClose}>
+                Cancel
+              </Button>
+
+              <Button
+                type='submit'
+                disabled={isLoading}
+                variant='outline'
+                className='bg-transparent border-teal-50 transition-all hover:border-2 hover:bg-transparent'
+              >
+                {!isLoading ? 'Create' : 'Creating...'}
+                {isLoading && <Loader2 className='w-4 h-4 ml-2 animate-spin' />}
               </Button>
             </DialogFooter>
           </form>

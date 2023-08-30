@@ -1,7 +1,9 @@
 'use client';
 
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,18 +27,22 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
-import { useRouter } from 'next/navigation';
+import { useModalStore } from '@/hooks/use-modal-store';
+import { Server } from '@prisma/client';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
   imageUrl: z.string().min(1, { message: 'Server image is required' }),
 });
 
-export default function InitialModal() {
-  const [isMounted, setIsMounted] = useState(false);
+export default function EditServerModal() {
+  const {
+    isOpen,
+    onClose,
+    type,
+    data: { server },
+  } = useModalStore();
   const router = useRouter();
-
-  useEffect(() => setIsMounted(true), []);
 
   const form = useForm({
     // @ts-ignore
@@ -47,15 +53,31 @@ export default function InitialModal() {
     },
   });
 
+  useEffect(() => {
+    if (server) {
+      form.setValue('name', server.name);
+      form.setValue('imageUrl', server.imageUrl);
+    }
+  }, [server, form]);
+
+  const isModalOpen = isOpen && type === 'editServer';
   const isLoading = form.formState.isSubmitting;
+
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post('/api/servers', values);
+      const { data: updatedServer } = await axios.patch<Server>(
+        `/api/servers/${server?.id}`,
+        values
+      );
 
       form.reset();
       router.refresh();
-      window.location.reload();
+      onClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -65,16 +87,12 @@ export default function InitialModal() {
     }
   };
 
-  if (!isMounted) {
-    return null;
-  }
-
   return (
-    <Dialog open>
-      <DialogContent className='bg-gradient-to-br from-zinc-950 via-teal-950 to-teal-600 p-0 overflow-hidden'>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
+      <DialogContent className=' bg-gradient-to-br from-zinc-950 via-teal-950 to-teal-600 p-0 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
-          <DialogTitle className='text-2xl text-center font-bold'>
-            Customize your server
+          <DialogTitle className='text-2xl text-center font-bold mb-2'>
+            Edit your server
           </DialogTitle>
 
           <DialogDescription className='text-center text-muted-foreground'>
@@ -111,13 +129,14 @@ export default function InitialModal() {
                 name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='uppercase text-xs font-bold '>
-                      Server text-secondary-foreground/90Name
+                    <FormLabel className='uppercase text-xs font-bold text-secondary-foreground/90'>
+                      Server Name
                     </FormLabel>
 
                     <FormControl>
                       <Input
                         disabled={isLoading}
+                        className=''
                         placeholder='Enter server name'
                         {...field}
                       />
@@ -129,9 +148,19 @@ export default function InitialModal() {
               />
             </div>
 
-            <DialogFooter className=' px-6 py-4'>
-              <Button variant='primary' disabled={isLoading}>
-                Create
+            <DialogFooter className='flex flex-col-reverse gap-y-2 px-6 py-4 '>
+              <Button disabled={isLoading} type='button' onClick={handleClose}>
+                Cancel
+              </Button>
+
+              <Button
+                type='submit'
+                disabled={isLoading}
+                variant='outline'
+                className='bg-transparent border-teal-50 transition-all hover:border-2 hover:bg-transparent'
+              >
+                {!isLoading ? 'Save Changes' : 'Saving...'}
+                {isLoading && <Loader2 className='w-4 h-4 ml-2 animate-spin' />}
               </Button>
             </DialogFooter>
           </form>
