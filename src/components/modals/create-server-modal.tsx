@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,18 +25,17 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
-import { useRouter } from 'next/navigation';
+import { useModalStore } from '@/hooks/use-modal-store';
+import { Server } from '@prisma/client';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
   imageUrl: z.string().min(1, { message: 'Server image is required' }),
 });
 
-export default function InitialModal() {
-  const [isMounted, setIsMounted] = useState(false);
+export default function CreateServerModal() {
+  const { isOpen, onClose, type } = useModalStore();
   const router = useRouter();
-
-  useEffect(() => setIsMounted(true), []);
 
   const form = useForm({
     // @ts-ignore
@@ -47,15 +46,22 @@ export default function InitialModal() {
     },
   });
 
+  const isModalOpen = isOpen && type === 'createServer';
   const isLoading = form.formState.isSubmitting;
+
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post('/api/servers', values);
+      const { data: server } = await axios.post<Server>('/api/servers', values);
 
       form.reset();
       router.refresh();
-      window.location.reload();
+      router.push(`/servers/${server.id}`);
+      onClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -65,12 +71,8 @@ export default function InitialModal() {
     }
   };
 
-  if (!isMounted) {
-    return null;
-  }
-
   return (
-    <Dialog open>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className='bg-white text-black p-0 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
