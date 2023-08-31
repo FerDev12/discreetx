@@ -33,8 +33,11 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className='focus:outline-none' asChild>
-        <button className='w-full text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition'>
-          {server.name} <ChevronDown className='w-5 h-5 ml-auto' />
+        <button className='group w-full text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition'>
+          <span className='text-teal-600 group-hover:text-teal-500 transition-colors'>
+            {server.name}
+          </span>{' '}
+          <ChevronDown className='w-5 h-5 ml-auto' />
         </button>
       </DropdownMenuTrigger>
 
@@ -48,6 +51,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
             <UserPlus className='w-4 h-4 ml-auto' />
           </DropdownMenuItem>
         ) : null}
+
         {isAdmin ? (
           <>
             <DropdownMenuItem
@@ -66,6 +70,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
             </DropdownMenuItem>
           </>
         ) : null}
+
         {isModerator ? (
           <>
             <DropdownMenuItem
@@ -79,6 +84,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
             <DropdownMenuSeparator />
           </>
         ) : null}
+
         {isAdmin ? (
           <>
             <DropdownMenuItem
@@ -90,6 +96,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
             </DropdownMenuItem>
           </>
         ) : null}
+
         {!isAdmin ? (
           <>
             <DropdownMenuItem

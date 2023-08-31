@@ -28,6 +28,7 @@ import FileUpload from '@/components/file-upload';
 import { useModalStore } from '@/hooks/use-modal-store';
 import { Server } from '@prisma/client';
 import { Loader2 } from 'lucide-react';
+import { createServer } from '@/actions/servers/create-server';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
@@ -57,18 +58,21 @@ export default function CreateServerModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { data: server } = await axios.post<Server>('/api/servers', values);
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('imageUrl', values.imageUrl);
+      const server = await createServer(formData);
+
+      if (!server) {
+        throw new Error('Server not created');
+      }
 
       form.reset();
       router.refresh();
       router.push(`/servers/${server.id}`);
       onClose();
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        console.error(err.response?.data);
-      } else {
-        console.error(err);
-      }
+    } catch (err: any) {
+      console.error(err);
     }
   };
 

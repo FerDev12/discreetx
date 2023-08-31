@@ -16,7 +16,6 @@ import {
   Gavel,
   Loader2,
   MoreVertical,
-  Shield,
   ShieldAlert,
   ShieldCheck,
   ShieldQuestion,
@@ -37,6 +36,7 @@ import {
 import { MemberRole } from '@prisma/client';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 
 export default function MembersModal() {
   const router = useRouter();
@@ -48,6 +48,7 @@ export default function MembersModal() {
     onOpen,
     onClose,
   } = useModalStore();
+  const user = useUser();
 
   const roleIconMap = new Map();
   roleIconMap.set('GUEST', null);
@@ -128,9 +129,12 @@ export default function MembersModal() {
 
                   <div className='flex flex-col space-y-1'>
                     <div className='flex space-x-2 items-center'>
-                      <p>{member.profile.name}</p>
+                      <p className='text-md'>{member.profile.name} </p>
 
                       {roleIconMap.get(member.role)}
+                      {member.profile.name === user?.user?.fullName && (
+                        <span className='text-xs'>{'(YOU)'}</span>
+                      )}
                     </div>
 
                     <p className='text-xs text-muted-foreground'>

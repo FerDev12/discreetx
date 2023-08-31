@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
 import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
@@ -134,7 +135,8 @@ export default function InitialModal() {
 
             <DialogFooter className=' px-6 py-4'>
               <Button variant='primary' disabled={isLoading}>
-                Create
+                {isLoading ? 'Creating...' : 'Create'}
+                {isLoading && <Loader2 className='w-4 h-4 ml-2 animate-spin' />}
               </Button>
             </DialogFooter>
           </form>

@@ -48,7 +48,12 @@ const formSchema = z.object({
 export default function CreateChannelModal() {
   const router = useRouter();
   const params = useParams();
-  const { isOpen, onClose, type } = useModalStore();
+  const {
+    isOpen,
+    onClose,
+    type,
+    data: { channelType },
+  } = useModalStore();
 
   useEffect(() => {
     (document.getElementById('name-input') as HTMLInputElement)?.focus();
@@ -59,12 +64,20 @@ export default function CreateChannelModal() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      type: ChannelType.TEXT,
+      type: channelType ?? ChannelType.TEXT,
     },
   });
 
   const isModalOpen = isOpen && type === 'createChannel';
   const isLoading = form.formState.isSubmitting;
+
+  useEffect(() => {
+    if (channelType) {
+      form.setValue('type', channelType);
+    } else {
+      form.setValue('type', ChannelType.TEXT);
+    }
+  }, [channelType, form]);
 
   const handleClose = () => {
     form.reset();
