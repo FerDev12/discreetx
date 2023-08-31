@@ -89,7 +89,7 @@ export default function EditServerModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className=' bg-gradient-to-br from-zinc-950 via-teal-950 to-teal-600 p-0 overflow-hidden'>
+      <DialogContent className=' bg-gradient-to-br border-2 border-teal-500 p-0 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold mb-2'>
             Edit your server

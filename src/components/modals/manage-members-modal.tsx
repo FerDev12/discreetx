@@ -52,7 +52,7 @@ export default function MembersModal() {
   roleIconMap.set('GUEST', null);
   roleIconMap.set(
     'MODERATOR',
-    <ShieldCheck className='h-4 w-4 ml-3 text-teal-500' />
+    <ShieldCheck className='h-4 w-4 ml-3 text-indigo-500' />
   );
   roleIconMap.set('ADMIN', <ShieldAlert className='h-4 w-4 text-rose-500' />);
 
@@ -84,9 +84,30 @@ export default function MembersModal() {
     }
   };
 
+  const onKick = async (memberId: string) => {
+    try {
+      setLoadingId(memberId);
+
+      const query = new URLSearchParams({
+        serverId: server?.id ?? '',
+      });
+
+      const { data } = await axios.delete(`/api/members/${memberId}?${query}`);
+
+      router.refresh();
+      onOpen('members', { server: data });
+    } catch (err: any) {
+      if (axios.isAxiosError(err)) {
+        console.error(err.response?.data);
+      } else {
+        console.error(err);
+      }
+    }
+  };
+
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent className='bg-gradient-to-br from-zinc-950 via-indigo-950 to-indigo-600  overflow-hidden'>
+      <DialogContent className='bg-gradient-to-br border-teal-500 border-2 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
             Manage Members
@@ -161,9 +182,12 @@ export default function MembersModal() {
 
                         <DropdownMenuSeparator />
 
-                        <DropdownMenuItem className='text-amber-500 cursor-pointer'>
-                          Kick
+                        <DropdownMenuItem
+                          className='text-amber-500 cursor-pointer'
+                          onClick={() => onKick(member.id)}
+                        >
                           <Gavel className='w-4 h-4 mr-2' />
+                          Kick
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
