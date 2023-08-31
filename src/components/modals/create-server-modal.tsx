@@ -1,6 +1,5 @@
 'use client';
 
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -26,7 +25,6 @@ import {
 import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
 import { useModalStore } from '@/hooks/use-modal-store';
-import { Server } from '@prisma/client';
 import { Loader2 } from 'lucide-react';
 import { createServer } from '@/actions/servers/create-server';
 

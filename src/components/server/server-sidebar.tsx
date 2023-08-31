@@ -1,16 +1,17 @@
 import { redirect } from 'next/navigation';
+import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from 'lucide-react';
+import { ReactNode } from 'react';
+
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { Channel, ChannelType, MemberRole } from '@prisma/client';
 import { ServerHeader } from '@/components/server/server-header';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ServerSearch } from './server-search';
-import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from 'lucide-react';
-import { ReactNode } from 'react';
 import { Separator } from '@/components/ui/separator';
-import { ServerSection } from './server-section';
-import { ServerChannel } from './server-channel';
-import { ServerMember } from './server-member';
+import { ServerSearch } from '@/components/server/server-search';
+import { ServerSection } from '@/components/server/server-section';
+import { ServerChannel } from '@/components/server/server-channel';
+import { ServerMember } from '@/components/server/server-member';
 
 type ServerSidebarProps = {
   serverId: string;
@@ -96,7 +97,7 @@ export async function ServerSidebar({ serverId }: ServerSidebarProps) {
   )?.role;
 
   return (
-    <aside className='flex flex-col h-full text-primary w-full dark:bg-[#2b2d31] bg-[#f2f3f5] pt-12 md:pt-0'>
+    <aside className='flex flex-col h-full text-primary w-full dark:bg-[#2b2d31] bg-[#f2f3f5] pt-12 md:pt-0 shadow-zinc-500/50 shadow-sm'>
       <Separator className='md:hidden' />
       <ServerHeader server={server} role={role} />
 

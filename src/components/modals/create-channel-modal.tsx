@@ -87,7 +87,7 @@ export default function CreateChannelModal() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const query = new URLSearchParams({
-        serverId: (params.serverId as string) ?? '',
+        serverId: (params?.serverId as string) ?? '',
       });
 
       const { data: server } = await axios.post<Server>(

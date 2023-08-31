@@ -36,7 +36,9 @@ export function ChatHeader({
         <UserAvatar src={imageUrl} className='w-8 h-8 md:w-8 md:h-8 mr-2' />
       )}
 
-      <h3 className='font-semibold text-md text-zinc-950'>{name}</h3>
+      <h3 className='font-semibold text-md text-zinc-950 dark:text-zinc-50'>
+        {name}
+      </h3>
 
       <div className='ml-auto flex items-center'>
         <SocketIndicator />
