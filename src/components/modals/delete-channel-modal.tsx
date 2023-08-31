@@ -19,13 +19,12 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { useForm } from 'react-hook-form';
 
-export default function DeleteServerModal() {
+export default function DeleteChannelModal() {
   const {
     isOpen,
     onClose,
-    onOpen,
     type,
-    data: { server },
+    data: { channel, server },
   } = useModalStore();
   const router = useRouter();
   const [value, setValue] = useState('');
@@ -37,16 +36,20 @@ export default function DeleteServerModal() {
   } = useForm();
 
   const isDisabled = isSubmitting || !namesMatch;
-  const isModalOpen = isOpen && type === 'deleteServer';
+  const isModalOpen = isOpen && type === 'deleteChannel';
 
-  const onDeleteServer = async () => {
+  const onDeleteChannel = async () => {
+    if (!namesMatch) return;
+
     try {
-      if (!namesMatch) return;
+      const query = new URLSearchParams({
+        serverId: server?.id ?? '',
+      });
 
-      await axios.delete(`/api/servers/${server?.id}`);
+      await axios.delete(`/api/channels/${channel?.id}?${query}`);
       onClose();
       router.refresh();
-      router.push('/');
+      router.push(`/servers/${server?.id}`);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -61,33 +64,34 @@ export default function DeleteServerModal() {
       <DialogContent className='bg-gradient-to-br border-2 border-rose-500 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
-            Delete Server
+            Delete Channel
           </DialogTitle>
 
           <DialogDescription className='text-center text-muted-foreground'>
             Are you sure you want to do this?{' '}
-            <span className='font-semibold text-teal-500'>{server?.name}</span>{' '}
+            <span className='font-semibold text-teal-500'>{channel?.name}</span>{' '}
             will be permanently deleted.
           </DialogDescription>
         </DialogHeader>
 
         <form
-          onSubmit={handleSubmit(onDeleteServer)}
+          id='form_delete-channel'
+          onSubmit={handleSubmit(onDeleteChannel)}
           className='flex flex-col space-y-4 mt-4'
         >
           <Label className='text-muted-foreground'>
-            Please type <span className='text-teal-500'>{server?.name}</span> to
-            delete the server.
+            Please type <span className='text-teal-500'>{channel?.name}</span>{' '}
+            to delete the channel.
           </Label>
           <Input
             type='text'
             disabled={isSubmitting}
-            placeholder={server?.name}
+            placeholder={channel?.name}
             value={value}
             onChange={(e) => {
               const val = e.target.value;
 
-              if (val === server?.name) {
+              if (val === channel?.name) {
                 setNamesMatch(true);
               } else {
                 setNamesMatch(false);
@@ -106,8 +110,14 @@ export default function DeleteServerModal() {
             >
               Cancel
             </Button>
-            <Button type='submit' disabled={isDisabled} variant='danger'>
-              {!isSubmitting ? 'Confirm' : 'Deleting...'}
+            <Button
+              form='form_delete-channel'
+              type='submit'
+              // onClick={onDeleteChannel}
+              disabled={isDisabled}
+              variant='danger'
+            >
+              {!isSubmitting ? 'Delete' : 'Deleting...'}
               {isSubmitting && (
                 <Loader2 className='w-4 h-4 ml-2 animate-spin text-rose-50' />
               )}

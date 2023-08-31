@@ -47,12 +47,11 @@ const formSchema = z.object({
 
 export default function CreateChannelModal() {
   const router = useRouter();
-  const params = useParams();
   const {
     isOpen,
     onClose,
     type,
-    data: { channelType },
+    data: { channel, server },
   } = useModalStore();
 
   useEffect(() => {
@@ -63,21 +62,23 @@ export default function CreateChannelModal() {
     // @ts-ignore
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      type: channelType ?? ChannelType.TEXT,
+      name: channel?.name ?? '',
+      type: channel?.type ?? ChannelType.TEXT,
     },
   });
 
-  const isModalOpen = isOpen && type === 'createChannel';
-  const isLoading = form.formState.isSubmitting;
-
   useEffect(() => {
-    if (channelType) {
-      form.setValue('type', channelType);
+    if (channel) {
+      form.setValue('type', channel.type);
+      form.setValue('name', channel.name);
     } else {
       form.setValue('type', ChannelType.TEXT);
+      form.setValue('name', '');
     }
-  }, [channelType, form]);
+  }, [channel, form]);
+
+  const isModalOpen = isOpen && type === 'editChannel';
+  const isLoading = form.formState.isSubmitting;
 
   const handleClose = () => {
     form.reset();
@@ -87,17 +88,17 @@ export default function CreateChannelModal() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const query = new URLSearchParams({
-        serverId: (params.serverId as string) ?? '',
+        serverId: server?.id ?? '',
       });
 
-      const { data: server } = await axios.post<Server>(
-        `/api/channels?${query}`,
+      const { data } = await axios.patch<Server>(
+        `/api/channels/${channel?.id}?${query}`,
         values
       );
 
       form.reset();
       router.refresh();
-      router.push(`/servers/${server.id}`);
+      router.push(`/servers/${data.id}`);
       onClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -113,7 +114,7 @@ export default function CreateChannelModal() {
       <DialogContent className='bg-gradient-to-br border-2 border-teal-500 p-0 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
-            Create Channel
+            Edit Channel
           </DialogTitle>
         </DialogHeader>
 
@@ -192,7 +193,7 @@ export default function CreateChannelModal() {
               </Button>
 
               <Button type='submit' disabled={isLoading} variant='primary'>
-                {!isLoading ? 'Create' : 'Creating...'}
+                {!isLoading ? 'Save Changes' : 'Saving...'}
                 {isLoading && <Loader2 className='w-4 h-4 ml-2 animate-spin' />}
               </Button>
             </DialogFooter>

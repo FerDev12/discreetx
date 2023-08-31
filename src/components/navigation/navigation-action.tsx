@@ -15,11 +15,11 @@ export function NavigationAction() {
           className='group flex items-center'
         >
           <div
-            className='flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center border
-          border-teal-500 dark:border-none bg-background dark:bg-neutral-700 group-hover:bg-teal-500'
+            className='flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center border-2
+          border-teal-500 bg-transparent dark:border-none dark:bg-neutral-700 group-hover:bg-teal-500'
           >
             <Plus
-              className='group-hover:text-white transition text-teal-500'
+              className='group-hover:text-teal-50 transition text-teal-500'
               size={25}
             />
           </div>
