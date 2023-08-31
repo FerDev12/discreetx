@@ -135,8 +135,9 @@ export default function EditServerModal() {
 
                     <FormControl>
                       <Input
+                        type='text'
+                        autoComplete='off'
                         disabled={isLoading}
-                        className=''
                         placeholder='Enter server name'
                         {...field}
                       />

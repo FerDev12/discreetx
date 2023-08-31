@@ -132,6 +132,8 @@ export default function CreateChannelModal() {
                     <FormControl>
                       <Input
                         id='name-input'
+                        type='text'
+                        autoComplete='off'
                         disabled={isLoading}
                         className=''
                         placeholder='Enter channel name'

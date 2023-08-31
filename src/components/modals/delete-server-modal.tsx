@@ -23,7 +23,6 @@ export default function DeleteServerModal() {
   const {
     isOpen,
     onClose,
-    onOpen,
     type,
     data: { server },
   } = useModalStore();
@@ -81,6 +80,7 @@ export default function DeleteServerModal() {
           </Label>
           <Input
             type='text'
+            autoComplete='off'
             disabled={isSubmitting}
             placeholder={server?.name}
             value={value}

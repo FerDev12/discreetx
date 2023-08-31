@@ -1,7 +1,6 @@
 'use client';
 
 import axios from 'axios';
-import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,43 +19,56 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { useModalStore } from '@/hooks/use-modal-store';
 
 const formSchema = z.object({
-  name: z.string().min(1, { message: 'Sever name is required' }),
-  imageUrl: z.string().min(1, { message: 'Server image is required' }),
+  fileUrl: z.string().min(1, { message: 'File is required' }),
 });
 
-export default function InitialModal() {
-  const [isMounted, setIsMounted] = useState(false);
+export default function MessageFileModal() {
   const router = useRouter();
+  const {
+    isOpen,
+    onClose,
+    type,
+    data: { apiUrl, query },
+  } = useModalStore();
 
-  useEffect(() => setIsMounted(true), []);
+  const isModalOpen = isOpen && type === 'messageFile';
 
   const form = useForm({
     // @ts-ignore
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      imageUrl: '',
+      fileUrl: '',
     },
   });
+
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
 
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post('/api/servers', values);
+      const params = new URLSearchParams({
+        ...query,
+      });
 
-      form.reset();
+      await axios.post(`${apiUrl}?${params}`, {
+        ...values,
+        content: values.fileUrl,
+      });
+
       router.refresh();
-      window.location.reload();
+      handleClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -66,24 +78,19 @@ export default function InitialModal() {
     }
   };
 
-  if (!isMounted) {
-    return null;
-  }
-
   return (
-    <Dialog open>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent
         className='bg-gradient-to-br border-2 border-teal-500 p-0 overflow-hidden'
         hideCloseButton
       >
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
-            Customize your server
+            Add an attachment
           </DialogTitle>
 
           <DialogDescription className='text-center text-muted-foreground'>
-            Giver your server a personality with a name and an image. You can
-            always change it later.
+            Send a file as a message
           </DialogDescription>
         </DialogHeader>
 
@@ -93,12 +100,12 @@ export default function InitialModal() {
               <div className='flex items-center justify-center text-center'>
                 <FormField
                   control={form.control}
-                  name='imageUrl'
+                  name='fileUrl'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
                         <FileUpload
-                          endpoint='serverImage'
+                          endpoint='messageFile'
                           value={field.value}
                           onChange={field.onChange}
                         />
@@ -109,35 +116,14 @@ export default function InitialModal() {
                   )}
                 />
               </div>
-
-              <FormField
-                control={form.control}
-                name='name'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='uppercase text-xs font-bold text-muted-foreground'>
-                      Server Name
-                    </FormLabel>
-
-                    <FormControl>
-                      <Input
-                        type='text'
-                        autoComplete='off'
-                        disabled={isLoading}
-                        placeholder='Enter server name'
-                        {...field}
-                      />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
             <DialogFooter className=' px-6 py-4'>
+              <Button variant='ghost' type='button' onClick={handleClose}>
+                Cancel
+              </Button>
               <Button variant='primary' disabled={isLoading}>
-                {isLoading ? 'Creating...' : 'Create'}
+                {isLoading ? 'Sending...' : 'Send'}
                 {isLoading && <Loader2 className='w-4 h-4 ml-2 animate-spin' />}
               </Button>
             </DialogFooter>

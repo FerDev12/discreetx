@@ -2,7 +2,7 @@
 
 import '@uploadthing/react/styles.css';
 
-import { X } from 'lucide-react';
+import { FileIcon, X } from 'lucide-react';
 import Image from 'next/image';
 import { UploadDropzone } from '@/lib/uploadthing';
 import { Button } from './ui/button';
@@ -20,7 +20,7 @@ export default function FileUpload({
   value,
   onChange,
 }: FileUploadProps) {
-  const fileType = value?.split('.').pop();
+  const fileType = value?.split('.').at(-1);
   const [fileKey, setFileKey] = useState('');
 
   const onDeleteImage = async () => {
@@ -52,6 +52,32 @@ export default function FileUpload({
       </div>
     );
   }
+
+  if (value && fileType === 'pdf') {
+    return (
+      <div className='relative flex items-center p-2 mt-2 rounded-md bg-bakcground/10 bg-indigo-50'>
+        <FileIcon className='h-10 w-10 fill-indigo-200 stroke-indigo-400 ' />
+        <a
+          href={value}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='ml-2 text-start text-sm text-indigo-500 dark:text-indigo-400 hover:underline'
+        >
+          <Button
+            size='icon'
+            variant='destructive'
+            className='rounded-full absolute -top-2 -right-2 shadow-sm w-6 h-6'
+            type='button'
+            onClick={onDeleteImage}
+          >
+            <X className='w-4 h-4' />
+          </Button>
+          {value}
+        </a>
+      </div>
+    );
+  }
+
   return (
     <UploadDropzone
       endpoint={endpoint}

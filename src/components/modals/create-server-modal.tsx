@@ -122,8 +122,9 @@ export default function CreateServerModal() {
 
                     <FormControl>
                       <Input
+                        type='text'
+                        autoComplete='off'
                         disabled={isLoading}
-                        className=''
                         placeholder='Enter server name'
                         {...field}
                       />

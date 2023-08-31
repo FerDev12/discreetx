@@ -85,6 +85,7 @@ export default function DeleteChannelModal() {
           </Label>
           <Input
             type='text'
+            autoComplete='off'
             disabled={isSubmitting}
             placeholder={channel?.name}
             value={value}
