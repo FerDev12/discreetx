@@ -171,7 +171,7 @@ export default function CreateChannelModal() {
                             value={type}
                             className='capitalize cursor-pointer'
                           >
-                            {type.toLowerCase()}
+                            {type.at(0) + type.slice(1).toLowerCase()}
                           </SelectItem>
                         ))}
                       </SelectContent>

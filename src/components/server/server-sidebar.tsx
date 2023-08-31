@@ -96,7 +96,8 @@ export async function ServerSidebar({ serverId }: ServerSidebarProps) {
   )?.role;
 
   return (
-    <aside className='flex flex-col h-full text-primary w-full dark:bg-[#2b2d31] bg-[#f2f3f5]'>
+    <aside className='flex flex-col h-full text-primary w-full dark:bg-[#2b2d31] bg-[#f2f3f5] pt-12 md:pt-0'>
+      <Separator className='md:hidden' />
       <ServerHeader server={server} role={role} />
 
       <ScrollArea className='flex-1 px-3'>

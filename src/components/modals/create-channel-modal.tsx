@@ -3,6 +3,7 @@
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,7 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { useEffect } from 'react';
 
 const formSchema = z.object({
   name: z
@@ -170,7 +170,7 @@ export default function CreateChannelModal() {
                             value={type}
                             className='capitalize cursor-pointer'
                           >
-                            {type.toLowerCase()}
+                            {type.at(0) + type.slice(1).toLowerCase()}
                           </SelectItem>
                         ))}
                       </SelectContent>
