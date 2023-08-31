@@ -3,10 +3,17 @@
 import { Member, MemberRole, Profile } from '@prisma/client';
 import { UserAvatar } from '../user-avatar';
 import { ActionTooltip } from '../action-tooltip';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Form, FormControl, FormField, FormItem } from '../ui/form';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import axios from 'axios';
 
 type ChatItemProps = {
   id: string;
@@ -34,6 +41,10 @@ roleIconMap.set(
   <ShieldAlert className='w-4 h-4 ml-2 text-rose-500' />
 );
 
+const formSchema = z.object({
+  content: z.string().min(1),
+});
+
 export function ChatItem({
   id,
   content,
@@ -48,6 +59,46 @@ export function ChatItem({
 }: ChatItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeliting] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    // @ts-ignore
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      content,
+    },
+  });
+
+  useEffect(() => {
+    form.reset({
+      content,
+    });
+  }, [content, form]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        setIsEditing(false);
+      }
+    };
+
+    addEventListener('keydown', handleKeyDown);
+
+    return () => removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const query = new URLSearchParams({ ...socketQuery });
+
+      await axios.patch(`/${socketUrl}/${id}?${query}`);
+    } catch (err: any) {
+      if (axios.isAxiosError(err)) {
+        console.error(err.response?.data);
+      } else {
+        console.error(err);
+      }
+    }
+  };
 
   const fileType = fileUrl?.split('.').at(-1);
 
@@ -131,6 +182,54 @@ export function ChatItem({
                 </span>
               )}
             </p>
+          )}
+
+          {!fileUrl && isEditing && (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className='flex items-center w-full gap-x-2 pt-2'
+              >
+                <FormField
+                  control={form.control}
+                  name='content'
+                  render={({ field }) => (
+                    <FormItem className='flex-1'>
+                      <FormControl>
+                        <div className='relative w-full'>
+                          <Input
+                            {...field}
+                            disabled={form.formState.isSubmitting}
+                            placeholder='Edited message'
+                            className='p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200'
+                          />
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type='button'
+                  disabled={form.formState.isSubmitting}
+                  size='sm'
+                  variant='ghost'
+                  onClick={() => setIsEditing(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type='submit'
+                  size='sm'
+                  disabled={form.formState.isSubmitting}
+                  variant='primary'
+                >
+                  Save
+                </Button>
+              </form>
+
+              <span>Press escape to cancel, enter to save</span>
+            </Form>
           )}
         </div>
       </div>
