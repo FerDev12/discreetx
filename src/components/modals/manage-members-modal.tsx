@@ -20,6 +20,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   ShieldQuestion,
+  User2,
 } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -157,7 +158,7 @@ export default function MembersModal() {
                                 onClick={() => onRoleChange(member.id, 'GUEST')}
                                 className='cursor-pointer'
                               >
-                                <Shield className='w-4 h-4 mr-2' />
+                                <User2 className='w-4 h-4 mr-2' />
                                 GUEST
                                 {member.role === 'GUEST' && (
                                   <Check className='2-4 h-4 ml-auto' />

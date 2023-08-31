@@ -71,7 +71,10 @@ export default function InitialModal() {
 
   return (
     <Dialog open>
-      <DialogContent className='bg-gradient-to-br border-2 border-teal-500 p-0 overflow-hidden'>
+      <DialogContent
+        className='bg-gradient-to-br border-2 border-teal-500 p-0 overflow-hidden'
+        hideCloseButton
+      >
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
             Customize your server

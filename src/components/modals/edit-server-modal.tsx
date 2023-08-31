@@ -149,16 +149,16 @@ export default function EditServerModal() {
             </div>
 
             <DialogFooter className='flex flex-col-reverse gap-y-2 px-6 py-4 '>
-              <Button disabled={isLoading} type='button' onClick={handleClose}>
+              <Button
+                disabled={isLoading}
+                type='button'
+                variant='ghost'
+                onClick={handleClose}
+              >
                 Cancel
               </Button>
 
-              <Button
-                type='submit'
-                disabled={isLoading}
-                variant='outline'
-                className='bg-transparent border-teal-50 transition-all hover:border-2 hover:bg-transparent'
-              >
+              <Button type='submit' disabled={isLoading} variant='primary'>
                 {!isLoading ? 'Save Changes' : 'Saving...'}
                 {isLoading && <Loader2 className='w-4 h-4 ml-2 animate-spin' />}
               </Button>
