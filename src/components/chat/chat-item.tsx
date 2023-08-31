@@ -4,7 +4,14 @@ import { Member, MemberRole, Profile } from '@prisma/client';
 import { UserAvatar } from '../user-avatar';
 import { ActionTooltip } from '../action-tooltip';
 import { ReactNode, useEffect, useState } from 'react';
-import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from 'lucide-react';
+import {
+  Edit,
+  FileIcon,
+  Loader2,
+  ShieldAlert,
+  ShieldCheck,
+  Trash,
+} from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import * as z from 'zod';
@@ -90,7 +97,10 @@ export function ChatItem({
     try {
       const query = new URLSearchParams({ ...socketQuery });
 
-      await axios.patch(`/${socketUrl}/${id}?${query}`);
+      await axios.patch(`${socketUrl}/${id}?${query}`, values);
+
+      form.reset();
+      setIsEditing(false);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -199,6 +209,8 @@ export function ChatItem({
                         <div className='relative w-full'>
                           <Input
                             {...field}
+                            type='text'
+                            autoComplete='off'
                             disabled={form.formState.isSubmitting}
                             placeholder='Edited message'
                             className='p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200'
@@ -224,11 +236,16 @@ export function ChatItem({
                   disabled={form.formState.isSubmitting}
                   variant='primary'
                 >
-                  Save
+                  {form.formState.isSubmitting ? 'Saving...' : 'Save'}
+                  {form.formState.isSubmitting && (
+                    <Loader2 className='w-4 h-4 ml-2 animate-spin' />
+                  )}
                 </Button>
               </form>
 
-              <span>Press escape to cancel, enter to save</span>
+              <span className='text-xs text-muted-foreground mt-2'>
+                Press escape to cancel, enter to save
+              </span>
             </Form>
           )}
         </div>
