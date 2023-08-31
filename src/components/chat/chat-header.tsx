@@ -32,7 +32,7 @@ export function ChatHeader({
       )}
 
       {type === 'conversation' && (
-        <UserAvatar src={imageUrl} className='w-8 h-8 md:w-8 md:h-8' />
+        <UserAvatar src={imageUrl} className='w-8 h-8 md:w-8 md:h-8 mr-2' />
       )}
 
       <h3 className='font-semibold text-md text-zinc-950'>{name}</h3>
