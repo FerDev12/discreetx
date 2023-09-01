@@ -7,6 +7,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponseServerIO
 ) {
+  const date = new Date();
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -32,47 +33,6 @@ export default async function handler(
     if (!content) {
       return res.status(400).json({ error: 'Missing content' });
     }
-
-    // const [serverResponse, channelResponse] = await Promise.allSettled([
-    //   db.server.findFirst({
-    //     where: {
-    //       id: serverId as string,
-    //       members: {
-    //         some: {
-    //           profileId: profile.id,
-    //         },
-    //       },
-    //     },
-    //     include: {
-    //       members: true,
-    //     },
-    //   }),
-    //   db.channel.findFirst({
-    //     where: {
-    //       id: conversationId as string,
-    //       serverId: serverId as string,
-    //     },
-    //   }),
-    // ]);
-
-    // if (serverResponse.status === 'rejected') {
-    //   throw new Error('Find server request failed');
-    // }
-
-    // if (channelResponse.status === 'rejected') {
-    //   throw new Error('Find channel request failed');
-    // }
-
-    // const server = serverResponse.value;
-    // const channel = channelResponse.value;
-
-    // if (!server) {
-    //   return res.status(404).json({ error: 'Server not found' });
-    // }
-
-    // if (!channel) {
-    //   return res.status(404).json({ error: 'Channel not found' });
-    // }
 
     const conversation = await db.conversation.findFirst({
       where: {
@@ -123,6 +83,8 @@ export default async function handler(
         fileUrl,
         memberId: member.id,
         conversationId: conversationId as string,
+        createdAt: date,
+        updatedAt: date,
       },
       include: {
         member: {

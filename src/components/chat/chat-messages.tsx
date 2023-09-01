@@ -1,52 +1,87 @@
 'use client';
 
 import { format } from 'date-fns';
-import { Member, Message, Profile } from '@prisma/client';
+import { Loader2, ServerCrash } from 'lucide-react';
+import {
+  ElementRef,
+  experimental_useOptimistic,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Member, MemberRole, Profile } from '@prisma/client';
+
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { ChatInput } from './chat-input';
+import { ChatItem } from './chat-item';
 import { ChatWelcome } from './chat-welcome';
 import { useChatQuery } from '@/hooks/use-chat-query';
-import { Loader2, ServerCrash } from 'lucide-react';
-import { ChatItem } from './chat-item';
-import { ElementRef, Fragment, useRef } from 'react';
 import { useChatSocket } from '@/hooks/use-chat-socket';
-// import { ScrollArea } from '../ui/scroll-area';
 import { useChatScroll } from '@/hooks/use-chat-scroll';
+import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
+import { useSocket } from '../providers/socket-provider';
 
 const DATE_FORMAT = 'd MMM yyyy, HH:mm';
 
-type MessageWithMemberWithProfile = Message & {
-  member: Member;
-  profile: Profile;
-};
-
 type ChatMessagesProps = {
   name: string;
-  member: Member;
+  profile: Profile;
+  currentMember: MemberWithProfile;
   chatId: string;
-  apiUrl: string;
-  socketUrl: string;
-  socketQuery: Record<string, string>;
-  paramKey: 'channelId' | 'conversationId';
   paramValue: string;
-  type: 'channel' | 'conversation';
-};
+} & (
+  | {
+      type: 'channel';
+      apiUrl: '/api/messages';
+      paramKey: 'channelId';
+      socketUrl: '/api/socket/messages';
+      socketQuery: {
+        channelId: string;
+        serverId: string;
+      };
+    }
+  | {
+      type: 'conversation';
+      otherMember: MemberWithProfile;
+      apiUrl: '/api/direct-messages';
+      paramKey: 'conversationId';
+      socketUrl: '/api/socket/direct-messages';
+      socketQuery: {
+        conversationId: string;
+      };
+    }
+);
 
 export function ChatMessages({
   name,
-  member,
+  currentMember,
   chatId,
   apiUrl,
   socketQuery,
   socketUrl,
   paramKey,
   paramValue,
-  type,
+  ...props
 }: ChatMessagesProps) {
   const queryKey = `chat:${chatId}`;
   const addKey = `chat:${chatId}:messages`;
   const updateKey = `chat:${chatId}:messages:update`;
+  const { socket } = useSocket();
 
   const chatRef = useRef<ElementRef<'div'>>(null);
   const bottomRef = useRef<ElementRef<'div'>>(null);
+
+  const [isTyping, setIsTyping] = useState(false);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    if (props.type !== 'conversation') return;
+    const typingKey = `typing:${chatId}:${props.otherMember.id}`;
+
+    socket.on(typingKey, (isTyping) => setIsTyping(isTyping));
+  }, [props, chatId, socket]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useChatQuery({
@@ -57,12 +92,29 @@ export function ChatMessages({
     });
 
   useChatSocket({ addKey, updateKey, queryKey });
+
+  const messages: MessageWithMemberWithProfile[] = useMemo(
+    () =>
+      (
+        data?.pages.flat() as {
+          items: MessageWithMemberWithProfile[];
+          nextCursor: string | null;
+        }[]
+      )?.flatMap(({ items }) => items) ?? [],
+    [data?.pages]
+  );
+
+  const [optimisticMessages, addOptimisticMessage] = experimental_useOptimistic(
+    messages,
+    (state, newMessage: MessageWithMemberWithProfile) => [newMessage, ...state]
+  );
+
   useChatScroll({
     chatRef,
     bottomRef,
     loadMore: fetchNextPage,
     shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
-    count: data?.pages?.at(0)?.items?.length ?? 0,
+    count: optimisticMessages.length,
   });
 
   if (status === 'loading') {
@@ -88,51 +140,86 @@ export function ChatMessages({
   }
 
   return (
-    <div ref={chatRef} className='flex-1 flex flex-col py-4 overflow-y-auto'>
-      {/* <ScrollArea viewPortRef={chatRef}> */}
-      {!hasNextPage && <div className='flex-1' />}
+    <>
+      <ScrollArea viewPortRef={chatRef} className='flex-1 py-4'>
+        {!hasNextPage && <div className='flex-1' />}
 
-      {!hasNextPage && <ChatWelcome type={type} name={name} />}
+        {!hasNextPage && <ChatWelcome type={props.type} name={name} />}
 
-      {hasNextPage && (
-        <div className='flex justify-center'>
-          {isFetchingNextPage ? (
-            <Loader2 className='h-6 w-6 text-zinc-500 animate-spin my-4' />
-          ) : (
-            <button
-              onClick={() => fetchNextPage()}
-              className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition text-xs my-4'
-            >
-              Load previous messages
-            </button>
-          )}
-        </div>
+        {hasNextPage && (
+          <div className='flex justify-center'>
+            {isFetchingNextPage ? (
+              <Loader2 className='h-6 w-6 text-zinc-500 animate-spin my-4' />
+            ) : (
+              <button
+                onClick={() => fetchNextPage()}
+                className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition text-xs my-4'
+              >
+                Load previous messages
+              </button>
+            )}
+          </div>
+        )}
+
+        <ul className='flex flex-col-reverse mt-auto'>
+          {optimisticMessages.map((message) => (
+            <ChatItem
+              key={message.id}
+              id={message.id}
+              content={message.content}
+              fileUrl={message.fileUrl}
+              deleted={message.deleted}
+              timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+              isUpdated={message.updatedAt !== message.createdAt}
+              currentMember={currentMember}
+              member={message.member as Member & { profile: Profile }}
+              socketUrl={socketUrl}
+              socketQuery={socketQuery}
+            />
+          ))}
+        </ul>
+
+        {props.type === 'conversation' && isTyping && (
+          <li className='text-xs text-zinc-500 list-none pl-12 pt-4 italic flex items-baseline gap-x-1'>
+            <p>
+              <span className='font-semibold'>
+                {props.otherMember.profile.name}
+              </span>{' '}
+              is typing
+            </p>
+            <div className='flex gap-x-0.5 items-baseline'>
+              <span className=' animate-ping delay-0 w-0.5 h-0.5 bg-zinc-500 rounded-full' />
+              <span className='animate-ping delay-50 w-0.5 h-0.5 bg-zinc-500 rounded-full' />
+              <span className='animate-ping delay-100 w-0.5 h-0.5 bg-zinc-500 rounded-full' />
+            </div>
+          </li>
+        )}
+
+        <div ref={bottomRef} />
+      </ScrollArea>
+
+      {props.type === 'channel' ? (
+        <ChatInput
+          type='channel'
+          chatId={chatId}
+          name={name}
+          currentMember={currentMember}
+          apiUrl={socketUrl}
+          query={socketQuery}
+          addOptimisticMessage={addOptimisticMessage}
+        />
+      ) : (
+        <ChatInput
+          type='conversation'
+          chatId={chatId}
+          name={name}
+          currentMember={currentMember}
+          otherMember={props.otherMember}
+          apiUrl={socketUrl}
+          query={socketQuery}
+          addOptimisticMessage={addOptimisticMessage}
+        />
       )}
-
-      <ul className='flex flex-col-reverse mt-auto'>
-        {data?.pages?.map((group, i) => (
-          <Fragment key={i}>
-            {group.items.map((message: MessageWithMemberWithProfile) => (
-              <ChatItem
-                key={message.id}
-                id={message.id}
-                content={message.content}
-                fileUrl={message.fileUrl}
-                deleted={message.deleted}
-                timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
-                isUpdated={message.updatedAt !== message.createdAt}
-                currentMember={member}
-                member={message.member as Member & { profile: Profile }}
-                socketUrl={socketUrl}
-                socketQuery={socketQuery}
-              />
-            ))}
-          </Fragment>
-        ))}
-      </ul>
-
-      <div ref={bottomRef} />
-      {/* </ScrollArea> */}
-    </div>
+    </>
   );
 }
