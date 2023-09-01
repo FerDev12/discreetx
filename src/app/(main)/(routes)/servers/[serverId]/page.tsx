@@ -15,16 +15,37 @@ export default async function ServerIdPage({ params }: ServerIdPageProps) {
     return redirectToSignIn();
   }
 
-  const channel = await db.channel.findFirst({
+  const server = await db.server.findUnique({
     where: {
-      profileId: profile.id,
-      name: 'general',
-      serverId: params.serverId,
+      id: params.serverId,
+      members: {
+        some: {
+          profileId: profile.id,
+        },
+      },
+    },
+    include: {
+      channels: {
+        where: {
+          name: 'general',
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      },
     },
   });
 
-  if (channel) {
-    return redirect(`/servers/${params.serverId}/channels/${channel.id}`);
+  if (!server) {
+    return null;
+  }
+
+  const initialChannel = server.channels?.at(0);
+
+  if (initialChannel) {
+    return redirect(
+      `/servers/${params.serverId}/channels/${initialChannel.id}`
+    );
   }
 
   return null;
