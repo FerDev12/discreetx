@@ -152,7 +152,10 @@ export function ChatItem({
             <div className='flex items-center'>
               <p
                 onClick={onMemberClick}
-                className='font-semibold text-sm hover:underline cursor-pointer'
+                className={cn(
+                  'font-semibold text-sm hover:underline cursor-pointer',
+                  isOwner && 'dark:text-teal-300/90 text-teal-700/90'
+                )}
               >
                 {member.profile.name}
               </p>
@@ -160,6 +163,10 @@ export function ChatItem({
               <ActionTooltip label={member.role}>
                 {roleIconMap.get(member.role)}
               </ActionTooltip>
+
+              {/* <span className='text-[10px] text-muted-foreground font-semibold ml-2 text-teal-500'>
+                {isOwner && '(ME)'}
+              </span> */}
             </div>
 
             <span className='text-xs text-zinc-500 dakr:text-zinc-400'>

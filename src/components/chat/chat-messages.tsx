@@ -4,11 +4,11 @@ import { format } from 'date-fns';
 import { Member, Message, Profile } from '@prisma/client';
 import { ChatWelcome } from './chat-welcome';
 import { useChatQuery } from '@/hooks/use-chat-query';
-import { Loader, Loader2, ServerCrash } from 'lucide-react';
+import { Loader2, ServerCrash } from 'lucide-react';
 import { ChatItem } from './chat-item';
 import { ElementRef, Fragment, useRef } from 'react';
 import { useChatSocket } from '@/hooks/use-chat-socket';
-import { ScrollArea } from '../ui/scroll-area';
+// import { ScrollArea } from '../ui/scroll-area';
 import { useChatScroll } from '@/hooks/use-chat-scroll';
 
 const DATE_FORMAT = 'd MMM yyyy, HH:mm';

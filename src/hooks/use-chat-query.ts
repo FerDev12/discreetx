@@ -19,7 +19,6 @@ export function useChatQuery({
 
   const fetchMessages = async ({ pageParam = undefined }) => {
     const query = new URLSearchParams({
-      // cursor: pageParam ?? '0',
       [paramKey]: paramValue,
     });
 

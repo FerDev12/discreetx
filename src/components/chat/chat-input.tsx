@@ -61,47 +61,49 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
   });
 
   return (
-    <Form {...form}>
-      <form onSubmit={onSubmit}>
-        <FormField
-          control={form.control}
-          name='content'
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <div className='relative p-4 pb-6 bg-[#e3e5e8] dark:bg-[#1e1f22]'>
-                  <button
-                    type='button'
-                    onClick={() => onOpen('messageFile', { apiUrl, query })}
-                    className='absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex items-center justify-center'
-                  >
-                    <Plus className='text-zinc-50 dark:text-[#313338]' />
-                  </button>
+    <footer>
+      <Form {...form}>
+        <form onSubmit={onSubmit}>
+          <FormField
+            control={form.control}
+            name='content'
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className='relative p-4 pb-6 bg-[#e3e5e8] dark:bg-[#1e1f22]'>
+                    <button
+                      type='button'
+                      onClick={() => onOpen('messageFile', { apiUrl, query })}
+                      className='absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex items-center justify-center'
+                    >
+                      <Plus className='text-zinc-50 dark:text-[#313338]' />
+                    </button>
 
-                  <Input
-                    {...field}
-                    type='text'
-                    autoComplete='off'
-                    placeholder={`Message ${
-                      type === 'conversation' ? name : `#${name}`
-                    }`}
-                    disabled={isSubmitting}
-                    className='px-14 py-6 bg-zinc-50 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-400'
-                  />
-
-                  <div className='absolute top-7 right-8'>
-                    <EmojiPicker
-                      onChange={(emoji: string) =>
-                        field.onChange(`${field.value}${emoji}`)
-                      }
+                    <Input
+                      {...field}
+                      type='text'
+                      autoComplete='off'
+                      placeholder={`Message ${
+                        type === 'conversation' ? name : `#${name}`
+                      }`}
+                      disabled={isSubmitting}
+                      className='px-14 py-6 bg-zinc-50 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-400'
                     />
+
+                    <div className='absolute top-7 right-8'>
+                      <EmojiPicker
+                        onChange={(emoji: string) =>
+                          field.onChange(`${field.value}${emoji}`)
+                        }
+                      />
+                    </div>
                   </div>
-                </div>
-              </FormControl>
-            </FormItem>
-          )}
-        />
-      </form>
-    </Form>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </footer>
   );
 }

@@ -97,7 +97,9 @@ export default async function handler(
       return res.status(404).json({ error: 'Message not found' });
     }
 
-    const member = server.members.find((member) => member.profileId);
+    const member = server.members.find(
+      (member) => member.profileId === profile.id
+    );
 
     if (!member) {
       return res.status(404).json({ error: 'Member not found' });
@@ -156,7 +158,7 @@ export default async function handler(
       });
     }
 
-    const updateKey = `chat:${channelId}:message:update`;
+    const updateKey = `chat:${channelId}:messages:update`;
 
     res?.socket?.server?.io?.emit(updateKey, message);
 
