@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,18 +26,25 @@ import FileUpload from '@/components/file-upload';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useModalStore } from '@/hooks/use-modal-store';
+import { MessageWithMemberWithProfile } from '@/types';
+
+type MessageFileModalProps = {
+  sendOptimisticFile: (message: MessageWithMemberWithProfile) => void;
+};
 
 const formSchema = z.object({
   fileUrl: z.string().min(1, { message: 'File is required' }),
 });
 
-export default function MessageFileModal() {
+export default function MessageFileModal({
+  sendOptimisticFile,
+}: MessageFileModalProps) {
   const router = useRouter();
   const {
     isOpen,
     onClose,
     type,
-    data: { apiUrl, query },
+    data: { apiUrl, query, channelId, member },
   } = useModalStore();
 
   const isModalOpen = isOpen && type === 'messageFile';
@@ -57,6 +65,23 @@ export default function MessageFileModal() {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (channelId?.length && member) {
+      const date = new Date();
+      sendOptimisticFile({
+        id: uuidv4(),
+        content: values.fileUrl,
+        fileUrl: values.fileUrl,
+        createdAt: date,
+        updatedAt: date,
+        deleted: false,
+        channelId,
+        member,
+        memberId: member.id,
+      });
+    }
+
+    handleClose();
+
     try {
       const params = new URLSearchParams({
         ...query,
@@ -67,8 +92,7 @@ export default function MessageFileModal() {
         content: values.fileUrl,
       });
 
-      router.refresh();
-      handleClose();
+      // router.refresh();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);

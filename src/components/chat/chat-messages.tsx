@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Member, MemberRole, Profile } from '@prisma/client';
+import { Member, Profile } from '@prisma/client';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatInput } from './chat-input';
@@ -21,6 +21,8 @@ import { useChatSocket } from '@/hooks/use-chat-socket';
 import { useChatScroll } from '@/hooks/use-chat-scroll';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { useSocket } from '../providers/socket-provider';
+import DeleteMessageModal from '../modals/delete-message-modal';
+import MessageFileModal from '../modals/message-file-modal';
 
 const DATE_FORMAT = 'd MMM yyyy, HH:mm';
 
@@ -104,10 +106,22 @@ export function ChatMessages({
     [data?.pages]
   );
 
-  const [optimisticMessages, addOptimisticMessage] = experimental_useOptimistic(
-    messages,
-    (state, newMessage: MessageWithMemberWithProfile) => [newMessage, ...state]
-  );
+  const [optimisticMessages, setOptimisticMessages] =
+    experimental_useOptimistic(messages);
+
+  const addOptimisticMessage = (message: MessageWithMemberWithProfile) =>
+    setOptimisticMessages((state) => [message, ...state]);
+
+  const deleteOptimisiticMessage = (messageId: string) =>
+    setOptimisticMessages((state) => {
+      const index = state.findIndex((message) => message.id === messageId);
+      if (index < 0) return state;
+      state[index].deleted = true;
+      state[index].content = 'This message has been deleted';
+      state[index].fileUrl = null;
+      state[index].updatedAt = new Date();
+      return [...state];
+    });
 
   useChatScroll({
     chatRef,
@@ -220,6 +234,9 @@ export function ChatMessages({
           addOptimisticMessage={addOptimisticMessage}
         />
       )}
+
+      <MessageFileModal sendOptimisticFile={addOptimisticMessage} />
+      <DeleteMessageModal deleteOptimisticMessage={deleteOptimisiticMessage} />
     </>
   );
 }

@@ -15,36 +15,47 @@ import {
 import { useModalStore } from '@/hooks/use-modal-store';
 import { Button } from '../ui/button';
 
-export default function DeleteMessageModal() {
+type DeleteMessageModalProps = {
+  deleteOptimisticMessage: (messageId: string) => void;
+};
+
+export default function DeleteMessageModal({
+  deleteOptimisticMessage,
+}: DeleteMessageModalProps) {
   const {
     isOpen,
     onClose,
     type,
-    data: { apiUrl, query },
+    data: { apiUrl, query, messageId },
   } = useModalStore();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const isModalOpen = isOpen && type === 'deleteMessage';
 
   const onDeleteMessage = async () => {
     try {
-      setIsLoading(true);
+      if (messageId?.length) {
+        deleteOptimisticMessage(messageId);
+      }
+
+      onClose();
+
+      // setIsLoading(true);
       const params = new URLSearchParams({
         ...query,
       });
 
       await axios.delete(`${apiUrl}?${params}`);
-
-      onClose();
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
       } else {
         console.error(err);
       }
-    } finally {
-      setIsLoading(false);
     }
+    //  finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (
@@ -62,18 +73,23 @@ export default function DeleteMessageModal() {
         </DialogHeader>
 
         <DialogFooter className='py-4'>
-          <Button onClick={onClose} disabled={isLoading} variant='ghost'>
+          <Button
+            onClick={onClose}
+            //  disabled={isLoading}
+            variant='ghost'
+          >
             Cancel
           </Button>
           <Button
             onClick={onDeleteMessage}
-            disabled={isLoading}
+            // disabled={isLoading}
             variant='danger'
           >
-            {!isLoading ? 'Delete' : 'Deleting...'}
+            Delete
+            {/* {!isLoading ? 'Delete' : 'Deleting...'}
             {isLoading && (
               <Loader2 className='w-4 h-4 ml-2 animate-spin text-rose-50' />
-            )}
+            )} */}
           </Button>
         </DialogFooter>
       </DialogContent>

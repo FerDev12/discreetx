@@ -13,7 +13,12 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { ReactNode, useEffect, useState } from 'react';
+import {
+  ReactNode,
+  experimental_useOptimistic,
+  useEffect,
+  useState,
+} from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -72,6 +77,10 @@ export function ChatItem({
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
   const router = useRouter();
+  const [optimisticContent, setOptimisticContent] = experimental_useOptimistic(
+    content,
+    (_, content: string) => content
+  );
 
   const onMemberClick = () => {
     if (member.id === currentMember.id) {
@@ -111,12 +120,12 @@ export function ChatItem({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      setOptimisticContent(values.content);
+      form.reset();
+      setIsEditing(false);
       const query = new URLSearchParams({ ...socketQuery });
 
       await axios.patch(`${socketUrl}/${id}?${query}`, values);
-
-      form.reset();
-      setIsEditing(false);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -218,7 +227,7 @@ export function ChatItem({
                     'italic text-zinc-500 dark:text-zinc-400 text-xs mt-1'
                 )}
               >
-                {content}
+                {optimisticContent}
 
                 {isUpdated && !deleted && (
                   <span className='text-[10px] mx-2 text-zinc-500 dark:text-zinc-400'>
@@ -302,6 +311,7 @@ export function ChatItem({
                   onOpen('deleteMessage', {
                     apiUrl: `${socketUrl}/${id}`,
                     query: socketQuery,
+                    messageId: id,
                   })
                 }
                 className='cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition'

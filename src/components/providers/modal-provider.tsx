@@ -35,8 +35,8 @@ export function ModalProvider() {
       <DeleteServerModal />
       <DeleteChannelModal />
       <EditChannelModal />
-      <MessageFileModal />
-      <DeleteMessageModal />
+      {/* <MessageFileModal /> */}
+      {/* <DeleteMessageModal /> */}
     </>
   );
 }

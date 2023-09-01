@@ -22,7 +22,7 @@ type ChatInputProps = {
   name: string;
   currentMember: MemberWithProfile;
   chatId: string;
-  addOptimisticMessage: (action: MessageWithMemberWithProfile) => void;
+  addOptimisticMessage: (message: MessageWithMemberWithProfile) => void;
 } & (
   | {
       type: 'channel';
@@ -141,7 +141,14 @@ export function ChatInput({
           <ActionTooltip label='Attach file'>
             <button
               type='button'
-              onClick={() => onOpen('messageFile', { apiUrl, query })}
+              onClick={() =>
+                onOpen('messageFile', {
+                  apiUrl,
+                  query,
+                  channelId: query.channelId,
+                  member: currentMember,
+                })
+              }
               className='h-[20px] w-[20px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex items-center justify-center'
             >
               <Plus className='text-zinc-50 dark:text-[#313338]' />

@@ -1,3 +1,4 @@
+import { MemberWithProfile } from '@/types';
 import { Channel, ChannelType, Server } from '@prisma/client';
 import { create } from 'zustand';
 
@@ -20,6 +21,9 @@ type ModalData = {
   channelType?: ChannelType;
   apiUrl?: string;
   query?: Record<string, any>;
+  messageId?: string;
+  channelId?: string;
+  member?: MemberWithProfile;
 };
 
 export type ModalStore = {
