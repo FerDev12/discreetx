@@ -26,7 +26,8 @@ import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
 import { useModalStore } from '@/hooks/use-modal-store';
 import { Loader2 } from 'lucide-react';
-import { createServer } from '@/actions/servers/create-server';
+import axios from 'axios';
+// import { createServer } from '@/actions/servers/create-server';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
@@ -54,12 +55,32 @@ export default function CreateServerModal() {
     onClose();
   };
 
+  // const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append('name', values.name);
+  //     formData.append('imageUrl', values.imageUrl);
+  //     const server = await createServer(formData);
+
+  //     if (!server) {
+  //       throw new Error('Server not created');
+  //     }
+
+  //     form.reset();
+  //     router.refresh();
+  //     router.push(`/servers/${server.id}`);
+  //     onClose();
+  //   } catch (err: any) {
+  //     console.error(err);
+  //   }
+  // };
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const formData = new FormData();
-      formData.append('name', values.name);
-      formData.append('imageUrl', values.imageUrl);
-      const server = await createServer(formData);
+      //   const formData = new FormData();
+      // formData.append('name', values.name);
+      // formData.append('imageUrl', values.imageUrl);
+      // const server = await createServer(formData);
+      const { data: server } = await axios.post(`/api/servers`, values);
 
       if (!server) {
         throw new Error('Server not created');
@@ -70,7 +91,11 @@ export default function CreateServerModal() {
       router.push(`/servers/${server.id}`);
       onClose();
     } catch (err: any) {
-      console.error(err);
+      if (axios.isAxiosError(err)) {
+        console.error(err);
+      } else {
+        console.error(err);
+      }
     }
   };
 
