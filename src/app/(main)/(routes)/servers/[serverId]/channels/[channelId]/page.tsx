@@ -5,6 +5,8 @@ import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { ChatHeader } from '@/components/chat/chat-header';
 import { ChatMessages } from '@/components/chat/chat-messages';
+import { ChannelType } from '@prisma/client';
+import { MediaRoom } from '@/components/media-room';
 
 type ChannelIdPageProps = {
   params: {
@@ -55,21 +57,31 @@ export default async function ChannelIdPage({
     <section className='dark:bg-[#313338] flex flex-col h-svh'>
       <ChatHeader serverId={serverId} name={channel.name} type='channel' />
 
-      <ChatMessages
-        type='channel'
-        profile={profile}
-        currentMember={member}
-        name={channel.name}
-        chatId={channel.id}
-        apiUrl='/api/messages'
-        paramKey='channelId'
-        paramValue={channel.id}
-        socketUrl='/api/socket/messages'
-        socketQuery={{
-          channelId: channel.id,
-          serverId: channel.serverId,
-        }}
-      />
+      {channel.type === ChannelType.TEXT && (
+        <ChatMessages
+          type='channel'
+          profile={profile}
+          currentMember={member}
+          name={channel.name}
+          chatId={channel.id}
+          apiUrl='/api/messages'
+          paramKey='channelId'
+          paramValue={channel.id}
+          socketUrl='/api/socket/messages'
+          socketQuery={{
+            channelId: channel.id,
+            serverId: channel.serverId,
+          }}
+        />
+      )}
+
+      {channel.type === ChannelType.AUDIO && (
+        <MediaRoom chatId={channel.id} audio={true} video={false} />
+      )}
+
+      {channel.type === ChannelType.VIDEO && (
+        <MediaRoom chatId={channel.id} video={true} audio={false} />
+      )}
     </section>
   );
 }

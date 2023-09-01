@@ -1,5 +1,6 @@
 import { ChatHeader } from '@/components/chat/chat-header';
 import { ChatMessages } from '@/components/chat/chat-messages';
+import { MediaRoom } from '@/components/media-room';
 import { getOrCreateConversation } from '@/lib/conversation';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
@@ -11,10 +12,14 @@ type MemberIdPageProps = {
     serverId: string;
     memberId: string;
   };
+  searchParams: {
+    video?: 'true' | 'false';
+  };
 };
 
 export default async function MemberIdPage({
   params: { serverId, memberId },
+  searchParams,
 }: MemberIdPageProps) {
   const profile = await currentProfile();
 
@@ -59,21 +64,35 @@ export default async function MemberIdPage({
         imageUrl={otherMember.profile.imageUrl}
       />
 
-      <ChatMessages
-        type='conversation'
-        profile={profile}
-        currentMember={currentMember}
-        otherMember={otherMember}
-        name={otherMember.profile.name}
-        chatId={conversation.id}
-        apiUrl='/api/direct-messages'
-        paramKey='conversationId'
-        paramValue={conversation.id}
-        socketUrl='/api/socket/direct-messages'
-        socketQuery={{
-          conversationId: conversation.id,
-        }}
-      />
+      {searchParams.video && searchParams.video === 'true' && (
+        <MediaRoom chatId={conversation.id} video={true} audio={false} />
+      )}
+
+      {(!searchParams.video || searchParams.video === 'false') && (
+        <ChatMessages
+          type='conversation'
+          profile={profile}
+          currentMember={currentMember}
+          otherMember={otherMember}
+          name={otherMember.profile.name}
+          chatId={conversation.id}
+          apiUrl='/api/direct-messages'
+          paramKey='conversationId'
+          paramValue={conversation.id}
+          socketUrl='/api/socket/direct-messages'
+          socketQuery={{
+            conversationId: conversation.id,
+          }}
+        />
+      )}
+
+      {/* {channel.type === ChannelType.AUDIO && (
+        <MediaRoom chatId={channel.id} audio={true} video={false} />
+      )}
+
+      {channel.type === ChannelType.VIDEO && (
+        <MediaRoom chatId={channel.id} video={true} audio={false} />
+      )} */}
     </section>
   );
 }

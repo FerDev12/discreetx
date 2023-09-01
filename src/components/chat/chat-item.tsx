@@ -45,6 +45,7 @@ type ChatItemProps = {
   isUpdated: boolean;
   socketUrl: string;
   socketQuery: Record<string, string>;
+  deleteOptimisticMessage: (messageId: string) => void;
 };
 
 const roleIconMap = new Map<MemberRole, ReactNode>();
@@ -73,6 +74,7 @@ export function ChatItem({
   isUpdated,
   socketQuery,
   socketUrl,
+  deleteOptimisticMessage,
 }: ChatItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
@@ -312,6 +314,7 @@ export function ChatItem({
                     apiUrl: `${socketUrl}/${id}`,
                     query: socketQuery,
                     messageId: id,
+                    deleteOptimisticMessage,
                   })
                 }
                 className='cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition'

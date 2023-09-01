@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useModalStore } from '@/hooks/use-modal-store';
-import { ChannelType, Server } from '@prisma/client';
+import { Channel, ChannelType, Server } from '@prisma/client';
 import {
   Select,
   SelectContent,
@@ -90,14 +90,13 @@ export default function CreateChannelModal() {
         serverId: (params?.serverId as string) ?? '',
       });
 
-      const { data: server } = await axios.post<Server>(
-        `/api/channels?${query}`,
-        values
-      );
+      const { data: server } = await axios.post<
+        Server & { channels: Channel[] }
+      >(`/api/channels?${query}`, values);
 
       form.reset();
       router.refresh();
-      router.push(`/servers/${server.id}`);
+      router.push(`/servers/${server.id}/channels/${server.channels[0].id}`);
       onClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {

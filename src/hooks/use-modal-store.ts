@@ -1,4 +1,4 @@
-import { MemberWithProfile } from '@/types';
+import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { Channel, ChannelType, Server } from '@prisma/client';
 import { create } from 'zustand';
 
@@ -24,6 +24,8 @@ type ModalData = {
   messageId?: string;
   channelId?: string;
   member?: MemberWithProfile;
+  addOptimisticMessage?: (message: MessageWithMemberWithProfile) => void;
+  deleteOptimisticMessage?: (messageId: string) => void;
 };
 
 export type ModalStore = {

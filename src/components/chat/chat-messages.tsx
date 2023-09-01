@@ -189,6 +189,7 @@ export function ChatMessages({
               member={message.member as Member & { profile: Profile }}
               socketUrl={socketUrl}
               socketQuery={socketQuery}
+              deleteOptimisticMessage={deleteOptimisiticMessage}
             />
           ))}
         </ul>
@@ -234,9 +235,6 @@ export function ChatMessages({
           addOptimisticMessage={addOptimisticMessage}
         />
       )}
-
-      <MessageFileModal sendOptimisticFile={addOptimisticMessage} />
-      <DeleteMessageModal deleteOptimisticMessage={deleteOptimisiticMessage} />
     </>
   );
 }

@@ -97,7 +97,7 @@ export async function ServerSidebar({ serverId }: ServerSidebarProps) {
   )?.role;
 
   return (
-    <aside className='flex flex-col h-full text-primary w-full dark:bg-[#2b2d31] bg-[#f2f3f5] pt-12 md:pt-0 shadow-zinc-500/50 shadow-sm'>
+    <div className='flex flex-col h-full text-primary w-full dark:bg-[#2b2d31] bg-[#f2f3f5] pt-12 md:pt-0 shadow-zinc-500/50 shadow-sm'>
       <Separator className='md:hidden' />
       <ServerHeader server={server} role={role} />
 
@@ -223,6 +223,6 @@ export async function ServerSidebar({ serverId }: ServerSidebarProps) {
           </div>
         )}
       </ScrollArea>
-    </aside>
+    </div>
   );
 }

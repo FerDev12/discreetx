@@ -54,7 +54,10 @@ export function ChatInput({
     },
   });
 
-  const { handleSubmit } = form;
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = form;
 
   const { onOpen } = useModalStore();
 
@@ -100,7 +103,7 @@ export function ChatInput({
         ...query,
       });
 
-      await axios.post(`${apiUrl}?${params}`, values);
+      axios.post(`${apiUrl}?${params}`, values);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);

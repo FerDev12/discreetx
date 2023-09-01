@@ -15,26 +15,19 @@ import {
 import { useModalStore } from '@/hooks/use-modal-store';
 import { Button } from '../ui/button';
 
-type DeleteMessageModalProps = {
-  deleteOptimisticMessage: (messageId: string) => void;
-};
-
-export default function DeleteMessageModal({
-  deleteOptimisticMessage,
-}: DeleteMessageModalProps) {
+export default function DeleteMessageModal() {
   const {
     isOpen,
     onClose,
     type,
-    data: { apiUrl, query, messageId },
+    data: { apiUrl, query, messageId, deleteOptimisticMessage },
   } = useModalStore();
-  // const [isLoading, setIsLoading] = useState(false);
 
   const isModalOpen = isOpen && type === 'deleteMessage';
 
   const onDeleteMessage = async () => {
     try {
-      if (messageId?.length) {
+      if (deleteOptimisticMessage && messageId?.length) {
         deleteOptimisticMessage(messageId);
       }
 

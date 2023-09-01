@@ -35,11 +35,11 @@ export default async function ServerIdLayout({
 
   return (
     <div>
-      <div className='hidden md:flex w-60 z-20 fixed flex-col inset-y-0'>
+      <aside className='hidden md:flex w-60 z-20 fixed flex-col inset-y-0'>
         <ServerSidebar serverId={server.id} />
-      </div>
+      </aside>
 
-      <main className='md:pl-60'>{children}</main>
+      <section className='md:pl-60'>{children}</section>
     </div>
   );
 }

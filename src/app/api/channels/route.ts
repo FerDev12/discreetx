@@ -44,6 +44,18 @@ export async function POST(req: Request) {
           },
         },
       },
+      include: {
+        channels: {
+          where: {
+            profileId: profile.id,
+            name: name,
+            type: type,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
     });
 
     return NextResponse.json(server);

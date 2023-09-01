@@ -26,25 +26,18 @@ import FileUpload from '@/components/file-upload';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useModalStore } from '@/hooks/use-modal-store';
-import { MessageWithMemberWithProfile } from '@/types';
-
-type MessageFileModalProps = {
-  sendOptimisticFile: (message: MessageWithMemberWithProfile) => void;
-};
 
 const formSchema = z.object({
   fileUrl: z.string().min(1, { message: 'File is required' }),
 });
 
-export default function MessageFileModal({
-  sendOptimisticFile,
-}: MessageFileModalProps) {
+export default function MessageFileModal() {
   const router = useRouter();
   const {
     isOpen,
     onClose,
     type,
-    data: { apiUrl, query, channelId, member },
+    data: { apiUrl, query, channelId, member, addOptimisticMessage },
   } = useModalStore();
 
   const isModalOpen = isOpen && type === 'messageFile';
@@ -65,9 +58,9 @@ export default function MessageFileModal({
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (channelId?.length && member) {
+    if (addOptimisticMessage && channelId?.length && member) {
       const date = new Date();
-      sendOptimisticFile({
+      addOptimisticMessage({
         id: uuidv4(),
         content: values.fileUrl,
         fileUrl: values.fileUrl,
