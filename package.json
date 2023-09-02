@@ -4,10 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm dlx prisma generate && next build",
+    "build-dev": "next build",
+    "build": "pnpm dlx prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "generate": "pnpm dlx prisma generate",
+    "studio": "pnpm dlx prisma studio",
+    "reset": "pnpm dlx prisma migrate reset",
+    "migrate-dev": "pnpm dlx prisma migrate dev",
+    "migrate-deploy": "pnpm dlx prisma migrate deploy"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.23.3",
