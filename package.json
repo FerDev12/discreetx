@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build-dev": "next build",
-    "build": "pnpm dlx prisma generate && pnpm dlx prisma migrate deploy && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "preinstall": "npx only-allow pnpm",
