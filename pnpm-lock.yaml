@@ -86,6 +86,9 @@ dependencies:
   cmdk:
     specifier: ^0.2.0
     version: 0.2.0(@types/react@18.2.21)(react-dom@18.2.0)(react@18.2.0)
+  cryptr:
+    specifier: ^6.2.0
+    version: 6.2.0
   date-fns:
     specifier: ^2.30.0
     version: 2.30.0
@@ -2277,6 +2280,10 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+    dev: false
+
+  /cryptr@6.2.0:
+    resolution: {integrity: sha512-jYi8SxvOFebTT7EYOABiPpHKY6lwWaP9IVcvT/aIVJUVoFdzTgi0ySPCL78q1ig8w2kwfXFCZACXoCXaye57aw==}
     dev: false
 
   /cssesc@3.0.0:

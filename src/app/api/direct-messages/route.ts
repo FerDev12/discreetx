@@ -2,6 +2,7 @@ import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { DirectMessage, Message } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import Cryptr from 'cryptr';
 
 const MESSAGES_BATCH = 10;
 
@@ -63,6 +64,15 @@ export async function GET(req: Request) {
         },
       });
     }
+
+    const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY ?? '');
+
+    messages.forEach((message) => {
+      message.content = cryptr.decrypt(message.content);
+      if (message.fileUrl) {
+        message.fileUrl = cryptr.decrypt(message.fileUrl);
+      }
+    });
 
     let nextCursor = null;
 
