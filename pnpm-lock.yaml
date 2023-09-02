@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   '@clerk/nextjs':
-    specifier: ^4.23.3
+    specifier: ^4.23.2
     version: 4.23.3(next@13.4.19)(react-dom@18.2.0)(react@18.2.0)
   '@emoji-mart/data':
     specifier: ^1.1.2
