@@ -23,6 +23,19 @@ export function useChatSocket({
   const { socket } = useSocket();
   const queryClient = useQueryClient();
 
+  // IMPORTANT IGNORE BUT DONT ERRASE (FOR TESTING)
+  // useEffect(() => {
+  //   fetch('/api/socket/test', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => console.log(data))
+  //     .catch((err) => console.error('TEST_REQUEST_FAILED', err));
+  // }, []);
+
   useEffect(() => {
     if (!socket) {
       return;

@@ -68,19 +68,16 @@ export function ChatInput({
 
     const typingKey = `typing:${chatId}:${currentMember.id}`;
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_SOCKET_IO_API_URL}/api/socket/direct-messages/is-typing/${chatId}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          key: typingKey,
-          isTyping,
-        }),
-      }
-    ).catch((err) => console.error(err));
+    fetch(`/api/socket/direct-messages/is-typing/${chatId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        key: typingKey,
+        isTyping,
+      }),
+    }).catch((err) => console.error(err));
   }, [type, isTyping, chatId, currentMember.id]);
 
   const onSubmit = handleSubmit(async (values: z.infer<typeof formSchema>) => {
