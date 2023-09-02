@@ -67,7 +67,9 @@ export default async function ChannelIdPage({
           apiUrl='/api/messages'
           paramKey='channelId'
           paramValue={channel.id}
-          socketUrl={process.env.SOCKET_IO_API_URL + '/api/socket/messages'}
+          socketUrl={
+            process.env.NEXT_PUBLIC_SOCKET_IO_API_URL + '/api/socket/messages'
+          }
           socketQuery={{
             channelId: channel.id,
             serverId: channel.serverId,

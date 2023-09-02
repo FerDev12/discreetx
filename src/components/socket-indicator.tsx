@@ -6,14 +6,6 @@ import { Badge } from './ui/badge';
 export function SocketIndicator() {
   const { isConnected } = useSocket();
 
-  // return (
-  //   <div
-  //     className={cn(
-  //       'w-2 h-2 rounded-full',
-  //       isConnected ? 'bg-teal-500' : 'bg-yellow-600'
-  //     )}
-  //   />
-  // );
   if (!isConnected) {
     return (
       <Badge

@@ -69,7 +69,7 @@ export function ChatInput({
     const typingKey = `typing:${chatId}:${currentMember.id}`;
 
     fetch(
-      `${process.env.SOCKET_IO_API_URL}/api/socket/direct-messages/is-typing/${chatId}`,
+      `${process.env.NEXT_PUBLIC_SOCKET_IO_API_URL}/api/socket/direct-messages/is-typing/${chatId}`,
       {
         method: 'POST',
         headers: {
