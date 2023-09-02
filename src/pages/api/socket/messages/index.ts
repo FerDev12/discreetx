@@ -7,7 +7,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponseServerIO
 ) {
-  console.time('server-request');
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -111,8 +110,6 @@ export default async function handler(
 
     res?.socket?.server?.io?.emit(channelKey, message);
 
-    console.timeEnd('server-request');
-    console.log('-------');
     return res.status(201).json(message);
   } catch (err: any) {
     console.error('[MESSAGES_POST', err);
