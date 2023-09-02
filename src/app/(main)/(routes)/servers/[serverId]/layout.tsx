@@ -1,3 +1,5 @@
+import { QueryProvider } from '@/components/providers/query-provider';
+import { SocketProvider } from '@/components/providers/socket-provider';
 import { ServerSidebar } from '@/components/server/server-sidebar';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
@@ -39,7 +41,11 @@ export default async function ServerIdLayout({
         <ServerSidebar serverId={server.id} />
       </aside>
 
-      <section className='md:pl-60'>{children}</section>
+      <section className='md:pl-60'>
+        <SocketProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </SocketProvider>
+      </section>
     </div>
   );
 }

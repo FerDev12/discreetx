@@ -109,7 +109,7 @@ export default function CreateChannelModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className='bg-gradient-to-br border-2 border-teal-500 p-0 overflow-hidden'>
+      <DialogContent className='dark:bg-zinc-900 border-2 border-teal-500 p-0 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
             Create Channel

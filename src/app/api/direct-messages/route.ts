@@ -3,6 +3,8 @@ import { db } from '@/lib/db';
 import { DirectMessage, Message } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import Cryptr from 'cryptr';
+import { MemberWithProfile } from '@/types';
+import axios from 'axios';
 
 const MESSAGES_BATCH = 10;
 
@@ -23,7 +25,7 @@ export async function GET(req: Request) {
       return new NextResponse('Conversation Id missing', { status: 400 });
     }
 
-    let messages: DirectMessage[] = [];
+    let messages: (DirectMessage & { member: MemberWithProfile })[] = [];
 
     if (cursor) {
       messages = await db.directMessage.findMany({
@@ -67,12 +69,19 @@ export async function GET(req: Request) {
 
     const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY ?? '');
 
-    messages.forEach((message) => {
-      message.content = cryptr.decrypt(message.content);
-      if (message.fileUrl) {
-        message.fileUrl = cryptr.decrypt(message.fileUrl);
+    for (let i = 0; i < messages.length; i++) {
+      const { content, fileUrl, deleted, read, id, member } = messages[i];
+
+      if (deleted) continue;
+
+      if (content.length) {
+        messages[i].content = cryptr.decrypt(content);
       }
-    });
+
+      if (fileUrl && fileUrl.length) {
+        messages[i].fileUrl = cryptr.decrypt(fileUrl);
+      }
+    }
 
     let nextCursor = null;
 

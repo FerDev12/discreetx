@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 
 type ChatScrollProps = {
   chatRef: RefObject<HTMLDivElement>;
@@ -16,7 +16,6 @@ export function useChatScroll({
   count,
 }: ChatScrollProps) {
   const [hasInitialized, setHasInitialized] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const topDiv = chatRef?.current;
@@ -26,6 +25,13 @@ export function useChatScroll({
 
       if (scrollTop === 0 && shouldLoadMore) {
         loadMore();
+
+        // const firstChatItem = document.querySelector(
+        //   '.chat-item'
+        // ) as HTMLElement;
+        // firstChatItem?.scrollIntoView({
+        //   behavior: 'smooth',
+        // });
       }
     };
 

@@ -21,6 +21,7 @@ import { useChatSocket } from '@/hooks/use-chat-socket';
 import { useChatScroll } from '@/hooks/use-chat-scroll';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { useSocket } from '../providers/socket-provider';
+import { useConversationStore } from '@/hooks/use-conversation-store';
 
 const DATE_FORMAT = 'd MMM yyyy, HH:mm';
 
@@ -72,16 +73,21 @@ export function ChatMessages({
   const chatRef = useRef<ElementRef<'div'>>(null);
   const bottomRef = useRef<ElementRef<'div'>>(null);
 
-  const [isTyping, setIsTyping] = useState(false);
+  // const [isTyping, setIsTyping] = useState(false);
+  const { setIsTyping } = useConversationStore();
 
   useEffect(() => {
     if (!socket) return;
-
     if (props.type !== 'conversation') return;
-    const typingKey = `typing:${chatId}:${props.otherMember.id}`;
 
-    socket.on(typingKey, (isTyping) => setIsTyping(isTyping));
-  }, [props, chatId, socket]);
+    const typingKey = `typing:${chatId}:${props.otherMember.id}`;
+    const typingKeyListener = (isTyping: boolean) => setIsTyping(isTyping);
+    socket.on(typingKey, typingKeyListener);
+
+    return () => {
+      socket.off(typingKey, typingKeyListener);
+    };
+  }, [props, chatId, socket, setIsTyping]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useChatQuery({
@@ -180,6 +186,7 @@ export function ChatMessages({
               id={message.id}
               content={message.content}
               fileUrl={message.fileUrl}
+              sent={message.sent}
               deleted={message.deleted}
               timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
               isUpdated={message.updatedAt !== message.createdAt}
@@ -191,22 +198,6 @@ export function ChatMessages({
             />
           ))}
         </ul>
-
-        {props.type === 'conversation' && isTyping && (
-          <li className='text-xs text-zinc-500 list-none pl-12 pt-4 italic flex items-baseline gap-x-1'>
-            <p>
-              <span className='font-semibold'>
-                {props.otherMember.profile.name}
-              </span>{' '}
-              is typing
-            </p>
-            <div className='flex gap-x-0.5 items-baseline'>
-              <span className=' animate-ping delay-0 w-0.5 h-0.5 bg-zinc-500 rounded-full' />
-              <span className='animate-ping delay-50 w-0.5 h-0.5 bg-zinc-500 rounded-full' />
-              <span className='animate-ping delay-100 w-0.5 h-0.5 bg-zinc-500 rounded-full' />
-            </div>
-          </li>
-        )}
 
         <div ref={bottomRef} />
       </ScrollArea>

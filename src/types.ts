@@ -4,6 +4,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { Member, Message, Profile, Server } from '@prisma/client';
 
 export type MemberWithProfile = Member & {
+  read?: boolean;
   profile: Profile;
 };
 
@@ -12,6 +13,7 @@ export type ServerWithMembersWithProfiles = Server & {
 };
 
 export type MessageWithMemberWithProfile = Message & {
+  read?: boolean;
   member: MemberWithProfile;
 };
 

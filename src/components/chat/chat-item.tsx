@@ -2,6 +2,8 @@
 
 import axios from 'axios';
 import {
+  Check,
+  CheckCheck,
   Edit,
   FileIcon,
   Loader2,
@@ -38,6 +40,7 @@ type ChatItemProps = {
   member: Member & {
     profile: Profile;
   };
+  sent: boolean;
   timestamp: string;
   fileUrl: string | null;
   deleted: boolean;
@@ -69,6 +72,7 @@ export function ChatItem({
   member,
   timestamp,
   fileUrl,
+  sent,
   deleted,
   currentMember,
   isUpdated,
@@ -151,6 +155,7 @@ export function ChatItem({
     <div>
       <li
         className={cn(
+          'chat-item',
           'relative group flex hover:bg-black/5 p-4 transition w-full self-end'
         )}
       >
@@ -187,6 +192,15 @@ export function ChatItem({
               <span className='text-xs text-zinc-500 dakr:text-zinc-400'>
                 {timestamp}
               </span>
+
+              {currentMember.id === member.id && !deleted && (
+                <span>
+                  {!sent && <Check className='w-4 h-4 text-muted-foreground' />}
+                  {sent && (
+                    <CheckCheck className='w-4 h-4 text-muted-foreground' />
+                  )}
+                </span>
+              )}
             </div>
 
             {isImage && (

@@ -4,6 +4,7 @@ import { MobileToggle } from '@/components/mobile-toggle';
 import { UserAvatar } from '@/components/user-avatar';
 import { SocketIndicator } from '@/components/socket-indicator';
 import { ChatVideoButton } from './chat-video-button';
+import { ChatIsTyping } from './chat-is-typing-indicator';
 
 type ChatHeaderProps = {
   serverId: string;
@@ -37,9 +38,12 @@ export function ChatHeader({
         <UserAvatar src={imageUrl} className='w-8 h-8 md:w-8 md:h-8 mr-2' />
       )}
 
-      <h3 className='font-semibold text-md text-zinc-950 dark:text-zinc-50'>
-        {name}
-      </h3>
+      <div className='flex items-baseline gap-x-2'>
+        <h3 className='font-semibold text-md text-zinc-950 dark:text-zinc-50'>
+          {name}
+        </h3>
+        {type === 'conversation' && <ChatIsTyping />}
+      </div>
 
       <div className='ml-auto flex items-center'>
         {type === 'conversation' && <ChatVideoButton />}

@@ -9,10 +9,12 @@ import { QueryProvider } from './query-provider';
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-      <SocketProvider>
-        <ModalProvider />
-        <QueryProvider>{children}</QueryProvider>
-      </SocketProvider>
+      {/* <SocketProvider> */}
+      <ModalProvider />
+      {/* <QueryProvider> */}
+      {children}
+      {/* </QueryProvider> */}
+      {/* </SocketProvider> */}
     </ThemeProvider>
   );
 }

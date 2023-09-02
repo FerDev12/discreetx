@@ -57,7 +57,7 @@ export default function DeleteServerModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent className='bg-gradient-to-br border-2 border-rose-500 overflow-hidden'>
+      <DialogContent className='dark:bg-zinc-900 border-2 border-rose-500 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
             Delete Server

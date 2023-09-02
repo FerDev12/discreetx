@@ -73,7 +73,7 @@ export default function InitialModal() {
   return (
     <Dialog open>
       <DialogContent
-        className='bg-gradient-to-br border-2 border-teal-500 p-0 overflow-hidden'
+        className='dark:bg-zinc-900 border-2 border-teal-500 p-0 overflow-hidden'
         hideCloseButton
       >
         <DialogHeader className='pt-8 px-6'>

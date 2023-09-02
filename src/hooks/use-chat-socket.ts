@@ -23,25 +23,14 @@ export function useChatSocket({
   const { socket } = useSocket();
   const queryClient = useQueryClient();
 
-  // IMPORTANT IGNORE BUT DONT ERRASE (FOR TESTING)
-  // useEffect(() => {
-  //   fetch('/api/socket/test', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => console.log(data))
-  //     .catch((err) => console.error('TEST_REQUEST_FAILED', err));
-  // }, []);
-
   useEffect(() => {
     if (!socket) {
       return;
     }
 
-    socket.on(updateKey, (message: MessageWithMemberWithProfile) => {
+    const updateKeyListener = (message?: MessageWithMemberWithProfile) => {
+      if (!message) return;
+
       queryClient.setQueryData([queryKey], (oldData: any) => {
         if (!oldData || !oldData.pages || oldData.pages.length === 0) {
           return oldData;
@@ -64,9 +53,11 @@ export function useChatSocket({
           pages: newData,
         };
       });
-    });
+    };
 
-    socket.on(addKey, (message: MessageWithMemberWithProfile) => {
+    const addKeyListener = (message?: MessageWithMemberWithProfile) => {
+      if (!message) return;
+
       queryClient.setQueryData([queryKey], (oldData: any) => {
         if (!oldData || !oldData.pages || oldData.pages.length === 0) {
           return {
@@ -86,11 +77,14 @@ export function useChatSocket({
           pages: newData,
         };
       });
-    });
+    };
+
+    socket.on(updateKey, updateKeyListener);
+    socket.on(addKey, addKeyListener);
 
     return () => {
-      socket.off(addKey);
-      socket.off(updateKey);
+      socket.off(addKey, addKeyListener);
+      socket.off(updateKey, updateKeyListener);
     };
   }, [socket, queryClient, addKey, updateKey, queryKey]);
 }

@@ -1,8 +1,6 @@
 'use client';
 
-import { useState } from 'react';
 import axios from 'axios';
-import { Loader2 } from 'lucide-react';
 
 import {
   Dialog,
@@ -46,14 +44,11 @@ export default function DeleteMessageModal() {
         console.error(err);
       }
     }
-    //  finally {
-    //   setIsLoading(false);
-    // }
   };
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent className='bg-gradient-to-br border-2 border-rose-500 overflow-hidden'>
+      <DialogContent className='dark:bg-zinc-900 border-2 border-rose-500 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
             Delete Message
@@ -66,18 +61,10 @@ export default function DeleteMessageModal() {
         </DialogHeader>
 
         <DialogFooter className='py-4'>
-          <Button
-            onClick={onClose}
-            //  disabled={isLoading}
-            variant='ghost'
-          >
+          <Button onClick={onClose} variant='ghost'>
             Cancel
           </Button>
-          <Button
-            onClick={onDeleteMessage}
-            // disabled={isLoading}
-            variant='danger'
-          >
+          <Button onClick={onDeleteMessage} variant='danger'>
             Delete
             {/* {!isLoading ? 'Delete' : 'Deleting...'}
             {isLoading && (

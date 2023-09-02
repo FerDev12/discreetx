@@ -67,12 +67,18 @@ export async function GET(req: Request) {
 
     const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY ?? '');
 
-    messages.forEach((message) => {
-      message.content = cryptr.decrypt(message.content);
-      if (message.fileUrl) {
-        message.fileUrl = cryptr.decrypt(message.fileUrl);
+    for (let i = 0; i < messages.length; i++) {
+      const { content, fileUrl, deleted } = messages[i];
+
+      if (deleted) continue;
+
+      if (content.length) {
+        messages[i].content = cryptr.decrypt(content);
       }
-    });
+      if (fileUrl && fileUrl.length) {
+        messages[i].fileUrl = cryptr.decrypt(fileUrl);
+      }
+    }
 
     let nextCursor = null;
 

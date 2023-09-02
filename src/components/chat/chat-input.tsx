@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, SendHorizonal } from 'lucide-react';
+import { Loader, Plus, SendHorizonal } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -81,29 +81,31 @@ export function ChatInput({
   }, [type, isTyping, chatId, currentMember.id]);
 
   const onSubmit = handleSubmit(async (values: z.infer<typeof formSchema>) => {
-    form.reset();
-    form.setFocus('content');
-    const date = new Date();
-    addOptimisticMessage({
-      id: uuidv4(),
-      content: values.content,
-      channelId: query.channelId,
-      fileUrl: null,
-      memberId: currentMember.id,
-      member: {
-        ...currentMember,
-      },
-      deleted: false,
-      updatedAt: date,
-      createdAt: date,
-    });
-
     try {
+      form.setValue('content', '');
+      form.setFocus('content');
+      const date = new Date();
+
+      addOptimisticMessage({
+        id: uuidv4(),
+        content: values.content,
+        channelId: query.channelId,
+        fileUrl: null,
+        memberId: currentMember.id,
+        member: {
+          ...currentMember,
+        },
+        sent: false,
+        deleted: false,
+        updatedAt: date,
+        createdAt: date,
+      });
+
       const params = new URLSearchParams({
         ...query,
       });
 
-      axios.post(`${apiUrl}?${params}`, values);
+      await axios.post(`${apiUrl}?${params}`, values);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -168,10 +170,12 @@ export function ChatInput({
         <ActionTooltip label='Send'>
           <button
             type='submit'
+            disabled={isSubmitting}
             form='form_send-message'
             className='text-muted-foreground hover:text-foreground transition-colors'
           >
-            <SendHorizonal className='h-5 w-5 ' />
+            {!isSubmitting && <SendHorizonal className='h-5 w-5 ' />}
+            {isSubmitting && <Loader className='h-5 w-5 animate-spin' />}
           </button>
         </ActionTooltip>
       </div>

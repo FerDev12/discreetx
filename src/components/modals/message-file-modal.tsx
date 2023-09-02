@@ -67,6 +67,7 @@ export default function MessageFileModal() {
         createdAt: date,
         updatedAt: date,
         deleted: false,
+        sent: false,
         channelId,
         member,
         memberId: member.id,
@@ -98,7 +99,7 @@ export default function MessageFileModal() {
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent
-        className='bg-gradient-to-br border-2 border-teal-500 p-0 overflow-hidden'
+        className='dark:bg-zinc-900 border-2 border-teal-500 p-0 overflow-hidden'
         hideCloseButton
       >
         <DialogHeader className='pt-8 px-6'>
