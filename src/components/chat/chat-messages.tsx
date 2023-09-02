@@ -21,8 +21,6 @@ import { useChatSocket } from '@/hooks/use-chat-socket';
 import { useChatScroll } from '@/hooks/use-chat-scroll';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { useSocket } from '../providers/socket-provider';
-import DeleteMessageModal from '../modals/delete-message-modal';
-import MessageFileModal from '../modals/message-file-modal';
 
 const DATE_FORMAT = 'd MMM yyyy, HH:mm';
 
@@ -37,7 +35,7 @@ type ChatMessagesProps = {
       type: 'channel';
       apiUrl: '/api/messages';
       paramKey: 'channelId';
-      socketUrl: '/api/socket/messages';
+      socketUrl: string;
       socketQuery: {
         channelId: string;
         serverId: string;
@@ -48,7 +46,7 @@ type ChatMessagesProps = {
       otherMember: MemberWithProfile;
       apiUrl: '/api/direct-messages';
       paramKey: 'conversationId';
-      socketUrl: '/api/socket/direct-messages';
+      socketUrl: string;
       socketQuery: {
         conversationId: string;
       };

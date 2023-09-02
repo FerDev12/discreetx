@@ -79,7 +79,7 @@ export default async function MemberIdPage({
           apiUrl='/api/direct-messages'
           paramKey='conversationId'
           paramValue={conversation.id}
-          socketUrl='/api/socket/direct-messages'
+          socketUrl={process.env.SOCKET_IO_API_URL + '/api/socket/direct-messages'}
           socketQuery={{
             conversationId: conversation.id,
           }}
