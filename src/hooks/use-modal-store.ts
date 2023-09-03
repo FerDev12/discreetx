@@ -13,7 +13,8 @@ export type ModalType =
   | 'deleteChannel'
   | 'editChannel'
   | 'messageFile'
-  | 'deleteMessage';
+  | 'deleteMessage'
+  | 'createCall';
 
 type ModalData = {
   server?: Server;
@@ -24,6 +25,7 @@ type ModalData = {
   messageId?: string;
   channelId?: string;
   member?: MemberWithProfile;
+  conversationId?: string;
   addOptimisticMessage?: (message: MessageWithMemberWithProfile) => void;
   deleteOptimisticMessage?: (messageId: string) => void;
 };

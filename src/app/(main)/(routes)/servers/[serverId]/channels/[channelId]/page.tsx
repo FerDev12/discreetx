@@ -54,7 +54,7 @@ export default async function ChannelIdPage({
   const member = memberResponse.value;
 
   return (
-    <section className='dark:bg-[#313338] flex flex-col h-svh'>
+    <>
       <ChatHeader serverId={serverId} name={channel.name} type='channel' />
 
       {channel.type === ChannelType.TEXT && (
@@ -82,6 +82,6 @@ export default async function ChannelIdPage({
       {channel.type === ChannelType.VIDEO && (
         <MediaRoom chatId={channel.id} video={true} audio={false} />
       )}
-    </section>
+    </>
   );
 }

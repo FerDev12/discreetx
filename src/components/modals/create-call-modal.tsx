@@ -13,57 +13,32 @@ import {
 import { useModalStore } from '@/hooks/use-modal-store';
 import { Button } from '../ui/button';
 
-export default function DeleteMessageModal() {
+export default function CreateCallModal() {
   const {
     isOpen,
     onClose,
     type,
-    data: { apiUrl, query, messageId, deleteOptimisticMessage },
+    data: { conversationId, member },
   } = useModalStore();
 
-  const isModalOpen = isOpen && type === 'deleteMessage';
+  const isModalOpen = isOpen && type === 'createCall';
 
-  const onDeleteMessage = async () => {
-    try {
-      if (deleteOptimisticMessage && messageId?.length) {
-        deleteOptimisticMessage(messageId);
-      }
-
-      onClose();
-
-      const params = new URLSearchParams({
-        ...query,
-      });
-
-      await axios.delete(`${apiUrl}?${params}`);
-    } catch (err: any) {
-      if (axios.isAxiosError(err)) {
-        console.error(err.response?.data);
-      } else {
-        console.error(err);
-      }
-    }
-  };
+  const onCreateCall = async () => {};
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className='dark:bg-zinc-900 border-2 border-rose-500 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
-            Delete Message
+            Call {member?.profile.name}?
           </DialogTitle>
-
-          <DialogDescription className='text-center text-muted-foreground'>
-            Are you sure you want to do this? <br />
-            The message will be permanently deleted
-          </DialogDescription>
         </DialogHeader>
 
         <DialogFooter className='py-4'>
           <Button onClick={onClose} variant='ghost'>
             Cancel
           </Button>
-          <Button onClick={onDeleteMessage} variant='danger'>
+          <Button onClick={onCreateCall} variant='danger'>
             Delete
             {/* {!isLoading ? 'Delete' : 'Deleting...'}
             {isLoading && (

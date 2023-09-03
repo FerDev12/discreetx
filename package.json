@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "generate": "pnpm dlx prisma generate",
+    "db-push": "pnpm dlx prisma db push",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "prisma generate"
   },

@@ -41,7 +41,7 @@ export default async function ServerIdLayout({
         <ServerSidebar serverId={server.id} />
       </aside>
 
-      <section className='md:pl-60'>
+      <section className='md:pl-60 dark:bg-[#313338] flex flex-col h-svh max-h-[100svh]'>
         <SocketProvider>
           <QueryProvider>{children}</QueryProvider>
         </SocketProvider>

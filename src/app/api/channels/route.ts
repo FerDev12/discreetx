@@ -2,13 +2,21 @@ import { NextResponse } from 'next/server';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { MemberRole } from '@prisma/client';
+import { handleApiError } from '@/lib/api-error-handler';
+import { UnauthorizedError } from '@/errors/unauthorized-error';
+import { z } from 'zod';
+
+const bodySchema = z.object({
+  name: z.string().nonempty(),
+  type: z.string().nonempty(),
+});
 
 export async function POST(req: Request) {
   try {
     const profile = await currentProfile();
 
     if (!profile) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const { searchParams } = new URL(req.url);
@@ -60,7 +68,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(server);
   } catch (err: any) {
-    console.error('[CHANNELS_POST', err);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return handleApiError(err, '[CHANNELS_POST]');
   }
 }

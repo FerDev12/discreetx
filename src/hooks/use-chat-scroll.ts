@@ -25,13 +25,6 @@ export function useChatScroll({
 
       if (scrollTop === 0 && shouldLoadMore) {
         loadMore();
-
-        // const firstChatItem = document.querySelector(
-        //   '.chat-item'
-        // ) as HTMLElement;
-        // firstChatItem?.scrollIntoView({
-        //   behavior: 'smooth',
-        // });
       }
     };
 

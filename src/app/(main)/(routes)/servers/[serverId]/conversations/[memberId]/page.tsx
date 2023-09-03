@@ -56,7 +56,7 @@ export default async function MemberIdPage({
     memberOne.profileId === profile.id ? memberTwo : memberOne;
 
   return (
-    <section className='dark:bg-[#313338] flex flex-col h-svh'>
+    <>
       <ChatHeader
         serverId={serverId}
         name={otherMember.profile.name}
@@ -85,14 +85,6 @@ export default async function MemberIdPage({
           }}
         />
       )}
-
-      {/* {channel.type === ChannelType.AUDIO && (
-        <MediaRoom chatId={channel.id} audio={true} video={false} />
-      )}
-
-      {channel.type === ChannelType.VIDEO && (
-        <MediaRoom chatId={channel.id} video={true} audio={false} />
-      )} */}
-    </section>
+    </>
   );
 }

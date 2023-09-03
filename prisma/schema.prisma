@@ -62,6 +62,7 @@ model Member {
 
   messages       Message[]
   directMessages DirectMessage[]
+  calls          Call[]
 
   @@index([profileId])
   @@index([serverId])
@@ -124,6 +125,7 @@ model Conversation {
   memberTwo   Member @relation("MemberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
 
   directMessages DirectMessage[]
+  calls          Call[]
 
   @@unique([memberOneId, memberTwoId])
   @@index([memberTwoId])
@@ -146,6 +148,28 @@ model DirectMessage {
   sent    Boolean @default(true)
   read    Boolean @default(false)
   deleted Boolean @default(false)
+
+  @@index([memberId])
+  @@index([conversationId])
+}
+
+model Call {
+  id String @id @default(uuid())
+
+  active Boolean @default(true)
+
+  start DateTime
+  end   DateTime
+
+  // Member who created the call
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([memberId])
   @@index([conversationId])

@@ -7,6 +7,8 @@ type ChatSocketProps = {
   addKey: string;
   updateKey: string;
   queryKey: string;
+  // -------------
+  profileId?: string;
 };
 
 type MessageWithMemberWithProfile = Message & {
