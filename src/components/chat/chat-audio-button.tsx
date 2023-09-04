@@ -1,6 +1,6 @@
 'use client';
 
-import { Video, VideoOff } from 'lucide-react';
+import { Phone, PhoneOff } from 'lucide-react';
 import { ActionTooltip } from '../action-tooltip';
 import { useParams } from 'next/navigation';
 import { useConversationStore } from '@/hooks/use-conversation-store';
@@ -9,26 +9,25 @@ import { CallType } from '@prisma/client';
 import { MemberWithProfile } from '@/types';
 import axios from 'axios';
 
-export function ChatVideoButton({
+export function ChatAudioButton({
   otherMember,
   conversationId,
   serverId,
 }: {
-  conversationId: string;
   serverId: string;
+  conversationId: string;
   otherMember: MemberWithProfile;
 }) {
   const { activeCall, setActiveCall } = useConversationStore();
   const { onOpen } = useModalStore();
 
-  const Icon = activeCall?.id ? VideoOff : Video;
-  const tooltipLabel = activeCall?.id ? 'End video call' : 'Start video call';
+  const Icon = activeCall ? PhoneOff : Phone;
+  const tooltipLabel = activeCall ? 'End audio call' : 'Start audio call';
 
   const onClick = async () => {
-    if (!activeCall?.id) {
-      return onOpen('createCall', {
+    if (!activeCall) {
+      onOpen('createCall', {
         conversationId,
-        serverId,
         name: otherMember.profile.name,
         callType: CallType.VIDEO,
       });
@@ -55,7 +54,7 @@ export function ChatVideoButton({
     <ActionTooltip label={tooltipLabel} side='bottom'>
       <button
         onClick={onClick}
-        disabled={!!activeCall && activeCall?.type === CallType.AUDIO}
+        disabled={!!activeCall && activeCall.type === CallType.VIDEO}
         className='hover:opacity-75 transition mr-4'
       >
         <Icon className='h-6 w-6 text-zinc-500 dark:text-zinc-400' />

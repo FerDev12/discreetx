@@ -66,17 +66,17 @@ export function ChatInput({
   useEffect(() => {
     if (type !== 'conversation') return;
 
-    const typingKey = `typing:${chatId}:${currentMember.id}`;
+    const query = new URLSearchParams({
+      chatId: chatId,
+      memberId: currentMember.id,
+    });
 
-    fetch(`/api/socket/direct-messages/is-typing/${chatId}`, {
+    fetch(`/api/socket/direct-messages/is-typing?${query}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        key: typingKey,
-        isTyping,
-      }),
+      body: JSON.stringify({ isTyping }),
     }).catch((err) => console.error(err));
   }, [type, isTyping, chatId, currentMember.id]);
 

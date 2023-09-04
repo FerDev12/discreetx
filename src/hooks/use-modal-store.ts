@@ -1,5 +1,5 @@
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
-import { Channel, ChannelType, Server } from '@prisma/client';
+import { CallType, Channel, ChannelType, Server } from '@prisma/client';
 import { create } from 'zustand';
 
 export type ModalType =
@@ -14,7 +14,9 @@ export type ModalType =
   | 'editChannel'
   | 'messageFile'
   | 'deleteMessage'
-  | 'createCall';
+  | 'createCall'
+  | 'answerCall'
+  | 'callEnded';
 
 type ModalData = {
   server?: Server;
@@ -26,6 +28,10 @@ type ModalData = {
   channelId?: string;
   member?: MemberWithProfile;
   conversationId?: string;
+  callId?: string;
+  callType?: CallType;
+  name?: string;
+  serverId?: string;
   addOptimisticMessage?: (message: MessageWithMemberWithProfile) => void;
   deleteOptimisticMessage?: (messageId: string) => void;
 };

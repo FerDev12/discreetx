@@ -12,14 +12,10 @@ type MemberIdPageProps = {
     serverId: string;
     memberId: string;
   };
-  searchParams: {
-    video?: 'true' | 'false';
-  };
 };
 
 export default async function MemberIdPage({
   params: { serverId, memberId },
-  searchParams,
 }: MemberIdPageProps) {
   const profile = await currentProfile();
 
@@ -42,6 +38,7 @@ export default async function MemberIdPage({
   }
 
   const conversation = await getOrCreateConversation(
+    serverId,
     currentMember.id,
     memberId
   );
@@ -59,32 +56,29 @@ export default async function MemberIdPage({
     <>
       <ChatHeader
         serverId={serverId}
+        conversationId={conversation.id}
         name={otherMember.profile.name}
         type='conversation'
         imageUrl={otherMember.profile.imageUrl}
+        currentMember={currentMember}
+        otherMember={otherMember}
       />
 
-      {searchParams.video && searchParams.video === 'true' && (
-        <MediaRoom chatId={conversation.id} video={true} audio={false} />
-      )}
-
-      {(!searchParams.video || searchParams.video === 'false') && (
-        <ChatMessages
-          type='conversation'
-          profile={profile}
-          currentMember={currentMember}
-          otherMember={otherMember}
-          name={otherMember.profile.name}
-          chatId={conversation.id}
-          apiUrl='/api/direct-messages'
-          paramKey='conversationId'
-          paramValue={conversation.id}
-          socketUrl={'/api/socket/direct-messages'}
-          socketQuery={{
-            conversationId: conversation.id,
-          }}
-        />
-      )}
+      <ChatMessages
+        type='conversation'
+        profile={profile}
+        currentMember={currentMember}
+        otherMember={otherMember}
+        name={otherMember.profile.name}
+        chatId={conversation.id}
+        apiUrl='/api/direct-messages'
+        paramKey='conversationId'
+        paramValue={conversation.id}
+        socketUrl={'/api/socket/direct-messages'}
+        socketQuery={{
+          conversationId: conversation.id,
+        }}
+      />
     </>
   );
 }

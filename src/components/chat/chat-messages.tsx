@@ -2,14 +2,7 @@
 
 import { format } from 'date-fns';
 import { Loader2, ServerCrash } from 'lucide-react';
-import {
-  ElementRef,
-  experimental_useOptimistic,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { ElementRef, experimental_useOptimistic, useMemo, useRef } from 'react';
 import { Member, Profile } from '@prisma/client';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -20,8 +13,6 @@ import { useChatQuery } from '@/hooks/use-chat-query';
 import { useChatSocket } from '@/hooks/use-chat-socket';
 import { useChatScroll } from '@/hooks/use-chat-scroll';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
-import { useSocket } from '../providers/socket-provider';
-import { useConversationStore } from '@/hooks/use-conversation-store';
 
 const DATE_FORMAT = 'd MMM yyyy, HH:mm';
 
@@ -68,27 +59,17 @@ export function ChatMessages({
   const queryKey = `chat:${chatId}`;
   const addKey = `chat:${chatId}:messages`;
   const updateKey = `chat:${chatId}:messages:update`;
-  const { socket } = useSocket();
+  const typingKey =
+    props.type === 'conversation'
+      ? `chat:${chatId}:istyping:${props.otherMember.id}`
+      : null;
+  const callKey =
+    props.type === 'conversation'
+      ? `chat:${chatId}:call:${props.otherMember.profileId}`
+      : null;
 
   const chatRef = useRef<ElementRef<'div'>>(null);
   const bottomRef = useRef<ElementRef<'div'>>(null);
-
-  // const [isTyping, setIsTyping] = useState(false);
-  const { setIsTyping } = useConversationStore();
-
-  useEffect(() => {
-    if (!socket) return;
-    if (props.type !== 'conversation') return;
-
-    const typingKey = `typing:${chatId}:${props.otherMember.id}`;
-    const typingKeyListener = (isTyping: boolean) => setIsTyping(isTyping);
-    socket.on(typingKey, typingKeyListener);
-
-    return () => {
-      socket.off(typingKey, typingKeyListener);
-    };
-  }, [props, chatId, socket, setIsTyping]);
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useChatQuery({
       queryKey,
@@ -96,8 +77,7 @@ export function ChatMessages({
       paramKey,
       paramValue,
     });
-
-  useChatSocket({ addKey, updateKey, queryKey });
+  useChatSocket({ addKey, updateKey, queryKey, typingKey, callKey });
 
   const messages: MessageWithMemberWithProfile[] = useMemo(
     () =>
@@ -113,6 +93,14 @@ export function ChatMessages({
   const [optimisticMessages, setOptimisticMessages] =
     experimental_useOptimistic(messages);
 
+  useChatScroll({
+    chatRef,
+    bottomRef,
+    loadMore: fetchNextPage,
+    shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
+    count: optimisticMessages.length,
+  });
+
   const addOptimisticMessage = (message: MessageWithMemberWithProfile) =>
     setOptimisticMessages((state) => [message, ...state]);
 
@@ -126,14 +114,6 @@ export function ChatMessages({
       state[index].updatedAt = new Date();
       return [...state];
     });
-
-  useChatScroll({
-    chatRef,
-    bottomRef,
-    loadMore: fetchNextPage,
-    shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
-    count: optimisticMessages.length,
-  });
 
   if (status === 'loading') {
     return (
@@ -159,7 +139,7 @@ export function ChatMessages({
 
   return (
     <>
-      <ScrollArea viewPortRef={chatRef} className='flex-1 py-4'>
+      <ScrollArea viewPortRef={chatRef} className='flex-1 py-4 h-full'>
         {!hasNextPage && <div className='flex-1' />}
 
         {!hasNextPage && <ChatWelcome type={props.type} name={name} />}

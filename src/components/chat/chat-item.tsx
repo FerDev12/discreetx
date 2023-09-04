@@ -34,6 +34,9 @@ import { cn } from '@/lib/utils';
 import { Member, MemberRole, Profile } from '@prisma/client';
 import { Separator } from '../ui/separator';
 
+const urlSchema = z.string().url();
+const isLink = (value: string) => urlSchema.safeParse(value).success;
+
 type ChatItemProps = {
   id: string;
   content: string;
@@ -124,7 +127,7 @@ export function ChatItem({
     return () => removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onEditMessage = async (values: z.infer<typeof formSchema>) => {
     try {
       setOptimisticContent(values.content);
       form.reset();
@@ -243,7 +246,18 @@ export function ChatItem({
                     'italic text-zinc-500 dark:text-zinc-400 text-xs mt-1'
                 )}
               >
-                {optimisticContent}
+                {isLink(optimisticContent) ? (
+                  <a
+                    className='text-indigo-500 hover:underline'
+                    href={optimisticContent}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    {optimisticContent}
+                  </a>
+                ) : (
+                  optimisticContent
+                )}
 
                 {isUpdated && !deleted && (
                   <span className='text-[10px] mx-2 text-zinc-500 dark:text-zinc-400'>
@@ -256,7 +270,7 @@ export function ChatItem({
             {!fileUrl && isEditing && (
               <Form {...form}>
                 <form
-                  onSubmit={form.handleSubmit(onSubmit)}
+                  onSubmit={form.handleSubmit(onEditMessage)}
                   className='flex items-center w-full gap-x-2 pt-2'
                 >
                   <FormField

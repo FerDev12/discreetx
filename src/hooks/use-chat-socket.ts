@@ -1,14 +1,19 @@
 import { useSocket } from '@/components/providers/socket-provider';
-import { Member, Message, Profile } from '@prisma/client';
+import { Call, Conversation, Member, Message, Profile } from '@prisma/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { useConversationStore } from './use-conversation-store';
+import { useModalStore } from './use-modal-store';
+import { useRouter } from 'next/navigation';
+import { MemberWithProfile } from '@/types';
 
 type ChatSocketProps = {
   addKey: string;
   updateKey: string;
   queryKey: string;
   // -------------
-  profileId?: string;
+  typingKey?: string | null;
+  callKey?: string | null;
 };
 
 type MessageWithMemberWithProfile = Message & {
@@ -21,9 +26,14 @@ export function useChatSocket({
   addKey,
   updateKey,
   queryKey,
+  typingKey,
+  callKey,
 }: ChatSocketProps) {
+  const router = useRouter();
   const { socket } = useSocket();
   const queryClient = useQueryClient();
+  const { setIsTyping, setActiveCall } = useConversationStore();
+  const { onOpen, onClose } = useModalStore();
 
   useEffect(() => {
     if (!socket) {
@@ -89,4 +99,65 @@ export function useChatSocket({
       socket.off(updateKey, updateKeyListener);
     };
   }, [socket, queryClient, addKey, updateKey, queryKey]);
+
+  useEffect(() => {
+    if (!socket) return;
+    if (!typingKey) return;
+
+    const typingKeyListener = (isTyping: boolean) => setIsTyping(isTyping);
+    socket.on(typingKey, typingKeyListener);
+
+    return () => {
+      socket.off(typingKey, typingKeyListener);
+    };
+  }, [typingKey, socket, setIsTyping]);
+
+  useEffect(() => {
+    if (!callKey || !socket) return;
+
+    const socketListener = (
+      call: Call & { conversation: Conversation; member: MemberWithProfile }
+    ) => {
+      if (call.active && !call.ended) {
+        setActiveCall({ id: call.id, type: call.type });
+
+        if (!call.answered) {
+          // Show modal to decline or answer call
+          console.log(call);
+          return onOpen('answerCall', {
+            callId: call.id,
+            conversationId: call.conversationId,
+            callType: call.type,
+            member: call.member,
+          });
+        }
+
+        if (call.answered) {
+          onClose();
+          return router.push(
+            `/servers/${call.conversation.serverId}/conversations/${call.conversationId}/calls/${call.id}`
+          );
+        }
+      }
+
+      if (!call.active && call.ended) {
+        setActiveCall(null);
+
+        if (call.declined) return onClose();
+        if (call.cancelled) return onClose();
+
+        onClose();
+        onOpen('callEnded', {
+          serverId: call.conversation.serverId,
+          conversationId: call.conversationId,
+        });
+      }
+    };
+
+    socket.on(callKey, socketListener);
+
+    return () => {
+      socket.off(callKey, socketListener);
+    };
+  }, [callKey, socket, onOpen, onClose, setActiveCall, router]);
 }

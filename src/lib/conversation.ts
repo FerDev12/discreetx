@@ -1,6 +1,7 @@
 import { db } from './db';
 
 export const getOrCreateConversation = async (
+  serverId: string,
   memberOneId: string,
   memberTwoId: string
 ) => {
@@ -9,7 +10,11 @@ export const getOrCreateConversation = async (
     (await findConversation(memberTwoId, memberOneId));
 
   if (!conversation) {
-    conversation = await createNewConversation(memberOneId, memberTwoId);
+    conversation = await createNewConversation(
+      serverId,
+      memberOneId,
+      memberTwoId
+    );
   }
 
   return conversation;
@@ -39,12 +44,14 @@ export const findConversation = async (
 };
 
 export const createNewConversation = async (
+  serverId: string,
   memberOneId: string,
   memberTwoId: string
 ) => {
   try {
     return await db.conversation.create({
       data: {
+        serverId,
         memberOneId,
         memberTwoId,
       },
