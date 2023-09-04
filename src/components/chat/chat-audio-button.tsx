@@ -13,7 +13,13 @@ export function ChatAudioButton({
   otherMember,
   conversationId,
   serverId,
+  callType,
+  callId,
+  callActive,
 }: {
+  callType?: CallType;
+  callId?: string;
+  callActive?: string;
   serverId: string;
   conversationId: string;
   otherMember: MemberWithProfile;

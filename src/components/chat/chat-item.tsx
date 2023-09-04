@@ -29,10 +29,10 @@ import { ActionTooltip } from '@/components/action-tooltip';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { useModalStore } from '@/hooks/use-modal-store';
 import { cn } from '@/lib/utils';
 import { Member, MemberRole, Profile } from '@prisma/client';
-import { Separator } from '../ui/separator';
 
 const urlSchema = z.string().url();
 const isLink = (value: string) => urlSchema.safeParse(value).success;
@@ -248,8 +248,8 @@ export function ChatItem({
               >
                 {isLink(optimisticContent) ? (
                   <a
-                    className='text-indigo-500 hover:underline'
                     href={optimisticContent}
+                    className='text-indigo-500 text-sm hover:underline'
                     target='_blank'
                     rel='noopener noreferrer'
                   >

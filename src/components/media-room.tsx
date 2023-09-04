@@ -5,14 +5,16 @@ import { useUser } from '@clerk/nextjs';
 import { LiveKitRoom, VideoConference } from '@livekit/components-react';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 type MediaRoomProps = {
+  callId?: string;
   chatId: string;
   video: boolean;
   audio: boolean;
 };
 
-export function MediaRoom({ chatId, video, audio }: MediaRoomProps) {
+export function MediaRoom({ chatId, video, audio, callId }: MediaRoomProps) {
   const { user } = useUser();
 
   const [token, setToken] = useState('');
@@ -36,6 +38,24 @@ export function MediaRoom({ chatId, video, audio }: MediaRoomProps) {
     })();
   }, [user?.firstName, user?.lastName, chatId]);
 
+  const onDisconnect = async () => {
+    if (!callId) return;
+    try {
+      const query = new URLSearchParams({
+        conversationId: chatId,
+      });
+
+      await axios.delete(`/api/socket/calls/${callId}?${query}`);
+    } catch (err: any) {
+      if (axios.isAxiosError(err)) {
+        console.error(err.response?.data);
+      }
+      {
+        console.error(err);
+      }
+    }
+  };
+
   if (token === '') {
     return (
       <div className='flex flex-col flex-1 justify-center items-center'>
@@ -51,11 +71,15 @@ export function MediaRoom({ chatId, video, audio }: MediaRoomProps) {
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       token={token}
       connect={true}
-      video={video}
-      audio={audio}
+      video={false}
+      audio={true}
       connectOptions={{
         autoSubscribe: false,
       }}
+      onConnected={() => {
+        console.log('Connected');
+      }}
+      onDisconnected={onDisconnect}
     >
       <VideoConference />
     </LiveKitRoom>

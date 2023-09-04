@@ -5,9 +5,9 @@ import { UserAvatar } from '@/components/user-avatar';
 import { SocketIndicator } from '@/components/socket-indicator';
 import { ChatVideoButton } from './chat-video-button';
 import { ChatIsTyping } from './chat-is-typing-indicator';
-import { Member } from '@prisma/client';
 import { MemberWithProfile } from '@/types';
-import { ChatAudioButton } from './chat-audio-button';
+// import { ChatAudioButton } from './chat-audio-button';
+import { CallType } from '@prisma/client';
 
 type ChatHeaderProps = {
   serverId: string;
@@ -19,6 +19,9 @@ type ChatHeaderProps = {
       imageUrl: string;
       currentMember: MemberWithProfile;
       otherMember: MemberWithProfile;
+      callId?: string;
+      callActive?: boolean;
+      callType?: CallType;
     }
   | {
       type: 'channel';
@@ -53,18 +56,24 @@ export function ChatHeader({
 
       <div className='ml-auto flex items-center gap-x-2'>
         {props.type === 'conversation' && (
-          <>
-            <ChatAudioButton
+          <div className='flex items-center gap-x-1'>
+            {/* <ChatAudioButton
+              callType={props.callType}
+              callId={props.callId}
+              callActive={props.callActive}
               otherMember={props.otherMember}
               conversationId={props.conversationId}
               serverId={serverId}
-            />
+              /> */}
             <ChatVideoButton
+              callType={props.callType}
+              callId={props.callId}
+              callActive={props.callActive}
               otherMember={props.otherMember}
               conversationId={props.conversationId}
               serverId={serverId}
             />
-          </>
+          </div>
         )}
         <SocketIndicator />
       </div>

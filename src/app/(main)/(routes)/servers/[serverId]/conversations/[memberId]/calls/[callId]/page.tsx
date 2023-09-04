@@ -14,7 +14,7 @@ type CallIdPageProps = {
 };
 
 export default async function CallIdPage({
-  params: { callId, memberId, serverId },
+  params: { callId, serverId },
 }: CallIdPageProps) {
   const profile = await currentProfile();
 
@@ -75,10 +75,15 @@ export default async function CallIdPage({
         serverId={serverId}
         name={otherMember.profile.name}
         imageUrl={otherMember.profile.imageUrl}
+        callActive={call.active}
+        callId={call.id}
+        callType={call.type}
       />
-      <div className='max-h-[calc(100svh-64px)]'>
+
+      <div className='max-h-[calc(100svh-48px)]'>
         <MediaRoom
-          chatId={call.id}
+          chatId={call.conversationId}
+          callId={call.id}
           video={call.type === 'VIDEO'}
           audio={call.type === 'AUDIO'}
         />

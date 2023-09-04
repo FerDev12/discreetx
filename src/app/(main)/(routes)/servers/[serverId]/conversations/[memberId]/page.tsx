@@ -1,6 +1,5 @@
 import { ChatHeader } from '@/components/chat/chat-header';
 import { ChatMessages } from '@/components/chat/chat-messages';
-import { MediaRoom } from '@/components/media-room';
 import { getOrCreateConversation } from '@/lib/conversation';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
@@ -15,7 +14,7 @@ type MemberIdPageProps = {
 };
 
 export default async function MemberIdPage({
-  params: { serverId, memberId },
+  params: { serverId, memberId: otherMemberId },
 }: MemberIdPageProps) {
   const profile = await currentProfile();
 
@@ -40,7 +39,7 @@ export default async function MemberIdPage({
   const conversation = await getOrCreateConversation(
     serverId,
     currentMember.id,
-    memberId
+    otherMemberId
   );
 
   if (!conversation) {
@@ -52,6 +51,9 @@ export default async function MemberIdPage({
   const otherMember =
     memberOne.profileId === profile.id ? memberTwo : memberOne;
 
+  const { calls } = conversation;
+  const activeCall = calls?.at(0);
+
   return (
     <>
       <ChatHeader
@@ -62,6 +64,9 @@ export default async function MemberIdPage({
         imageUrl={otherMember.profile.imageUrl}
         currentMember={currentMember}
         otherMember={otherMember}
+        callActive={activeCall?.active}
+        callId={activeCall?.id}
+        callType={activeCall?.type}
       />
 
       <ChatMessages

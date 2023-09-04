@@ -39,6 +39,12 @@ export const findConversation = async (
           profile: true,
         },
       },
+      calls: {
+        where: {
+          active: true,
+          ended: false,
+        },
+      },
     },
   });
 };
@@ -64,6 +70,12 @@ export const createNewConversation = async (
         memberTwo: {
           include: {
             profile: true,
+          },
+        },
+        calls: {
+          where: {
+            active: true,
+            ended: false,
           },
         },
       },

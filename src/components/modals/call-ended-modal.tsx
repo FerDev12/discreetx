@@ -22,7 +22,7 @@ export default function CallEndedModal() {
 
   const handleClose = () => {
     onClose();
-    router.push(`/server/${serverId}/conversation/${conversationId}`);
+    router.push(`/servers/${serverId}/conversations/${conversationId}`);
   };
 
   const isModalOpen = isOpen && type === 'callEnded';
