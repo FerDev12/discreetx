@@ -1,19 +1,24 @@
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
-import { DirectMessage, Message } from '@prisma/client';
+import { DirectMessage } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import Cryptr from 'cryptr';
 import { MemberWithProfile } from '@/types';
-import axios from 'axios';
+import { UnauthorizedError } from '@/errors/unauthorized-error';
+import { BadRequestError } from '@/errors/bad-request-error';
+import { handleApiError } from '@/lib/api-error-handler';
 
 const MESSAGES_BATCH = 10;
+
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
 
 export async function GET(req: Request) {
   try {
     const profile = await currentProfile();
 
     if (!profile) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const { searchParams } = new URL(req.url);
@@ -22,7 +27,7 @@ export async function GET(req: Request) {
     const conversationId = searchParams.get('conversationId');
 
     if (!conversationId) {
-      return new NextResponse('Conversation Id missing', { status: 400 });
+      throw new BadRequestError('Conversation Id missing');
     }
 
     let messages: (DirectMessage & { member: MemberWithProfile })[] = [];
@@ -91,7 +96,8 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ items: messages, nextCursor });
   } catch (err: any) {
-    console.error('[DIRECT_MESSAGES_GET]', err);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return handleApiError(err, '[DIRECT_MESSAGES_GET]');
+    // console.error('[DIRECT_MESSAGES_GET]', err);
+    // return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
