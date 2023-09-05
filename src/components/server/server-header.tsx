@@ -18,7 +18,7 @@ import {
   Users,
 } from 'lucide-react';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { ModalType, useModalStore } from '@/hooks/use-modal-store';
 
 type ServerHeaderProps = {
   server: ServerWithMembersWithProfiles;
@@ -44,7 +44,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
       <DropdownMenuContent className='w-56 text-xs font-medium text-black dark:text-neutral-400 space-y-[2px]'>
         {isModerator ? (
           <DropdownMenuItem
-            onClick={() => onOpen('invite', { server })}
+            onClick={() => onOpen({ type: ModalType.INVITE, data: { server } })}
             className='text-teal-600 dark:text-teal-400 px-3 py-2 text-sm cursor-pointer'
           >
             Invite People
@@ -55,14 +55,18 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
         {isAdmin ? (
           <>
             <DropdownMenuItem
-              onClick={() => onOpen('editServer', { server })}
+              onClick={() =>
+                onOpen({ type: ModalType.EDIT_SERVER, data: { server } })
+              }
               className='px-3 py-2 text-sm cursor-pointer'
             >
               Server Settings
               <Settings className='w-4 h-4 ml-auto' />
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => onOpen('members', { server })}
+              onClick={() =>
+                onOpen({ type: ModalType.MANAGE_MEMBERS, data: { server } })
+              }
               className='px-3 py-2 text-sm cursor-pointer'
             >
               Manage Members
@@ -74,7 +78,9 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
         {isModerator ? (
           <>
             <DropdownMenuItem
-              onClick={() => onOpen('createChannel', { server })}
+              onClick={() =>
+                onOpen({ type: ModalType.CREATE_CHANNEL, data: { server } })
+              }
               className='px-3 py-2 text-sm cursor-pointer'
             >
               Create Channel
@@ -88,7 +94,9 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
         {isAdmin ? (
           <>
             <DropdownMenuItem
-              onClick={() => onOpen('deleteServer', { server })}
+              onClick={() =>
+                onOpen({ type: ModalType.DELETE_SERVER, data: { server } })
+              }
               className='text-rose-500 px-3 py-2 text-sm cursor-pointer'
             >
               Delete Server
@@ -100,7 +108,9 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
         {!isAdmin ? (
           <>
             <DropdownMenuItem
-              onClick={() => onOpen('leaveServer', { server })}
+              onClick={() =>
+                onOpen({ type: ModalType.LEAVE_SERVER, data: { server } })
+              }
               className='text-rose-500 px-3 py-2 text-sm cursor-pointer'
             >
               Leave Server

@@ -11,7 +11,7 @@ import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { EmojiPicker } from '@/components/emoji-picker';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { ModalType, useModalStore } from '@/hooks/use-modal-store';
 import { ActionTooltip } from '@/components/action-tooltip';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { Member } from '@prisma/client';
@@ -147,11 +147,15 @@ export function ChatInput({
             <button
               type='button'
               onClick={() =>
-                onOpen('messageFile', {
-                  apiUrl,
-                  query,
-                  channelId: query.channelId,
-                  member: currentMember,
+                onOpen({
+                  type: ModalType.MESSAGE_FILE,
+                  data: {
+                    apiUrl,
+                    query,
+                    channelId: query.channelId,
+                    member: currentMember,
+                    addOptimisticMessage,
+                  },
                 })
               }
               className='h-[20px] w-[20px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex items-center justify-center'

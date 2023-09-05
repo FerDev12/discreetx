@@ -7,7 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
+import {
+  ManageMembersModalData,
+  ModalType,
+  useModalStore,
+} from '@/hooks/use-modal-store';
 import { ServerWithMembersWithProfiles } from '@/types';
 import { ScrollArea } from '../ui/scroll-area';
 import { UserAvatar } from '../user-avatar';
@@ -41,15 +45,9 @@ import { useUser } from '@clerk/nextjs';
 export default function MembersModal() {
   const router = useRouter();
   const [loadingId, setLoadingId] = useState('');
-  const {
-    isOpen,
-    type,
-    data: { server },
-    onOpen,
-    onClose,
-  } = useModalStore();
+  const { isOpen, type, data, onOpen, onClose } = useModalStore();
   const user = useUser();
-
+  const { server } = data as ManageMembersModalData;
   const roleIconMap = new Map();
   roleIconMap.set('GUEST', null);
   roleIconMap.set(
@@ -58,7 +56,7 @@ export default function MembersModal() {
   );
   roleIconMap.set('ADMIN', <ShieldAlert className='h-4 w-4 text-rose-500' />);
 
-  const isModalOpen = isOpen && type === 'members';
+  const isModalOpen = isOpen && type === ModalType.MANAGE_MEMBERS;
   const members = (server as ServerWithMembersWithProfiles)?.members;
 
   const onRoleChange = async (memberId: string, role: MemberRole) => {
@@ -69,12 +67,15 @@ export default function MembersModal() {
         serverId: server?.id ?? '',
       });
 
-      const { data } = await axios.patch(`/api/members/${memberId}?${query}`, {
-        role,
-      });
+      const { data } = await axios.patch(
+        `/api/socket/members/${memberId}?${query}`,
+        {
+          role,
+        }
+      );
 
       router.refresh();
-      onOpen('members', { server: data });
+      onOpen({ type: ModalType.MANAGE_MEMBERS, data });
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -94,10 +95,12 @@ export default function MembersModal() {
         serverId: server?.id ?? '',
       });
 
-      const { data } = await axios.delete(`/api/members/${memberId}?${query}`);
+      const { data } = await axios.delete(
+        `/api/socket/members/${memberId}?${query}`
+      );
 
       router.refresh();
-      onOpen('members', { server: data });
+      onOpen({ type: ModalType.MANAGE_MEMBERS, data });
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);

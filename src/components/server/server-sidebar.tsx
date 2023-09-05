@@ -12,6 +12,7 @@ import { ServerSearch } from '@/components/server/server-search';
 import { ServerSection } from '@/components/server/server-section';
 import { ServerChannel } from '@/components/server/server-channel';
 import { ServerMember } from '@/components/server/server-member';
+import { ServerSocket } from './server-socket';
 
 type ServerSidebarProps = {
   serverId: string;
@@ -99,6 +100,8 @@ export async function ServerSidebar({ serverId }: ServerSidebarProps) {
   return (
     <div className='flex flex-col h-full text-primary w-full dark:bg-[#2b2d31] bg-[#f2f3f5] pt-12 md:pt-0 shadow-zinc-500/50 shadow-sm'>
       <Separator className='md:hidden' />
+      <ServerSocket serverId={server.id} />
+
       <ServerHeader server={server} role={role} />
 
       <ScrollArea className='flex-1 px-3'>

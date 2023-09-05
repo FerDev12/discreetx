@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { EditServerModalData, useModalStore } from '@/hooks/use-modal-store';
 import { Server } from '@prisma/client';
 
 const formSchema = z.object({
@@ -36,13 +36,9 @@ const formSchema = z.object({
 });
 
 export default function EditServerModal() {
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { server },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
   const router = useRouter();
+  const { server } = data as EditServerModalData;
 
   const form = useForm({
     // @ts-ignore
@@ -70,10 +66,7 @@ export default function EditServerModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { data: updatedServer } = await axios.patch<Server>(
-        `/api/servers/${server?.id}`,
-        values
-      );
+      await axios.patch<Server>(`/api/servers/${server?.id}`, values);
 
       form.reset();
       router.refresh();

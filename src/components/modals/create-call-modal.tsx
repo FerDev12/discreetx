@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { CreateCallModalData, useModalStore } from '@/hooks/use-modal-store';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { PhoneCall, Video } from 'lucide-react';
@@ -18,14 +18,15 @@ import { CallType } from '@prisma/client';
 import { useConversationStore } from '@/hooks/use-conversation-store';
 
 export default function CreateCallModal() {
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { conversationId, serverId, callType, name },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
   const { setIsCalling, isCalling, setActiveCall } = useConversationStore();
   const [callId, setCallId] = useState('');
+  const {
+    conversationId,
+    serverId,
+    type: callType,
+    name,
+  } = data as CreateCallModalData;
 
   const isModalOpen = isOpen && type === 'createCall';
 

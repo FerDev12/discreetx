@@ -27,7 +27,7 @@ export default async function InviteCodePage({ params }: InviteCodePageProps) {
     }),
   ]);
 
-  if (profileResponse.status === 'rejected') {
+  if (profileResponse.status === 'rejected' || !profileResponse.value) {
     return redirectToSignIn();
   }
 
@@ -37,10 +37,6 @@ export default async function InviteCodePage({ params }: InviteCodePageProps) {
 
   const profile = profileResponse.value;
   const existingServer = existingServerResponse.value;
-
-  if (!profile) {
-    return redirectToSignIn();
-  }
 
   if (!existingServer) {
     return (
@@ -59,25 +55,35 @@ export default async function InviteCodePage({ params }: InviteCodePageProps) {
     ) === -1 &&
     existingServer.members.length < 100
   ) {
-    const server = await db.server.update({
-      where: {
-        inviteCode: params.inviteCode,
-      },
+    const member = await db.member.create({
       data: {
-        // CREATE NEW PROFILE
-        members: {
-          create: [
-            {
-              profileId: profile.id,
-            },
-          ],
-        },
+        profileId: profile.id,
+        serverId: existingServer.id,
       },
     });
 
-    if (server) {
-      return redirect(`/servers/${server.id}`);
+    if (member) {
+      return redirect(`/servers/${existingServer.id}`);
     }
+    // const server = await db.server.update({
+    //   where: {
+    //     inviteCode: params.inviteCode,
+    //   },
+    //   data: {
+    //     // CREATE NEW PROFILE
+    //     members: {
+    //       create: [
+    //         {
+    //           profileId: profile.id,
+    //         },
+    //       ],
+    //     },
+    //   },
+    // });
+
+    // if (server) {
+    //   return redirect(`/servers/${server.id}`);
+    // }
   }
 
   return null;

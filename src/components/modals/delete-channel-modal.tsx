@@ -13,22 +13,18 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { DeleteChannelModalData, useModalStore } from '@/hooks/use-modal-store';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { useForm } from 'react-hook-form';
 
 export default function DeleteChannelModal() {
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { channel, server },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
   const router = useRouter();
   const [value, setValue] = useState('');
   const [namesMatch, setNamesMatch] = useState(false);
+  const { channel, server } = data as DeleteChannelModalData;
 
   const {
     handleSubmit,
@@ -46,7 +42,7 @@ export default function DeleteChannelModal() {
         serverId: server?.id ?? '',
       });
 
-      await axios.delete(`/api/channels/${channel?.id}?${query}`);
+      await axios.delete(`/api/socket/channels/${channel?.id}?${query}`);
       onClose();
       router.refresh();
       router.push(`/servers/${server?.id}`);

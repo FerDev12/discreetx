@@ -3,7 +3,7 @@ import { Call, Conversation, Member, Message, Profile } from '@prisma/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useConversationStore } from './use-conversation-store';
-import { useModalStore } from './use-modal-store';
+import { ModalType, useModalStore } from './use-modal-store';
 import { useRouter } from 'next/navigation';
 import { MemberWithProfile } from '@/types';
 
@@ -123,12 +123,20 @@ export function useChatSocket({
 
         if (!call.answered) {
           // Show modal to decline or answer call
-          console.log(call);
-          return onOpen('answerCall', {
-            callId: call.id,
-            conversationId: call.conversationId,
-            callType: call.type,
-            member: call.member,
+          // return onOpen('answerCall', {
+          //   callId: call.id,
+          //   conversationId: call.conversationId,
+          //   callType: call.type,
+          //   member: call.member,
+          // });
+          return onOpen({
+            type: ModalType.ANSWER_CALL,
+            data: {
+              callId: call.id,
+              conversationId: call.conversationId,
+              type: call.type,
+              member: call.member,
+            },
           });
         }
 
@@ -147,9 +155,13 @@ export function useChatSocket({
         if (call.cancelled) return onClose();
 
         onClose();
-        onOpen('callEnded', {
-          serverId: call.conversation.serverId,
-          conversationId: call.conversationId,
+
+        onOpen({
+          type: ModalType.CALL_ENDED,
+          data: {
+            serverId: call.conversation.serverId,
+            conversationId: call.conversationId,
+          },
         });
       }
     };

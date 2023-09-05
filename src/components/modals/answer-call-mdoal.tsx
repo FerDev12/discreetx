@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { AnswerCallModalData, useModalStore } from '@/hooks/use-modal-store';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -17,16 +17,17 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useConversationStore } from '@/hooks/use-conversation-store';
 
 export default function AnswerCallModal() {
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { conversationId, member, callId, callType, serverId },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
   const [isLoading, setIsLoading] = useState(false);
   const { setActiveCall } = useConversationStore();
   const router = useRouter();
   const pathname = usePathname();
+  const {
+    conversationId,
+    member,
+    callId,
+    type: callType,
+  } = data as AnswerCallModalData;
 
   const isModalOpen = isOpen && type === 'answerCall';
 

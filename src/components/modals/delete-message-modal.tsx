@@ -10,17 +10,13 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { DeleteMessageModalData, useModalStore } from '@/hooks/use-modal-store';
 import { Button } from '../ui/button';
 
 export default function DeleteMessageModal() {
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { apiUrl, query, messageId, deleteOptimisticMessage },
-  } = useModalStore();
-
+  const { isOpen, onClose, type, data } = useModalStore();
+  const { apiUrl, query, messageId, deleteOptimisticMessage } =
+    data as DeleteMessageModalData;
   const isModalOpen = isOpen && type === 'deleteMessage';
 
   const onDeleteMessage = async () => {

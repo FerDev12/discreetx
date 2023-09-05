@@ -47,32 +47,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       socketRef.current?.disconnect();
     };
   }, []);
-  // useEffect(() => {
-  //   const socketInstance = ClientIO(process.env.NEXT_PUBLIC_SITE_URL ?? '', {
-  //     path: '/api/socket/io',
-  //     addTrailingSlash: false,
-  //   });
-
-  //   socketInstance.on('error', (err) => {
-  //     console.error('[SOCKET_CONNECTION]', err);
-  //   });
-
-  //   socketInstance.on('connect', () => {
-  //     setIsConnected(true);
-  //     setSocket(socketInstance);
-  //   });
-
-  //   socketInstance.on('disconnect', () => {
-  //     setIsConnected(false);
-  //     setSocket(null);
-  //   });
-
-  //   return () => {
-  //     setIsConnected(false);
-  //     setSocket(null);
-  //     socketInstance.disconnect();
-  //   };
-  // }, []);
 
   return (
     <SocketContext.Provider value={{ socket: socketRef.current, isConnected }}>

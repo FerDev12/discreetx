@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { LeaveServerModalData, useModalStore } from '@/hooks/use-modal-store';
 
 import { Button } from '../ui/button';
 import { useState } from 'react';
@@ -17,15 +17,10 @@ import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export default function LeaveServerModal() {
-  const {
-    isOpen,
-    onClose,
-    onOpen,
-    type,
-    data: { server },
-  } = useModalStore();
+  const { isOpen, onClose, onOpen, type, data } = useModalStore();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { server } = data as LeaveServerModalData;
 
   const isModalOpen = isOpen && type === 'leaveServer';
 

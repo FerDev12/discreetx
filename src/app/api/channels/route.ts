@@ -5,6 +5,7 @@ import { MemberRole } from '@prisma/client';
 import { handleApiError } from '@/lib/api-error-handler';
 import { UnauthorizedError } from '@/errors/unauthorized-error';
 import { z } from 'zod';
+import { BadRequestError } from '@/errors/bad-request-error';
 
 const bodySchema = z.object({
   name: z.string().nonempty(),
@@ -24,13 +25,13 @@ export async function POST(req: Request) {
     const serverId = searchParams.get('serverId');
 
     if (!serverId) {
-      return new NextResponse('Missing server Id', { status: 400 });
+      throw new BadRequestError('Missing server Id');
     }
 
     const { name, type } = await req.json();
 
     if (name === 'general') {
-      return new NextResponse("Name cannot be 'general'", { status: 400 });
+      throw new BadRequestError("Name cannot be 'general'");
     }
 
     const server = await db.server.update({

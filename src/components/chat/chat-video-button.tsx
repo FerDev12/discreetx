@@ -3,7 +3,7 @@
 import { Video, VideoOff } from 'lucide-react';
 import { ActionTooltip } from '../action-tooltip';
 import { useConversationStore } from '@/hooks/use-conversation-store';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { ModalType, useModalStore } from '@/hooks/use-modal-store';
 import { CallType } from '@prisma/client';
 import { MemberWithProfile } from '@/types';
 import axios from 'axios';
@@ -34,11 +34,14 @@ export function ChatVideoButton({
 
   const onClick = async () => {
     if (!isOnCall) {
-      return onOpen('createCall', {
-        conversationId,
-        serverId,
-        name: otherMember.profile.name,
-        callType: CallType.VIDEO,
+      return onOpen({
+        type: ModalType.CREATE_CALL,
+        data: {
+          conversationId,
+          serverId,
+          name: otherMember.profile.name,
+          type: CallType.VIDEO,
+        },
       });
     }
 

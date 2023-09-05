@@ -36,16 +36,18 @@ export default async function ServerIdLayout({
   }
 
   return (
-    <div>
-      <aside className='hidden md:flex w-60 z-20 fixed flex-col inset-y-0'>
-        <ServerSidebar serverId={server.id} />
-      </aside>
+    <SocketProvider>
+      <QueryProvider>
+        <div>
+          <aside className='hidden md:flex w-60 z-20 fixed flex-col inset-y-0'>
+            <ServerSidebar serverId={server.id} />
+          </aside>
 
-      <section className='md:pl-60 dark:bg-[#313338] flex flex-col h-svh max-h-[100svh]'>
-        <SocketProvider>
-          <QueryProvider>{children}</QueryProvider>
-        </SocketProvider>
-      </section>
-    </div>
+          <section className='md:pl-60 dark:bg-[#313338] flex flex-col h-svh max-h-[100svh]'>
+            {children}
+          </section>
+        </div>
+      </QueryProvider>
+    </SocketProvider>
   );
 }
