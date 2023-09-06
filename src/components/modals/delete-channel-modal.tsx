@@ -1,4 +1,5 @@
-'use client';
+import { useForm } from 'react-hook-form';
+('use client');
 
 import { useState } from 'react';
 import axios from 'axios';
@@ -14,10 +15,9 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { DeleteChannelModalData, useModalStore } from '@/hooks/use-modal-store';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function DeleteChannelModal() {
   const { isOpen, onClose, type, data } = useModalStore();

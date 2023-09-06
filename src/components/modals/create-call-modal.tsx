@@ -2,6 +2,10 @@
 
 import axios from 'axios';
 
+import { useState } from 'react';
+import { PhoneCall, Video } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,11 +15,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { CreateCallModalData, useModalStore } from '@/hooks/use-modal-store';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { PhoneCall, Video } from 'lucide-react';
-import { CallType } from '@prisma/client';
 import { useConversationStore } from '@/hooks/use-conversation-store';
+import { CallType } from '@prisma/client';
 
 export default function CreateCallModal() {
   const { isOpen, onClose, type, data } = useModalStore();

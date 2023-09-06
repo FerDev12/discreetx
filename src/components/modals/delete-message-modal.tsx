@@ -10,8 +10,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { DeleteMessageModalData, useModalStore } from '@/hooks/use-modal-store';
-import { Button } from '../ui/button';
 
 export default function DeleteMessageModal() {
   const { isOpen, onClose, type, data } = useModalStore();

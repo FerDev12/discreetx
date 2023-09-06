@@ -1,10 +1,11 @@
 'use client';
 
 import axios from 'axios';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,8 +26,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
-import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),

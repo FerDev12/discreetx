@@ -1,11 +1,12 @@
+import { redirectToSignIn } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { ReactNode } from 'react';
+
 import { QueryProvider } from '@/components/providers/query-provider';
 import { SocketProvider } from '@/components/providers/socket-provider';
 import { ServerSidebar } from '@/components/server/server-sidebar';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
-import { redirectToSignIn } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { ReactNode } from 'react';
 
 export default async function ServerIdLayout({
   children,

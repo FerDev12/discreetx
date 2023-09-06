@@ -14,9 +14,9 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { DeleteServerModalData, useModalStore } from '@/hooks/use-modal-store';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 
 export default function DeleteServerModal() {

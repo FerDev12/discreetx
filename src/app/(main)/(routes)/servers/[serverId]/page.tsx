@@ -3,7 +3,6 @@ import { redirectToSignIn } from '@clerk/nextjs';
 
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
-import axios, { isAxiosError } from 'axios';
 
 type ServerIdPageProps = {
   params: { serverId: string };

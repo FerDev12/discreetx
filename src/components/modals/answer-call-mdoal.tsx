@@ -1,6 +1,9 @@
 'use client';
 
 import axios from 'axios';
+import { Loader2 } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import {
   Dialog,
@@ -9,12 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { AnswerCallModalData, useModalStore } from '@/hooks/use-modal-store';
-import { Button } from '../ui/button';
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import { useConversationStore } from '@/hooks/use-conversation-store';
+import { AnswerCallModalData, useModalStore } from '@/hooks/use-modal-store';
 
 export default function AnswerCallModal() {
   const { isOpen, onClose, type, data } = useModalStore();

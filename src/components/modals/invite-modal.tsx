@@ -1,5 +1,7 @@
 'use client';
 
+import axios from 'axios';
+import { useState } from 'react';
 import { Check, Copy, RefreshCw } from 'lucide-react';
 
 import {
@@ -18,8 +20,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useOrigin } from '@/hooks/use-origin';
-import { useState } from 'react';
-import axios from 'axios';
 import { cn } from '@/lib/utils';
 
 export default function InviteModal() {

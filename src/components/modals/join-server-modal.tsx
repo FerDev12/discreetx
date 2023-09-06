@@ -1,6 +1,9 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
+
 import {
   Dialog,
   DialogContent,
@@ -10,11 +13,9 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Member, Server } from '@prisma/client';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { ServerIcon } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
 export function JoinServerModal({
   server,
