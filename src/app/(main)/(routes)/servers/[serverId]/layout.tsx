@@ -29,6 +29,14 @@ export default async function ServerIdLayout({
         },
       },
     },
+    include: {
+      members: {
+        include: {
+          profile: true,
+        },
+      },
+      channels: true,
+    },
   });
 
   if (!server) {

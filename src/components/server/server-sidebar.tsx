@@ -1,10 +1,13 @@
-import { redirect } from 'next/navigation';
 import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from 'lucide-react';
 import { ReactNode } from 'react';
 
-import { currentProfile } from '@/lib/current-profile';
-import { db } from '@/lib/db';
-import { Channel, ChannelType, MemberRole } from '@prisma/client';
+import {
+  Channel,
+  ChannelType,
+  MemberRole,
+  Profile,
+  Server,
+} from '@prisma/client';
 import { ServerHeader } from '@/components/server/server-header';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -13,10 +16,11 @@ import { ServerSection } from '@/components/server/server-section';
 import { ServerChannel } from '@/components/server/server-channel';
 import { ServerMember } from '@/components/server/server-member';
 import { ServerSocket } from './server-socket';
-
-type ServerSidebarProps = {
-  serverId: string;
-};
+import { MemberWithProfile } from '@/types';
+import { currentProfile } from '@/lib/current-profile';
+import { redirectToSignIn } from '@clerk/nextjs';
+import { db } from '@/lib/db';
+import { redirect } from 'next/navigation';
 
 const iconMap = new Map<ChannelType, ReactNode>();
 iconMap.set(ChannelType.TEXT, <Hash className='mr-2 w-4 h-4' />);
@@ -34,29 +38,27 @@ roleIconMap.set(
   <ShieldAlert className='mr-2 w-4 h-4 text-rose-500' />
 );
 
-export async function ServerSidebar({ serverId }: ServerSidebarProps) {
+export async function ServerSidebar({ serverId }: { serverId: string }) {
   const profile = await currentProfile();
 
   if (!profile) {
-    return redirect('/');
+    return redirectToSignIn();
   }
 
-  const server = await db.server.findUnique({
+  const server = await db.server.findFirst({
     where: {
       id: serverId,
-    },
-    include: {
-      channels: {
-        orderBy: {
-          createdAt: 'asc',
+      members: {
+        some: {
+          profileId: profile.id,
         },
       },
+    },
+    include: {
+      channels: true,
       members: {
         include: {
           profile: true,
-        },
-        orderBy: {
-          role: 'asc',
         },
       },
     },
@@ -68,7 +70,7 @@ export async function ServerSidebar({ serverId }: ServerSidebarProps) {
 
   const initState: Channel[][] = [[], [], []];
 
-  const [textChannels, audioChannels, videoChannels] = server.channels.reduce(
+  const [textChannels, audioChannels, videoChannels] = server.channels?.reduce(
     (prev, curr) => {
       switch (curr.type) {
         case ChannelType.TEXT:
@@ -89,11 +91,11 @@ export async function ServerSidebar({ serverId }: ServerSidebarProps) {
     initState
   );
 
-  const members = server.members.filter(
+  const members = server.members?.filter(
     (member) => member.profileId !== profile.id
   );
 
-  const role = server.members.find(
+  const role = server.members?.find(
     (member) => member.profileId === profile.id
   )?.role;
 

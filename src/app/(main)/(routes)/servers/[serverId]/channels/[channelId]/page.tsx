@@ -24,10 +24,27 @@ export default async function ChannelIdPage({
     return redirectToSignIn();
   }
 
-  const [channelResponse, memberResponse] = await Promise.allSettled([
-    db.channel.findUnique({
+  const [serverResponse, memberResponse] = await Promise.allSettled([
+    db.server.findFirst({
       where: {
-        id: channelId,
+        id: serverId,
+        members: {
+          some: {
+            profileId: profile.id,
+          },
+        },
+      },
+      include: {
+        channels: {
+          where: {
+            id: channelId,
+          },
+        },
+        members: {
+          include: {
+            profile: true,
+          },
+        },
       },
     }),
     db.member.findFirst({
@@ -42,16 +59,22 @@ export default async function ChannelIdPage({
   ]);
 
   if (
-    channelResponse.status === 'rejected' ||
-    !channelResponse.value ||
+    serverResponse.status === 'rejected' ||
+    !serverResponse.value ||
     memberResponse.status === 'rejected' ||
     !memberResponse.value
   ) {
-    return redirect(`/server/${serverId}`);
+    return redirect(`/`);
   }
 
-  const channel = channelResponse.value;
+  const server = serverResponse.value;
   const member = memberResponse.value;
+
+  const channel = server.channels.find((ch) => ch.id === channelId);
+
+  if (!channel) {
+    return redirect(`servers/${serverId}`);
+  }
 
   return (
     <>
