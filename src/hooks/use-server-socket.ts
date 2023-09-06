@@ -51,7 +51,7 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
       router.refresh();
     };
     const onMemberDeleted = (memberId?: string) => {
-      if ((params.memberId ?? '') === memberId) {
+      if (params.memberId && params.memberId === memberId) {
         router.push(`/servers/${serverId}`);
       } else {
         router.refresh();

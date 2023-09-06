@@ -40,8 +40,6 @@ export default function DeleteServerModal() {
 
       await axios.delete(`/api/socket/servers/${server?.id}`);
       onClose();
-      router.refresh();
-      router.push('/');
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);

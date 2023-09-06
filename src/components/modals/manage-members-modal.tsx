@@ -74,7 +74,6 @@ export default function MembersModal() {
         }
       );
 
-      router.refresh();
       onOpen({ type: ModalType.MANAGE_MEMBERS, data });
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
@@ -99,7 +98,6 @@ export default function MembersModal() {
         `/api/socket/members/${memberId}?${query}`
       );
 
-      router.refresh();
       onOpen({ type: ModalType.MANAGE_MEMBERS, data });
     } catch (err: any) {
       if (axios.isAxiosError(err)) {

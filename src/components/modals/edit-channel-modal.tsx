@@ -93,7 +93,6 @@ export default function EditChannelModal() {
       );
 
       form.reset();
-      router.refresh();
       router.push(`/servers/${data.id}`);
       onClose();
     } catch (err: unknown) {
