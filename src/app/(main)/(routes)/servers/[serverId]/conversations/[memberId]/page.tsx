@@ -22,15 +22,31 @@ export default async function MemberIdPage({
     return redirectToSignIn();
   }
 
-  const currentMember = await db.member.findFirst({
+  const server = await db.server.findFirst({
     where: {
-      serverId: serverId,
-      profileId: profile.id,
+      id: serverId,
+      members: {
+        some: {
+          profileId: profile.id,
+        },
+      },
     },
     include: {
-      profile: true,
+      members: {
+        include: {
+          profile: true,
+        },
+      },
     },
   });
+
+  if (!server) {
+    return redirect('/');
+  }
+
+  const currentMember = server.members.find(
+    (member) => member.profileId === profile.id
+  );
 
   if (!currentMember) {
     return redirect('/');
@@ -43,7 +59,7 @@ export default async function MemberIdPage({
   );
 
   if (!conversation) {
-    return redirect(`/server/${serverId}`);
+    return redirect(`/servers/${serverId}`);
   }
 
   const { memberOne, memberTwo } = conversation;
@@ -71,7 +87,6 @@ export default async function MemberIdPage({
 
       <ChatMessages
         type='conversation'
-        profile={profile}
         currentMember={currentMember}
         otherMember={otherMember}
         name={otherMember.profile.name}

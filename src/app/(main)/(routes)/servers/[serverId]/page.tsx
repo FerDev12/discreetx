@@ -16,6 +16,17 @@ export default async function ServerIdPage({ params }: ServerIdPageProps) {
   }
 
   const server = await db.server.findUnique({
+    select: {
+      id: true,
+      channels: {
+        where: {
+          name: 'general',
+        },
+        select: {
+          id: true,
+        },
+      },
+    },
     where: {
       id: params.serverId,
       members: {
@@ -24,20 +35,10 @@ export default async function ServerIdPage({ params }: ServerIdPageProps) {
         },
       },
     },
-    include: {
-      channels: {
-        where: {
-          name: 'general',
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
-      },
-    },
   });
 
   if (!server) {
-    return null;
+    return redirect('/');
   }
 
   const initialChannel = server.channels?.at(0);
@@ -48,5 +49,20 @@ export default async function ServerIdPage({ params }: ServerIdPageProps) {
     );
   }
 
-  return null;
+  // if (initialChannel) {
+  //   axios
+  //     .patch(`/api/socket/servers/${server.id}`, {
+  //       eventType: 'server:member:joined',
+  //     })
+  //     .then((res) => res.data)
+  //     .catch((err) =>
+  //       console.error(isAxiosError(err) ? err.response?.data : err)
+  //     );
+
+  //   return redirect(
+  //     `/servers/${params.serverId}/channels/${initialChannel.id}`
+  //   );
+  // }
+
+  return redirect(`/`);
 }

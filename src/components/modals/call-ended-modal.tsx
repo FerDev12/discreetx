@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import {
   Dialog,
   DialogContent,
@@ -7,18 +9,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import {
+  CallEndedAlertModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 
 export default function CallEndedModal() {
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { conversationId, serverId },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
   const router = useRouter();
+  const { conversationId, serverId } = data as CallEndedAlertModalData;
 
   const handleClose = () => {
     onClose();

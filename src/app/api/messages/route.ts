@@ -1,3 +1,6 @@
+import { BadRequestError } from '@/errors/bad-request-error';
+import { UnauthorizedError } from '@/errors/unauthorized-error';
+import { handleApiError } from '@/lib/api-error-handler';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { Message } from '@prisma/client';
@@ -6,12 +9,15 @@ import { NextResponse } from 'next/server';
 
 const MESSAGES_BATCH = 10;
 
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
 export async function GET(req: Request) {
   try {
     const profile = await currentProfile();
 
     if (!profile) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const { searchParams } = new URL(req.url);
@@ -20,7 +26,7 @@ export async function GET(req: Request) {
     const channelId = searchParams.get('channelId');
 
     if (!channelId) {
-      return new NextResponse('Channel Id missing', { status: 400 });
+      throw new BadRequestError('Missing channel Id');
     }
 
     let messages: Message[] = [];
@@ -88,7 +94,8 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ items: messages, nextCursor });
   } catch (err: any) {
-    console.error('[MESSAGES_GET]', err);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    // console.error('[MESSAGES_GET]', err);
+    // return new NextResponse('Internal Server Error', { status: 500 });
+    return handleApiError(err, '[Messages_GET]');
   }
 }

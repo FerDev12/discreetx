@@ -25,7 +25,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useModalStore } from '@/hooks/use-modal-store';
+import {
+  CreateChannelModalData,
+  ModalType,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 import { Channel, ChannelType, Server } from '@prisma/client';
 import {
   Select,
@@ -33,7 +37,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from '@/components/ui/select';
 
 const formSchema = z.object({
   name: z
@@ -48,12 +52,9 @@ const formSchema = z.object({
 export default function CreateChannelModal() {
   const router = useRouter();
   const params = useParams();
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { channelType },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
+
+  const { type: channelType, server } = data as CreateChannelModalData;
 
   useEffect(() => {
     (document.getElementById('name-input') as HTMLInputElement)?.focus();
@@ -68,7 +69,7 @@ export default function CreateChannelModal() {
     },
   });
 
-  const isModalOpen = isOpen && type === 'createChannel';
+  const isModalOpen = isOpen && type === ModalType.CREATE_CHANNEL;
   const isLoading = form.formState.isSubmitting;
 
   useEffect(() => {
@@ -87,16 +88,17 @@ export default function CreateChannelModal() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const query = new URLSearchParams({
-        serverId: (params?.serverId as string) ?? '',
+        serverId: server.id,
       });
 
-      const { data: server } = await axios.post<
-        Server & { channels: Channel[] }
-      >(`/api/channels?${query}`, values);
+      const { data } = await axios.post<Server & { channels: Channel[] }>(
+        `/api/socket/channels?${query}`,
+        values
+      );
 
       form.reset();
       router.refresh();
-      router.push(`/servers/${server.id}/channels/${server.channels[0].id}`);
+      router.push(`/servers/${data.id}/channels/${data.channels[0].id}`);
       onClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {

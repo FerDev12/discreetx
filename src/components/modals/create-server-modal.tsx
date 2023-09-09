@@ -1,10 +1,12 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -24,10 +26,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
-import { useModalStore } from '@/hooks/use-modal-store';
-import { Loader2 } from 'lucide-react';
-import axios from 'axios';
-// import { createServer } from '@/actions/servers/create-server';
+import { useModalStore } from '@/hooks/stores/use-modal-store';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),

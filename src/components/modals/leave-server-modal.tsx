@@ -8,7 +8,10 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
+import {
+  LeaveServerModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 
 import { Button } from '../ui/button';
 import { useState } from 'react';
@@ -17,24 +20,18 @@ import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export default function LeaveServerModal() {
-  const {
-    isOpen,
-    onClose,
-    onOpen,
-    type,
-    data: { server },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { server } = data as LeaveServerModalData;
 
   const isModalOpen = isOpen && type === 'leaveServer';
 
   const onLeaveServer = async () => {
     try {
       setIsLoading(true);
-      await axios.patch(`/api/servers/${server?.id}/leave`);
+      await axios.patch(`/api/socket/servers/${server?.id}/leave`);
       onClose();
-      router.refresh();
       router.push('/');
     } catch (err: any) {
       if (axios.isAxiosError(err)) {

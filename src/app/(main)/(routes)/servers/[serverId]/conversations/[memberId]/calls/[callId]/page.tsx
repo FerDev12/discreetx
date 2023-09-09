@@ -14,46 +14,81 @@ type CallIdPageProps = {
 };
 
 export default async function CallIdPage({
-  params: { callId, serverId },
+  params: { callId, memberId, serverId },
 }: CallIdPageProps) {
   const profile = await currentProfile();
 
   if (!profile) return redirectToSignIn();
 
-  const call = await db.call.findUnique({
-    where: {
-      id: callId,
-      conversation: {
-        OR: [
-          { memberOne: { profileId: profile.id } },
-          { memberTwo: { profileId: profile.id } },
-        ],
-      },
-    },
-    include: {
-      conversation: {
-        include: {
-          memberOne: {
-            include: {
-              profile: true,
+  const [serverResponse, callResponse] = await Promise.allSettled([
+    db.server.findFirst({
+      where: {
+        id: serverId,
+        conversations: {
+          some: {
+            calls: {
+              some: {
+                id: callId,
+              },
             },
+            OR: [
+              { memberOne: { profileId: profile.id } },
+              { memberTwo: { profileId: profile.id } },
+            ],
           },
-          memberTwo: {
-            include: {
-              profile: true,
+        },
+      },
+      include: {
+        members: {
+          include: {
+            profile: true,
+          },
+        },
+      },
+    }),
+    db.call.findUnique({
+      where: {
+        id: callId,
+        conversation: {
+          serverId,
+          OR: [
+            { memberOne: { profileId: profile.id } },
+            { memberTwo: { profileId: profile.id } },
+          ],
+        },
+      },
+      include: {
+        conversation: {
+          include: {
+            memberOne: {
+              include: {
+                profile: true,
+              },
+            },
+            memberTwo: {
+              include: {
+                profile: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    }),
+  ]);
 
-  if (!call) {
+  if (serverResponse.status === 'rejected' || !serverResponse.value) {
     return redirect('/');
   }
 
+  if (callResponse.status === 'rejected' || !callResponse.value) {
+    return redirect(`/servers/${serverId}/conversations/${memberId}`);
+  }
+
+  const server = serverResponse.value;
+  const call = callResponse.value;
+
   if (!call.active) {
-    return redirect('/');
+    return redirect(`/servers/${serverId}/conversations/${memberId}`);
   }
 
   const currentMember =

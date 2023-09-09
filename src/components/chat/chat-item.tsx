@@ -16,6 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import {
+  Fragment,
   ReactNode,
   experimental_useOptimistic,
   useEffect,
@@ -30,7 +31,7 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { useModalStore } from '@/hooks/use-modal-store';
+import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
 import { cn } from '@/lib/utils';
 import { Member, MemberRole, Profile } from '@prisma/client';
 
@@ -338,11 +339,14 @@ export function ChatItem({
             <ActionTooltip label='Delete'>
               <Trash
                 onClick={() =>
-                  onOpen('deleteMessage', {
-                    apiUrl: `${socketUrl}/${id}`,
-                    query: socketQuery,
-                    messageId: id,
-                    deleteOptimisticMessage,
+                  onOpen({
+                    type: ModalType.DELETE_MESSAGE,
+                    data: {
+                      apiUrl: `${socketUrl}/${id}`,
+                      query: socketQuery,
+                      messageId: id,
+                      deleteOptimisticMessage,
+                    },
                   })
                 }
                 className='cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition'

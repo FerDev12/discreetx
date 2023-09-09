@@ -5,7 +5,7 @@ import { Channel, ChannelType, MemberRole, Server } from '@prisma/client';
 import { Edit, Hash, Lock, LucideIcon, Mic, Trash, Video } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { ActionTooltip } from '../action-tooltip';
-import { ModalType, useModalStore } from '@/hooks/use-modal-store';
+import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
 import { MouseEvent } from 'react';
 
 type ServerChannelProps = {
@@ -31,9 +31,12 @@ export function ServerChannel({ channel, server, role }: ServerChannelProps) {
     router.push(`/servers/${params?.serverId}/channels/${channel.id}`);
   };
 
-  const onAction = (e: MouseEvent, action: ModalType) => {
+  const onAction = (
+    e: MouseEvent,
+    action: ModalType.EDIT_CHANNEL | ModalType.DELETE_CHANNEL
+  ) => {
     e.stopPropagation();
-    onOpen(action, { channel, server });
+    onOpen({ type: action, data: { server, channel } });
   };
 
   return (
@@ -60,14 +63,14 @@ export function ServerChannel({ channel, server, role }: ServerChannelProps) {
         <div className='ml-auto flex items-center gap-x-2'>
           <ActionTooltip label='Edit'>
             <Edit
-              onClick={(e) => onAction(e, 'editChannel')}
+              onClick={(e) => onAction(e, ModalType.EDIT_CHANNEL)}
               className='hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition'
             />
           </ActionTooltip>
 
           <ActionTooltip label='Delete'>
             <Trash
-              onClick={(e) => onAction(e, 'deleteChannel')}
+              onClick={(e) => onAction(e, ModalType.DELETE_CHANNEL)}
               className='hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition'
             />
           </ActionTooltip>

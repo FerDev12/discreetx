@@ -1,19 +1,25 @@
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
-import { DirectMessage, Message } from '@prisma/client';
+import { Conversation, DirectMessage } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import Cryptr from 'cryptr';
-import { MemberWithProfile } from '@/types';
-import axios from 'axios';
+import { MemberWithSimpleProfile } from '@/types';
+import { UnauthorizedError } from '@/errors/unauthorized-error';
+import { BadRequestError } from '@/errors/bad-request-error';
+import { handleApiError } from '@/lib/api-error-handler';
+import { NotFoundError } from '@/errors/not-found-error';
 
 const MESSAGES_BATCH = 10;
+
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
 
 export async function GET(req: Request) {
   try {
     const profile = await currentProfile();
 
     if (!profile) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const { searchParams } = new URL(req.url);
@@ -22,50 +28,116 @@ export async function GET(req: Request) {
     const conversationId = searchParams.get('conversationId');
 
     if (!conversationId) {
-      return new NextResponse('Conversation Id missing', { status: 400 });
+      throw new BadRequestError('Conversation Id missing');
     }
 
-    let messages: (DirectMessage & { member: MemberWithProfile })[] = [];
+    let conversation:
+      | (Conversation & {
+          directMessages: (DirectMessage & {
+            member: MemberWithSimpleProfile;
+          })[];
+        })
+      | null = null;
 
     if (cursor) {
-      messages = await db.directMessage.findMany({
-        take: MESSAGES_BATCH,
-        skip: 1,
-        cursor: {
-          id: cursor,
-        },
+      conversation = await db.conversation.update({
         where: {
-          conversationId,
+          id: conversationId,
         },
-        include: {
-          member: {
-            include: {
-              profile: true,
+        data: {
+          directMessages: {
+            updateMany: {
+              where: {
+                deleted: {
+                  not: true,
+                },
+                memberId: {
+                  not: '',
+                },
+              },
+              data: {
+                read: true,
+              },
             },
           },
         },
-        orderBy: {
-          createdAt: 'desc',
+        include: {
+          directMessages: {
+            take: MESSAGES_BATCH,
+            skip: 1,
+            cursor: {
+              id: cursor,
+            },
+            include: {
+              member: {
+                include: {
+                  profile: {
+                    select: {
+                      id: true,
+                      name: true,
+                      imageUrl: true,
+                    },
+                  },
+                },
+              },
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
         },
       });
     } else {
-      messages = await db.directMessage.findMany({
-        take: MESSAGES_BATCH,
+      conversation = await db.conversation.update({
         where: {
-          conversationId,
+          id: conversationId,
         },
-        include: {
-          member: {
-            include: {
-              profile: true,
+        data: {
+          directMessages: {
+            updateMany: {
+              where: {
+                deleted: {
+                  not: true,
+                },
+                memberId: {
+                  not: '',
+                },
+              },
+              data: {
+                read: true,
+              },
             },
           },
         },
-        orderBy: {
-          createdAt: 'desc',
+        include: {
+          directMessages: {
+            take: MESSAGES_BATCH,
+            include: {
+              member: {
+                include: {
+                  profile: {
+                    select: {
+                      id: true,
+                      name: true,
+                      imageUrl: true,
+                    },
+                  },
+                },
+              },
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
         },
       });
     }
+
+    if (!conversation) {
+      throw new NotFoundError('Conversation not found');
+    }
+
+    const messages = conversation.directMessages;
 
     const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY ?? '');
 
@@ -91,7 +163,8 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ items: messages, nextCursor });
   } catch (err: any) {
-    console.error('[DIRECT_MESSAGES_GET]', err);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return handleApiError(err, '[DIRECT_MESSAGES_GET]');
+    // console.error('[DIRECT_MESSAGES_GET]', err);
+    // return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

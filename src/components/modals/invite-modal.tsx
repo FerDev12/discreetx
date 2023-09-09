@@ -1,5 +1,7 @@
 'use client';
 
+import axios from 'axios';
+import { useState } from 'react';
 import { Check, Copy, RefreshCw } from 'lucide-react';
 
 import {
@@ -9,23 +11,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
+import {
+  InviteModalData,
+  ModalType,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useOrigin } from '@/hooks/use-origin';
-import { useState } from 'react';
-import axios from 'axios';
 import { cn } from '@/lib/utils';
 
 export default function InviteModal() {
-  const {
-    isOpen,
-    onClose,
-    onOpen,
-    type,
-    data: { server },
-  } = useModalStore();
+  const { isOpen, onClose, onOpen, type, data } = useModalStore();
+  const { server } = data as InviteModalData;
   const origin = useOrigin();
 
   const isModalOpen = isOpen && type === 'invite';
@@ -52,7 +51,7 @@ export default function InviteModal() {
         `/api/servers/${server?.id}/invite-code`
       );
 
-      onOpen('invite', { server: data });
+      onOpen({ type: ModalType.INVITE, data: { server: data } });
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);

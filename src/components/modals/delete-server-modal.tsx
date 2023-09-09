@@ -13,22 +13,21 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { useModalStore } from '@/hooks/use-modal-store';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import {
+  DeleteServerModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 
 export default function DeleteServerModal() {
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { server },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
   const router = useRouter();
   const [value, setValue] = useState('');
   const [namesMatch, setNamesMatch] = useState(false);
+  const { server } = data as DeleteServerModalData;
 
   const {
     handleSubmit,
@@ -42,10 +41,8 @@ export default function DeleteServerModal() {
     try {
       if (!namesMatch) return;
 
-      await axios.delete(`/api/servers/${server?.id}`);
+      await axios.delete(`/api/socket/servers/${server?.id}`);
       onClose();
-      router.refresh();
-      router.push('/');
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);

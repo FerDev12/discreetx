@@ -1,6 +1,6 @@
 'use client';
 
-import { useConversationStore } from '@/hooks/use-conversation-store';
+import { useConversationStore } from '@/hooks/stores/use-conversation-store';
 
 export function ChatIsTyping() {
   const { isTyping } = useConversationStore();

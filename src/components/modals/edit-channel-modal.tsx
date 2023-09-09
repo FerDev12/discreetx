@@ -24,7 +24,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useModalStore } from '@/hooks/use-modal-store';
+import {
+  EditChannelModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 import { ChannelType, Server } from '@prisma/client';
 import {
   Select,
@@ -32,7 +35,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from '@/components/ui/select';
 import { useEffect } from 'react';
 
 const formSchema = z.object({
@@ -45,14 +48,10 @@ const formSchema = z.object({
   type: z.nativeEnum(ChannelType),
 });
 
-export default function CreateChannelModal() {
+export default function EditChannelModal() {
   const router = useRouter();
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { channel, server },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
+  const { channel, server } = data as EditChannelModalData;
 
   useEffect(() => {
     (document.getElementById('name-input') as HTMLInputElement)?.focus();
@@ -92,12 +91,11 @@ export default function CreateChannelModal() {
       });
 
       const { data } = await axios.patch<Server>(
-        `/api/channels/${channel?.id}?${query}`,
+        `/api/socket/channels/${channel?.id}?${query}`,
         values
       );
 
       form.reset();
-      router.refresh();
       router.push(`/servers/${data.id}`);
       onClose();
     } catch (err: unknown) {

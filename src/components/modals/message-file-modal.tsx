@@ -25,7 +25,10 @@ import {
 import FileUpload from '@/components/file-upload';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import { useModalStore } from '@/hooks/use-modal-store';
+import {
+  MessageFileModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 
 const formSchema = z.object({
   fileUrl: z.string().min(1, { message: 'File is required' }),
@@ -33,12 +36,9 @@ const formSchema = z.object({
 
 export default function MessageFileModal() {
   const router = useRouter();
-  const {
-    isOpen,
-    onClose,
-    type,
-    data: { apiUrl, query, channelId, member, addOptimisticMessage },
-  } = useModalStore();
+  const { isOpen, onClose, type, data } = useModalStore();
+  const { apiUrl, query, channelId, member, addOptimisticMessage } =
+    data as MessageFileModalData;
 
   const isModalOpen = isOpen && type === 'messageFile';
 
