@@ -13,7 +13,10 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { DeleteServerModalData, useModalStore } from '@/hooks/use-modal-store';
+import {
+  DeleteServerModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

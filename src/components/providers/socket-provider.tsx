@@ -41,9 +41,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     socketRef.current.on('error', onError);
 
     return () => {
-      socketRef.current?.off('connect', onConnect);
-      socketRef.current?.off('disconnect', onDisconnect);
-      socketRef.current?.off('error', onError);
       socketRef.current?.disconnect();
     };
   }, []);

@@ -18,7 +18,7 @@ import {
   Users,
 } from 'lucide-react';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
-import { ModalType, useModalStore } from '@/hooks/use-modal-store';
+import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
 
 type ServerHeaderProps = {
   server: ServerWithMembersWithProfiles;

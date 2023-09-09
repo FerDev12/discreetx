@@ -27,7 +27,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import FileUpload from '@/components/file-upload';
-import { EditServerModalData, useModalStore } from '@/hooks/use-modal-store';
+import {
+  EditServerModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 import { Server } from '@prisma/client';
 
 const formSchema = z.object({

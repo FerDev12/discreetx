@@ -14,8 +14,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { CreateCallModalData, useModalStore } from '@/hooks/use-modal-store';
-import { useConversationStore } from '@/hooks/use-conversation-store';
+import {
+  CreateCallModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
+import { useConversationStore } from '@/hooks/stores/use-conversation-store';
 import { CallType } from '@prisma/client';
 
 export default function CreateCallModal() {

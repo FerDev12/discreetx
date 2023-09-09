@@ -24,7 +24,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { EditChannelModalData, useModalStore } from '@/hooks/use-modal-store';
+import {
+  EditChannelModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 import { ChannelType, Server } from '@prisma/client';
 import {
   Select,

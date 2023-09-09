@@ -25,7 +25,10 @@ import {
 import FileUpload from '@/components/file-upload';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import { MessageFileModalData, useModalStore } from '@/hooks/use-modal-store';
+import {
+  MessageFileModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 
 const formSchema = z.object({
   fileUrl: z.string().min(1, { message: 'File is required' }),

@@ -12,9 +12,9 @@ import DeleteChannelModal from '@/components/modals/delete-channel-modal';
 import EditChannelModal from '@/components/modals/edit-channel-modal';
 import MessageFileModal from '@/components/modals/message-file-modal';
 import DeleteMessageModal from '@/components/modals/delete-message-modal';
-import CreateCallModal from '../modals/create-call-modal';
-import AnswerCallModal from '../modals/answer-call-mdoal';
-import CallEndedModal from '../modals/call-ended-modal';
+import CreateCallModal from '@/components/modals/create-call-modal';
+import AnswerCallModal from '@/components/modals/answer-call-mdoal';
+import CallEndedModal from '@/components/modals/call-ended-modal';
 
 export function ModalProvider() {
   const [isMounted, setIsMounted] = useState(false);

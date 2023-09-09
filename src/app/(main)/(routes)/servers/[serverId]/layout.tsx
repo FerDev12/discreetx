@@ -30,13 +30,8 @@ export default async function ServerIdLayout({
         },
       },
     },
-    include: {
-      members: {
-        include: {
-          profile: true,
-        },
-      },
-      channels: true,
+    select: {
+      id: true,
     },
   });
 

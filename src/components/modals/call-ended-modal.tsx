@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import {
   CallEndedAlertModalData,
   useModalStore,
-} from '@/hooks/use-modal-store';
+} from '@/hooks/stores/use-modal-store';
 
 export default function CallEndedModal() {
   const { isOpen, onClose, type, data } = useModalStore();

@@ -11,7 +11,7 @@ import {
   ManageMembersModalData,
   ModalType,
   useModalStore,
-} from '@/hooks/use-modal-store';
+} from '@/hooks/stores/use-modal-store';
 import { ServerWithMembersWithProfiles } from '@/types';
 import { ScrollArea } from '../ui/scroll-area';
 import { UserAvatar } from '../user-avatar';

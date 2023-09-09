@@ -31,7 +31,7 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { ModalType, useModalStore } from '@/hooks/use-modal-store';
+import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
 import { cn } from '@/lib/utils';
 import { Member, MemberRole, Profile } from '@prisma/client';
 

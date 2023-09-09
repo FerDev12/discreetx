@@ -29,7 +29,7 @@ import {
   CreateChannelModalData,
   ModalType,
   useModalStore,
-} from '@/hooks/use-modal-store';
+} from '@/hooks/stores/use-modal-store';
 import { Channel, ChannelType, Server } from '@prisma/client';
 import {
   Select,

@@ -1,5 +1,5 @@
 'use client';
-import { useServerSocket } from '@/hooks/use-server-socket';
+import { useServerSocket } from '@/hooks/sockets/use-server-socket';
 
 type ServerSocketProps = {
   serverId: string;

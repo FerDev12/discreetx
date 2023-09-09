@@ -3,8 +3,8 @@
 import { Phone, PhoneOff } from 'lucide-react';
 import { ActionTooltip } from '../action-tooltip';
 import { useParams } from 'next/navigation';
-import { useConversationStore } from '@/hooks/use-conversation-store';
-import { ModalType, useModalStore } from '@/hooks/use-modal-store';
+import { useConversationStore } from '@/hooks/stores/use-conversation-store';
+import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
 import { CallType } from '@prisma/client';
 import { MemberWithProfile } from '@/types';
 import axios from 'axios';

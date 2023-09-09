@@ -11,7 +11,7 @@ import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { EmojiPicker } from '@/components/emoji-picker';
-import { ModalType, useModalStore } from '@/hooks/use-modal-store';
+import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
 import { ActionTooltip } from '@/components/action-tooltip';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { Member } from '@prisma/client';

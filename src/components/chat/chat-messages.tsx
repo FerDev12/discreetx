@@ -9,8 +9,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatInput } from './chat-input';
 import { ChatItem } from './chat-item';
 import { ChatWelcome } from './chat-welcome';
-import { useChatQuery } from '@/hooks/use-chat-query';
-import { useChatSocket } from '@/hooks/use-chat-socket';
+import { useChatQuery } from '@/hooks/queries/use-chat-query';
+import { useChatSocket } from '@/hooks/sockets/use-chat-socket';
 import { useChatScroll } from '@/hooks/use-chat-scroll';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 
@@ -18,7 +18,6 @@ const DATE_FORMAT = 'd MMM yyyy, HH:mm';
 
 type ChatMessagesProps = {
   name: string;
-  profile: Profile;
   currentMember: MemberWithProfile;
   chatId: string;
   paramValue: string;

@@ -13,8 +13,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useConversationStore } from '@/hooks/use-conversation-store';
-import { AnswerCallModalData, useModalStore } from '@/hooks/use-modal-store';
+import { useConversationStore } from '@/hooks/stores/use-conversation-store';
+import {
+  AnswerCallModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 
 export default function AnswerCallModal() {
   const { isOpen, onClose, type, data } = useModalStore();

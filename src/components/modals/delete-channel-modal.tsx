@@ -1,5 +1,6 @@
+'use client';
+
 import { useForm } from 'react-hook-form';
-('use client');
 
 import { useState } from 'react';
 import axios from 'axios';
@@ -14,7 +15,10 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { DeleteChannelModalData, useModalStore } from '@/hooks/use-modal-store';
+import {
+  DeleteChannelModalData,
+  useModalStore,
+} from '@/hooks/stores/use-modal-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

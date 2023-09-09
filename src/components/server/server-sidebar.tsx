@@ -1,13 +1,7 @@
 import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from 'lucide-react';
 import { ReactNode } from 'react';
 
-import {
-  Channel,
-  ChannelType,
-  MemberRole,
-  Profile,
-  Server,
-} from '@prisma/client';
+import { Channel, ChannelType, MemberRole } from '@prisma/client';
 import { ServerHeader } from '@/components/server/server-header';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -16,11 +10,11 @@ import { ServerSection } from '@/components/server/server-section';
 import { ServerChannel } from '@/components/server/server-channel';
 import { ServerMember } from '@/components/server/server-member';
 import { ServerSocket } from './server-socket';
-import { MemberWithProfile } from '@/types';
 import { currentProfile } from '@/lib/current-profile';
 import { redirectToSignIn } from '@clerk/nextjs';
 import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
+import { ServerMembers } from './server-members';
 
 const iconMap = new Map<ChannelType, ReactNode>();
 iconMap.set(ChannelType.TEXT, <Hash className='mr-2 w-4 h-4' />);
@@ -94,6 +88,14 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
   const members = server.members?.filter(
     (member) => member.profileId !== profile.id
   );
+
+  const currentMember = server.members.find(
+    (member) => member.profileId === profile.id
+  );
+
+  if (!currentMember) {
+    return redirect('/');
+  }
 
   const role = server.members?.find(
     (member) => member.profileId === profile.id
@@ -222,9 +224,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
               server={server}
             />
 
-            {members.map((member) => (
-              <ServerMember key={member.id} member={member} server={server} />
-            ))}
+            <ServerMembers member={currentMember} />
           </div>
         )}
       </ScrollArea>

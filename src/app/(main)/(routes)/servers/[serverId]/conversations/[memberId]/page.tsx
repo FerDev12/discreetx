@@ -87,7 +87,6 @@ export default async function MemberIdPage({
 
       <ChatMessages
         type='conversation'
-        profile={profile}
         currentMember={currentMember}
         otherMember={otherMember}
         name={otherMember.profile.name}
