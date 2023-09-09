@@ -3,7 +3,7 @@ import { db } from '@/lib/db';
 import { Conversation, DirectMessage } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import Cryptr from 'cryptr';
-import { MemberWithProfile, MemberWithSimpleProfile } from '@/types';
+import { MemberWithSimpleProfile } from '@/types';
 import { UnauthorizedError } from '@/errors/unauthorized-error';
 import { BadRequestError } from '@/errors/bad-request-error';
 import { handleApiError } from '@/lib/api-error-handler';
@@ -132,48 +132,6 @@ export async function GET(req: Request) {
         },
       });
     }
-
-    // let messages: (DirectMessage & { member: MemberWithProfile })[] = [];
-
-    // if (cursor) {
-    //   messages = await db.directMessage.findMany({
-    //     take: MESSAGES_BATCH,
-    //     skip: 1,
-    //     cursor: {
-    //       id: cursor,
-    //     },
-    //     where: {
-    //       conversationId,
-    //     },
-    //     include: {
-    //       member: {
-    //         include: {
-    //           profile: true,
-    //         },
-    //       },
-    //     },
-    //     orderBy: {
-    //       createdAt: 'desc',
-    //     },
-    //   });
-    // } else {
-    //   messages = await db.directMessage.findMany({
-    //     take: MESSAGES_BATCH,
-    //     where: {
-    //       conversationId,
-    //     },
-    //     include: {
-    //       member: {
-    //         include: {
-    //           profile: true,
-    //         },
-    //       },
-    //     },
-    //     orderBy: {
-    //       createdAt: 'desc',
-    //     },
-    //   });
-    // }
 
     if (!conversation) {
       throw new NotFoundError('Conversation not found');

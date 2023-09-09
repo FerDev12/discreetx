@@ -247,23 +247,6 @@ export function ChatItem({
                     'italic text-zinc-500 dark:text-zinc-400 text-xs mt-1'
                 )}
               >
-                {/* {optimisticContent.split(' ').map((content, i) => (
-                  <Fragment key={i}>
-                    {isLink(content) ? (
-                      <a
-                        href={content}
-                        className='text-indigo-500 text-sm hover:underline'
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        {' '}
-                        {content}
-                      </a>
-                    ) : (
-                      content
-                    )}
-                  </Fragment>
-                ))} */}
                 {isLink(optimisticContent) ? (
                   <a
                     href={optimisticContent}

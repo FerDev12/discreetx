@@ -168,7 +168,11 @@ export function ChatMessages({
               sent={message.sent}
               deleted={message.deleted}
               timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
-              isUpdated={message.updatedAt !== message.createdAt}
+              isUpdated={
+                'edited' in message
+                  ? !!message.edited
+                  : message.updatedAt !== message.createdAt
+              }
               currentMember={currentMember}
               member={message.member as Member & { profile: Profile }}
               socketUrl={socketUrl}

@@ -82,7 +82,8 @@ export function ServerMember({
             <div
               className={cn(
                 'w-2 h-2 rounded-full bg-muted-foreground relative before:w-3 before:h-3 before:border before:rounded-full before:border-muted-foreground before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2',
-                isOnline && 'bg-teal-500  before:border-teal-500',
+                isOnline &&
+                  'bg-teal-500  before:border-teal-500 before:animate-pulse',
                 isIdle && 'bg-yellow-500 before:border-yellow-500'
               )}
             />
