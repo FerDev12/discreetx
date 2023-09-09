@@ -4,15 +4,49 @@ import { ServerMember } from './server-member';
 import { useMembersQuery } from '@/hooks/queries/use-members-query';
 import { MemberWithProfile } from '@/types';
 import { Loader2 } from 'lucide-react';
+import { useMemo } from 'react';
 
-export function ServerMembers({ member }: { member: MemberWithProfile }) {
+export function ServerMembers({
+  currentMember,
+}: {
+  currentMember: MemberWithProfile;
+}) {
   const {
-    data: members,
+    data: server,
     isLoading,
     isError,
   } = useMembersQuery({
-    member,
+    member: currentMember,
   });
+
+  const members = useMemo(() => {
+    if (!server) return null;
+
+    return server.members.map((member) => {
+      if (member.id === currentMember.id) {
+        return (
+          <ServerMember
+            key={member.id}
+            currentMember={currentMember}
+            member={member}
+          />
+        );
+      }
+
+      const badgeCount = server.conversations.find(
+        (c) => c.memberOneId === member.id
+      )?.directMessages.length;
+
+      return (
+        <ServerMember
+          key={member.id}
+          currentMember={currentMember}
+          member={member}
+          badgeCount={badgeCount}
+        />
+      );
+    });
+  }, [currentMember, server]);
 
   if (isError) {
     return null;
@@ -26,11 +60,5 @@ export function ServerMembers({ member }: { member: MemberWithProfile }) {
     );
   }
 
-  return (
-    <>
-      {members?.map((member) => (
-        <ServerMember key={member.id} member={member} />
-      ))}
-    </>
-  );
+  return <>{members}</>;
 }

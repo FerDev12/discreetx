@@ -59,7 +59,7 @@ export default async function MemberIdPage({
   );
 
   if (!conversation) {
-    return redirect(`/server/${serverId}`);
+    return redirect(`/servers/${serverId}`);
   }
 
   const { memberOne, memberTwo } = conversation;

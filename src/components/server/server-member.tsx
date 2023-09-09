@@ -12,10 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../ui/tooltip';
-
-type ServerMemberProps = {
-  member: Member & { profile: { id: string; name: string; imageUrl: string } };
-};
+import { MemberWithSimpleProfile } from '@/types';
 
 const roleIconMap = new Map<MemberRole, ReactNode>();
 roleIconMap.set(MemberRole.GUEST, null);
@@ -28,20 +25,29 @@ roleIconMap.set(
   <ShieldAlert className='h-4 w-4 ml-2 text-rose-500' />
 );
 
-export function ServerMember({ member }: ServerMemberProps) {
+export function ServerMember({
+  member,
+  badgeCount,
+  currentMember,
+}: {
+  currentMember: MemberWithSimpleProfile;
+  member: MemberWithSimpleProfile;
+  badgeCount?: number;
+}) {
   const params = useParams();
   const router = useRouter();
 
   const icon = roleIconMap.get(member.role);
 
-  const onClick = () => {
-    router.push(`/servers/${member.serverId}/conversations/${member.id}`);
-  };
-
   const date = Date.now();
   const updatedAt = new Date(member.updatedAt).getTime();
   const isOnline = date - updatedAt < 60 * 1000;
   const isIdle = !isOnline && date - updatedAt < 60 * 5000;
+
+  const onClick = () => {
+    if (member.profileId === currentMember.profileId) return;
+    router.push(`/servers/${member.serverId}/conversations/${member.id}`);
+  };
 
   return (
     <button
@@ -55,6 +61,7 @@ export function ServerMember({ member }: ServerMemberProps) {
         <UserAvatar
           src={member.profile.imageUrl}
           className='w-8 h-8 md:w-8 md:h-8'
+          badgeCount={badgeCount}
         />
         <p
           className={cn(

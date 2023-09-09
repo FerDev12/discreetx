@@ -8,7 +8,6 @@ import { Separator } from '@/components/ui/separator';
 import { ServerSearch } from '@/components/server/server-search';
 import { ServerSection } from '@/components/server/server-section';
 import { ServerChannel } from '@/components/server/server-channel';
-import { ServerMember } from '@/components/server/server-member';
 import { ServerSocket } from './server-socket';
 import { currentProfile } from '@/lib/current-profile';
 import { redirectToSignIn } from '@clerk/nextjs';
@@ -224,7 +223,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
               server={server}
             />
 
-            <ServerMembers member={currentMember} />
+            <ServerMembers currentMember={currentMember} />
           </div>
         )}
       </ScrollArea>

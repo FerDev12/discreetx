@@ -1,11 +1,15 @@
-import { Member } from '@prisma/client';
+import {
+  MemberWithSimpleProfile,
+  ServerWithMembersWithConversations,
+} from '@/types';
+import { Member, Server } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
 
-type MemberWithSimpleProfile = Member & {
-  profile: { id: string; name: string; imageUrl: string };
-};
-
-export function useMembersQuery({ member }: { member: Member }) {
+export function useMembersQuery({
+  member,
+}: {
+  member: MemberWithSimpleProfile;
+}) {
   const fetchMembers = async () => {
     const query = new URLSearchParams({
       memberId: member.id,
@@ -16,11 +20,12 @@ export function useMembersQuery({ member }: { member: Member }) {
     return await res.json();
   };
 
-  const { data, isLoading, isError } = useQuery<MemberWithSimpleProfile[]>({
-    queryKey: [`server:${member.serverId}:members`],
-    queryFn: fetchMembers,
-    refetchInterval: 1000 * 60,
-  });
+  const { data, isLoading, isError } =
+    useQuery<ServerWithMembersWithConversations>({
+      queryKey: [`server:${member.serverId}:members`],
+      queryFn: fetchMembers,
+      refetchInterval: 1000 * 60,
+    });
 
   return {
     data,

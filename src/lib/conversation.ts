@@ -81,6 +81,7 @@ export const createNewConversation = async (
       },
     });
   } catch (err: any) {
+    console.error('[CREATE_CONVERSATION]', err);
     return null;
   }
 };
