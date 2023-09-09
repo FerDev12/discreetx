@@ -2,7 +2,6 @@
 
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarImage } from './ui/avatar';
-import { Badge } from './ui/badge';
 
 type UserAvatarProps = {
   src?: string;
@@ -14,7 +13,7 @@ export function UserAvatar({ src, className, badgeCount }: UserAvatarProps) {
   return (
     <div className='relative'>
       {badgeCount !== undefined && (
-        <span className='w-4 h-4 rounded-full absolute top-0 right-0 text-xs font-medium bg-rose-500 '>
+        <span className='w-4 h-4 rounded-full absolute -top-1 -right-1 text-[10px] font-semibold bg-rose-500 z-10 text-rose-50'>
           {badgeCount}
         </span>
       )}

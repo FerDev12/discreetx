@@ -4,6 +4,7 @@ import { ServerMember } from './server-member';
 import { useMembersQuery } from '@/hooks/queries/use-members-query';
 import { MemberWithProfile } from '@/types';
 import { Loader2 } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 
 export function ServerMembers({
@@ -18,6 +19,7 @@ export function ServerMembers({
   } = useMembersQuery({
     member: currentMember,
   });
+  const { memberId } = useParams();
 
   const members = useMemo(() => {
     if (!server) return null;
@@ -32,21 +34,41 @@ export function ServerMembers({
           />
         );
       }
+      console.log('Hello');
 
-      const badgeCount = server.conversations.find(
-        (c) => c.memberOneId === member.id
-      )?.directMessages.length;
+      const badgeCount = server.conversations
+        .find((convo) => {
+          return (
+            (convo.memberOneId === member.id ||
+              convo.memberOneId === currentMember.id) &&
+            (convo.memberTwoId === member.id ||
+              convo.memberTwoId === currentMember.id)
+          );
+        })
+        ?.directMessages.filter(
+          (message) => message.memberId !== currentMember.id
+        )?.length;
+
+      if (memberId && memberId === member.id) {
+        return (
+          <ServerMember
+            key={member.id}
+            currentMember={currentMember}
+            member={member}
+          />
+        );
+      }
 
       return (
         <ServerMember
           key={member.id}
           currentMember={currentMember}
           member={member}
-          badgeCount={badgeCount}
+          badgeCount={badgeCount === 0 ? undefined : badgeCount}
         />
       );
     });
-  }, [currentMember, server]);
+  }, [currentMember, server, memberId]);
 
   if (isError) {
     return null;

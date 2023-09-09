@@ -1,5 +1,4 @@
 import { useSocket } from '@/components/providers/socket-provider';
-import { MemberWithSimpleProfile } from '@/types';
 import { Channel, Member, Server } from '@prisma/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
@@ -7,9 +6,10 @@ import { useEffect } from 'react';
 
 type UseServerSocketProps = {
   serverId: string;
+  profileId: string;
 };
 
-export function useServerSocket({ serverId }: UseServerSocketProps) {
+export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
   const { socket } = useSocket();
   const router = useRouter();
   const params = useParams();
@@ -24,6 +24,7 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
   const memberAddedKey = `server:${serverId}:member:added`;
   const memberUpdatedKey = `server:${serverId}:member:updated`;
   const memberDeletedKey = `server:${serverId}:member:deleted `;
+  const notificationsKey = `server:${serverId}:notifications:${profileId}`;
 
   useEffect(() => {
     if (!socket) return;
@@ -39,44 +40,21 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
     };
 
     const onChannelCreated = (channel?: Channel) => {
-      if (!channel) {
-        return router.refresh();
-      }
-
-      queryClient.setQueryData(
-        [`server:${serverId}:channels`],
-        (oldData: unknown) => {
-          if (Array.isArray(oldData)) {
-            oldData.push(channel);
-            return oldData;
-          } else {
-            router.refresh();
-          }
-        }
-      );
+      queryClient.refetchQueries({
+        queryKey: [`server:${serverId}:channels`],
+      });
     };
-    const onChannelUpdated = (channel?: Channel) => {
-      router.refresh();
+    const onChannelUpdated = () => {
+      queryClient.refetchQueries({
+        queryKey: [`server:${serverId}:channels`],
+      });
     };
 
     const onChannelDeleted = (channelId: string) => {
       if ((params.channelId ?? '') === channelId) {
         router.push(`/servers/${serverId}`);
       } else {
-        queryClient.setQueryData(
-          [`server:${serverId}:channels`],
-          (oldData: unknown) => {
-            console.log(oldData);
-            if (Array.isArray(oldData)) {
-              return (
-                oldData?.filter((channel: any) => channel.id !== channelId) ??
-                router.refresh()
-              );
-            } else {
-              router.refresh();
-            }
-          }
-        );
+        queryClient.refetchQueries([`server:${serverId}:channels`]);
       }
     };
 
@@ -85,35 +63,31 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
         return router.refresh();
       }
 
-      queryClient.setQueryData(
-        [`server:${member.serverId}:members`],
-        (oldData: unknown) => {
-          console.log(oldData);
-          router.refresh();
-        }
-      );
+      queryClient.refetchQueries([`server:${serverId}:channels`]);
     };
 
     const onMemberUpdated = (member?: Member) => {
       if (!member) {
         return router.refresh();
       }
-
-      queryClient.setQueryData(
-        [`server:${member?.serverId}:members`],
-        (oldData: unknown) => {
-          console.log(oldData);
-          router.refresh();
-        }
-      );
+      queryClient.refetchQueries([`server:${serverId}:channels`]);
     };
 
     const onMemberDeleted = (memberId?: string) => {
       if (params.memberId && params.memberId === memberId) {
         router.push(`/servers/${serverId}`);
       } else {
-        router.refresh();
+        queryClient.refetchQueries([`server:${serverId}:members`]);
       }
+    };
+
+    const onNotification = () => {
+      queryClient.refetchQueries({
+        queryKey: [`server:${serverId}:channels`],
+      });
+      queryClient.refetchQueries({
+        queryKey: [`server:${serverId}:members`],
+      });
     };
 
     socket.on(serverDeletedKey, onServerDeleted);
@@ -124,6 +98,7 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
     socket.on(memberAddedKey, onMemberAdded);
     socket.on(memberUpdatedKey, onMemberUpdated);
     socket.on(memberDeletedKey, onMemberDeleted);
+    socket.on(notificationsKey, onNotification);
 
     return () => {
       socket.off(serverDeletedKey, onServerDeleted);
@@ -134,6 +109,7 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
       socket.off(memberAddedKey, onMemberAdded);
       socket.off(memberUpdatedKey, onMemberUpdated);
       socket.off(memberDeletedKey, onMemberDeleted);
+      socket.off(notificationsKey, onNotification);
     };
   }, [
     router,
@@ -149,5 +125,6 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
     memberAddedKey,
     memberUpdatedKey,
     memberDeletedKey,
+    notificationsKey,
   ]);
 }

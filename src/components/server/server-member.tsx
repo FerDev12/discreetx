@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from '../ui/tooltip';
 import { MemberWithSimpleProfile } from '@/types';
+import { useQueryClient } from '@tanstack/react-query';
 
 const roleIconMap = new Map<MemberRole, ReactNode>();
 roleIconMap.set(MemberRole.GUEST, null);

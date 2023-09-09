@@ -13,7 +13,7 @@ import {
 export type ServerWithMembersWithConversations = Server & {
   members: MemberWithSimpleProfile[];
   conversations: (Conversation & {
-    directMessages: (DirectMessage & { member: MemberWithSimpleProfile })[];
+    directMessages: { memberId: string }[];
   })[];
 };
 

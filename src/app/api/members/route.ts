@@ -4,18 +4,14 @@ import { ValidationError } from '@/errors/validation-error';
 import { handleApiError } from '@/lib/api-error-handler';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
-import {
-  MemberWithSimpleProfile,
-  ServerWithMembersWithConversations,
-} from '@/types';
-import { Conversation, DirectMessage, Member, Server } from '@prisma/client';
+import { ServerWithMembersWithConversations } from '@/types';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 
-const serverIdSchema = z.string().uuid().nonempty();
+const idSchema = z.string().uuid().nonempty();
 
 export async function GET(req: Request) {
   try {
@@ -27,15 +23,21 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
 
-    const serverIdResponse = serverIdSchema.safeParse(
-      searchParams.get('serverId')
-    );
+    const serverIdResponse = idSchema.safeParse(searchParams.get('serverId'));
 
     if (!serverIdResponse.success) {
       throw new ValidationError(serverIdResponse.error.errors);
     }
 
     const serverId = serverIdResponse.data;
+
+    const memberIdResponse = idSchema.safeParse(searchParams.get('memberId'));
+
+    if (!memberIdResponse.success) {
+      throw new ValidationError(memberIdResponse.error.errors);
+    }
+
+    const memberId = serverIdResponse.data;
 
     const server = await db.server.update({
       where: {
@@ -62,34 +64,17 @@ export async function GET(req: Request) {
         conversations: {
           where: {
             OR: [
-              {
-                memberOne: { profileId: profile.id },
-              },
+              { memberOne: { profileId: profile.id } },
               { memberTwo: { profileId: profile.id } },
             ],
           },
           include: {
             directMessages: {
               where: {
-                member: {
-                  profileId: {
-                    not: profile.id,
-                  },
-                },
                 read: false,
               },
-              include: {
-                member: {
-                  include: {
-                    profile: {
-                      select: {
-                        id: true,
-                        name: true,
-                        imageUrl: true,
-                      },
-                    },
-                  },
-                },
+              select: {
+                memberId: true,
               },
             },
           },
