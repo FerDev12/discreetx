@@ -1,4 +1,6 @@
 'use client';
+
+import { useNotificationsSocket } from '@/hooks/sockets/use-notifications-socket';
 import { useServerSocket } from '@/hooks/sockets/use-server-socket';
 
 type ServerSocketProps = {
@@ -7,6 +9,7 @@ type ServerSocketProps = {
 };
 
 export function ServerSocket({ serverId, profileId }: ServerSocketProps) {
-  useServerSocket({ serverId, profileId });
+  useServerSocket({ serverId });
+  useNotificationsSocket({ serverId, profileId });
   return <></>;
 }

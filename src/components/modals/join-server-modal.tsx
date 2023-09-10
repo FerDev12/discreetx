@@ -13,7 +13,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Member, Server } from '@prisma/client';
-import { ServerIcon } from 'lucide-react';
+import { Loader2, ServerIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
@@ -23,6 +23,7 @@ export function JoinServerModal({
   server: Server & { members: Member[] };
 }) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => setIsMounted(true), []);
@@ -32,7 +33,10 @@ export function JoinServerModal({
   }
 
   const onJoin = async () => {
+    if (isLoading) return;
+
     try {
+      setIsLoading(true);
       const query = new URLSearchParams({
         serverId: server.id,
         inviteCode: server.inviteCode,
@@ -47,6 +51,8 @@ export function JoinServerModal({
       } else {
         console.log(err);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -57,7 +63,7 @@ export function JoinServerModal({
         hideCloseButton
       >
         <DialogHeader className='pt-8 px-6 items-center'>
-          <Avatar>
+          <Avatar className='h-12 w-12 mb-4'>
             <AvatarImage src={server.imageUrl} alt='Server image' />
             <AvatarFallback>
               <ServerIcon />
@@ -78,8 +84,16 @@ export function JoinServerModal({
         </DialogHeader>
 
         <DialogFooter>
-          <Button variant='primary' onClick={onJoin}>
-            Join Server
+          <Button
+            variant='ghost'
+            disabled={isLoading}
+            onClick={() => router.push(`/`)}
+          >
+            No
+          </Button>
+          <Button variant='primary' disabled={isLoading} onClick={onJoin}>
+            {!isLoading ? 'Join Server' : 'Joining...'}
+            {isLoading && <Loader2 className='w-4 h-4 animate-spin ml-2' />}
           </Button>
         </DialogFooter>
       </DialogContent>

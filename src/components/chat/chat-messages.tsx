@@ -40,6 +40,7 @@ type ChatMessagesProps = {
       socketUrl: string;
       socketQuery: {
         conversationId: string;
+        memberId: string;
       };
     }
 );

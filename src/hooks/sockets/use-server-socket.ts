@@ -1,15 +1,14 @@
 import { useSocket } from '@/components/providers/socket-provider';
-import { Channel, Member, Server } from '@prisma/client';
+import { Channel, Member } from '@prisma/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 type UseServerSocketProps = {
   serverId: string;
-  profileId: string;
 };
 
-export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
+export function useServerSocket({ serverId }: UseServerSocketProps) {
   const { socket } = useSocket();
   const router = useRouter();
   const params = useParams();
@@ -24,7 +23,6 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
   const memberAddedKey = `server:${serverId}:member:added`;
   const memberUpdatedKey = `server:${serverId}:member:updated`;
   const memberDeletedKey = `server:${serverId}:member:deleted `;
-  const notificationsKey = `server:${serverId}:notifications:${profileId}`;
 
   useEffect(() => {
     if (!socket) return;
@@ -81,15 +79,6 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
       }
     };
 
-    const onNotification = () => {
-      queryClient.refetchQueries({
-        queryKey: [`server:${serverId}:channels`],
-      });
-      queryClient.refetchQueries({
-        queryKey: [`server:${serverId}:members`],
-      });
-    };
-
     socket.on(serverDeletedKey, onServerDeleted);
     socket.on(serverLeaveKey, onServerLeave);
     socket.on(channelCreatedKey, onChannelCreated);
@@ -98,7 +87,6 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
     socket.on(memberAddedKey, onMemberAdded);
     socket.on(memberUpdatedKey, onMemberUpdated);
     socket.on(memberDeletedKey, onMemberDeleted);
-    socket.on(notificationsKey, onNotification);
 
     return () => {
       socket.off(serverDeletedKey, onServerDeleted);
@@ -109,7 +97,6 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
       socket.off(memberAddedKey, onMemberAdded);
       socket.off(memberUpdatedKey, onMemberUpdated);
       socket.off(memberDeletedKey, onMemberDeleted);
-      socket.off(notificationsKey, onNotification);
     };
   }, [
     router,
@@ -125,6 +112,5 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
     memberAddedKey,
     memberUpdatedKey,
     memberDeletedKey,
-    notificationsKey,
   ]);
 }
