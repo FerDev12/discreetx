@@ -16,7 +16,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import {
-  Fragment,
   ReactNode,
   experimental_useOptimistic,
   useEffect,
@@ -153,7 +152,11 @@ export function ChatItem({
   const canDeleteMessage = !deleted && (isAdmin || isModerator || isOwner);
   const canEditMessage = !deleted && isOwner && !fileUrl;
   const isPDF = fileType === 'pdf' && fileUrl;
-  const isImage = fileType !== 'pdf' && fileUrl;
+  const isImage =
+    ['jpg', 'jpeg', 'png', 'webd'].includes(fileType ?? '') && fileUrl;
+  const isVideo =
+    ['mov', 'mp4', 'flv', 'wmv', 'ogg', 'webm'].includes(fileType ?? '') &&
+    fileUrl;
 
   return (
     <div>
@@ -237,6 +240,17 @@ export function ChatItem({
                   </a>
                 </div>
               </a>
+            )}
+
+            {isVideo && (
+              <video
+                controls
+                autoPlay
+                muted
+                className='z-10 hover:border-red-500 hover:border-2 rounded-sm aspect-video w-80 h-48 '
+              >
+                <source src={fileUrl} type={`video/${fileType}`}></source>
+              </video>
             )}
 
             {!fileUrl && !isEditing && (

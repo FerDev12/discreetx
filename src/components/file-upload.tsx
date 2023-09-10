@@ -4,10 +4,11 @@ import '@uploadthing/react/styles.css';
 
 import { FileIcon, X } from 'lucide-react';
 import Image from 'next/image';
-import { UploadDropzone } from '@/lib/uploadthing';
+import { UploadButton } from '@/lib/uploadthing';
 import { Button } from './ui/button';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useToast } from './ui/use-toast';
 
 type FileUploadProps = {
   endpoint: 'messageFile' | 'serverImage';
@@ -22,6 +23,7 @@ export default function FileUpload({
 }: FileUploadProps) {
   const fileType = value?.split('.').at(-1);
   const [fileKey, setFileKey] = useState('');
+  const { toast } = useToast();
 
   const onDeleteImage = async () => {
     try {
@@ -36,9 +38,21 @@ export default function FileUpload({
     }
   };
 
+  useEffect(() => {
+    console.log(fileType);
+  }, [fileType]);
+
+  if (value && fileType === 'mp4') {
+    return (
+      <video controls className='h-40 w-72 rounded-sm'>
+        <source src={value} type={`video/${fileType}`}></source>
+      </video>
+    );
+  }
+
   if (value && fileType !== 'pdf') {
     return (
-      <div className='relative h-20 w-20'>
+      <div className='relative h-40 w-40'>
         <Image fill src={value} alt='Upload' className='rounded-full' />
         <Button
           size='icon'
@@ -79,13 +93,20 @@ export default function FileUpload({
   }
 
   return (
-    <UploadDropzone
+    <UploadButton
       endpoint={endpoint}
       onClientUploadComplete={(res) => {
-        const file = res?.[0];
+        const file = res?.at(0);
 
         setFileKey(file?.key ?? '');
         onChange(file?.url);
+      }}
+      onUploadError={(error) => {
+        console.error(error);
+        toast({
+          title: 'File Upload Failed',
+          variant: 'destructive',
+        });
       }}
     />
   );

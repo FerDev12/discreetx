@@ -34,7 +34,6 @@ export function ServerMembers({
           />
         );
       }
-      console.log('Hello');
 
       const badgeCount = server.conversations
         .find((convo) => {
