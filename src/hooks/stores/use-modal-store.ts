@@ -93,26 +93,8 @@ export interface MessageFileModalData {
   query: Record<string, string>;
   channelId: string;
   member: MemberWithProfile;
-  addOptimisticMessage: (message: MessageWithMemberWithProfile) => void;
+  addOptimisticMessages: (messages: MessageWithMemberWithProfile[]) => void;
 }
-
-type ModalData = {
-  server?: Server;
-  channel?: Channel;
-  channelType?: ChannelType;
-  apiUrl?: string;
-  query?: Record<string, any>;
-  messageId?: string;
-  channelId?: string;
-  member?: MemberWithProfile;
-  conversationId?: string;
-  callId?: string;
-  callType?: CallType;
-  name?: string;
-  serverId?: string;
-  addOptimisticMessage?: (message: MessageWithMemberWithProfile) => void;
-  deleteOptimisticMessage?: (messageId: string) => void;
-};
 
 type ModalDataType =
   | { type: null; data: {} }

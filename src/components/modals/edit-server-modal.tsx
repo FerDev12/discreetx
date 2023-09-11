@@ -2,7 +2,6 @@
 
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -35,12 +34,20 @@ import { Server } from '@prisma/client';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
-  imageUrl: z.string().min(1, { message: 'Server image is required' }),
+  files: z
+    .array(
+      z.object({
+        name: z.string(),
+        size: z.number(),
+        url: z.string(),
+        key: z.string(),
+      })
+    )
+    .min(1, { message: 'Server image is required' }),
 });
 
 export default function EditServerModal() {
   const { isOpen, onClose, type, data } = useModalStore();
-  const router = useRouter();
   const { server } = data as EditServerModalData;
 
   const form = useForm({
@@ -48,14 +55,28 @@ export default function EditServerModal() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      imageUrl: '',
+      files: [
+        {
+          name: '',
+          key: '',
+          url: '',
+          size: 0,
+        },
+      ],
     },
   });
 
   useEffect(() => {
     if (server) {
       form.setValue('name', server.name);
-      form.setValue('imageUrl', server.imageUrl);
+      form.setValue('files', [
+        {
+          name: 'temp-name',
+          size: 1234,
+          url: server.imageUrl,
+          key: 'temp-key',
+        },
+      ]);
     }
   }, [server, form]);
 
@@ -69,7 +90,10 @@ export default function EditServerModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch<Server>(`/api/socket/servers/${server?.id}`, values);
+      await axios.patch<Server>(`/api/socket/servers/${server?.id}`, {
+        name: values.name,
+        imageUrl: values.files.at(0)?.url,
+      });
 
       form.reset();
       onClose();
@@ -102,13 +126,13 @@ export default function EditServerModal() {
               <div className='flex items-center justify-center text-center'>
                 <FormField
                   control={form.control}
-                  name='imageUrl'
+                  name='files'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
                         <FileUpload
                           endpoint='serverImage'
-                          value={field.value}
+                          values={field.value}
                           onChange={field.onChange}
                         />
                       </FormControl>

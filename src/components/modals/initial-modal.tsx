@@ -30,7 +30,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
-  imageUrl: z.string().min(1, { message: 'Server image is required' }),
+  files: z
+    .array(
+      z.object({
+        name: z.string(),
+        size: z.number(),
+        url: z.string(),
+        key: z.string(),
+      })
+    )
+    .min(1, { message: 'Server image is required' }),
 });
 
 export default function InitialModal() {
@@ -44,7 +53,7 @@ export default function InitialModal() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      imageUrl: '',
+      files: [],
     },
   });
 
@@ -52,7 +61,10 @@ export default function InitialModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post('/api/servers', values);
+      await axios.post('/api/servers', {
+        name: values.name,
+        imageUrl: values.files.at(0)?.url ?? '',
+      });
 
       form.reset();
       router.refresh();
@@ -93,13 +105,13 @@ export default function InitialModal() {
               <div className='flex items-center justify-center text-center'>
                 <FormField
                   control={form.control}
-                  name='imageUrl'
+                  name='files'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
                         <FileUpload
                           endpoint='serverImage'
-                          value={field.value}
+                          values={field.value}
                           onChange={field.onChange}
                         />
                       </FormControl>

@@ -22,7 +22,7 @@ type ChatInputProps = {
   name: string;
   currentMember: MemberWithProfile;
   chatId: string;
-  addOptimisticMessage: (message: MessageWithMemberWithProfile) => void;
+  addOptimisticMessages: (messages: MessageWithMemberWithProfile[]) => void;
 } & (
   | {
       type: 'channel';
@@ -44,7 +44,7 @@ export function ChatInput({
   type,
   currentMember,
   chatId,
-  addOptimisticMessage,
+  addOptimisticMessages,
 }: ChatInputProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     // @ts-ignore
@@ -86,20 +86,22 @@ export function ChatInput({
       form.setFocus('content');
       const date = new Date();
 
-      addOptimisticMessage({
-        id: uuidv4(),
-        content: values.content,
-        channelId: query.channelId,
-        fileUrl: null,
-        memberId: currentMember.id,
-        member: {
-          ...currentMember,
+      addOptimisticMessages([
+        {
+          id: uuidv4(),
+          content: values.content,
+          channelId: query.channelId,
+          fileUrl: null,
+          memberId: currentMember.id,
+          member: {
+            ...currentMember,
+          },
+          sent: false,
+          deleted: false,
+          updatedAt: date,
+          createdAt: date,
         },
-        sent: false,
-        deleted: false,
-        updatedAt: date,
-        createdAt: date,
-      });
+      ]);
 
       const params = new URLSearchParams({
         ...query,
@@ -154,7 +156,7 @@ export function ChatInput({
                     query,
                     channelId: query.channelId,
                     member: currentMember,
-                    addOptimisticMessage,
+                    addOptimisticMessages,
                   },
                 })
               }

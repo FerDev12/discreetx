@@ -23,7 +23,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import FileUpload from '@/components/file-upload';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import {
   MessageFileModalData,
@@ -31,13 +30,21 @@ import {
 } from '@/hooks/stores/use-modal-store';
 
 const formSchema = z.object({
-  fileUrl: z.string().min(1, { message: 'File is required' }),
+  // fileUrl: z.string().min(1, { message: 'File is required' }),
+  // fileUrls: z.array(z.string().min(1, { message: 'File is required' })),
+  fileUrls: z.array(
+    z.object({
+      name: z.string(),
+      size: z.number(),
+      url: z.string(),
+      key: z.string(),
+    })
+  ),
 });
 
 export default function MessageFileModal() {
-  const router = useRouter();
   const { isOpen, onClose, type, data } = useModalStore();
-  const { apiUrl, query, channelId, member, addOptimisticMessage } =
+  const { apiUrl, query, channelId, member, addOptimisticMessages } =
     data as MessageFileModalData;
 
   const isModalOpen = isOpen && type === 'messageFile';
@@ -46,7 +53,8 @@ export default function MessageFileModal() {
     // @ts-ignore
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fileUrl: '',
+      // fileUrl: '',
+      fileUrls: [],
     },
   });
 
@@ -58,20 +66,37 @@ export default function MessageFileModal() {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (addOptimisticMessage && channelId?.length && member) {
+    if (addOptimisticMessages && channelId?.length && member) {
       const date = new Date();
-      addOptimisticMessage({
-        id: uuidv4(),
-        content: values.fileUrl,
-        fileUrl: values.fileUrl,
-        createdAt: date,
-        updatedAt: date,
-        deleted: false,
-        sent: false,
-        channelId,
-        member,
-        memberId: member.id,
-      });
+
+      addOptimisticMessages(
+        values.fileUrls.map(({ url }) => ({
+          id: uuidv4(),
+          content: url,
+          fileUrl: url,
+          createdAt: date,
+          updatedAt: date,
+          deleted: false,
+          sent: false,
+          channelId,
+          member,
+          memberId: member.id,
+        }))
+      );
+      // addOptimisticMessages([
+      //   {
+      //     id: uuidv4(),
+      //     content: values.fileUrl,
+      //     fileUrl: values.fileUrl,
+      //     createdAt: date,
+      //     updatedAt: date,
+      //     deleted: false,
+      //     sent: false,
+      //     channelId,
+      //     member,
+      //     memberId: member.id,
+      //   },
+      // ]);
     }
 
     handleClose();
@@ -81,12 +106,15 @@ export default function MessageFileModal() {
         ...query,
       });
 
-      await axios.post(`${apiUrl}?${params}`, {
-        ...values,
-        content: values.fileUrl,
-      });
-
-      // router.refresh();
+      await Promise.all(
+        values.fileUrls.map(
+          async ({ url }) =>
+            await axios.post(`${apiUrl}?${params}`, {
+              fileUrl: url,
+              content: url,
+            })
+        )
+      );
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -118,13 +146,13 @@ export default function MessageFileModal() {
               <div className='flex items-center justify-center text-center'>
                 <FormField
                   control={form.control}
-                  name='fileUrl'
+                  name='fileUrls'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
                         <FileUpload
                           endpoint='messageFile'
-                          value={field.value}
+                          values={field.value}
                           onChange={field.onChange}
                         />
                       </FormControl>

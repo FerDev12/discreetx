@@ -243,14 +243,11 @@ export function ChatItem({
             )}
 
             {isVideo && (
-              <video
-                controls
-                autoPlay
-                muted
-                className='z-10 hover:border-red-500 hover:border-2 rounded-sm aspect-video w-80 h-48 '
-              >
-                <source src={fileUrl} type={`video/${fileType}`}></source>
-              </video>
+              <div className='relative z-10 hover:border-red-500 hover:border-2 rounded-sm h-44 w-80 overflow-hidden'>
+                <video controls autoPlay muted className='absolute inset-0'>
+                  <source src={fileUrl} type={`video/${fileType}`}></source>
+                </video>
+              </div>
             )}
 
             {!fileUrl && !isEditing && (

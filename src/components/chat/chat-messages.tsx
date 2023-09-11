@@ -101,8 +101,8 @@ export function ChatMessages({
     count: optimisticMessages.length,
   });
 
-  const addOptimisticMessage = (message: MessageWithMemberWithProfile) =>
-    setOptimisticMessages((state) => [message, ...state]);
+  const addOptimisticMessages = (messages: MessageWithMemberWithProfile[]) =>
+    setOptimisticMessages((state) => [...messages, ...state]);
 
   const deleteOptimisiticMessage = (messageId: string) =>
     setOptimisticMessages((state) => {
@@ -194,7 +194,7 @@ export function ChatMessages({
           currentMember={currentMember}
           apiUrl={socketUrl}
           query={socketQuery}
-          addOptimisticMessage={addOptimisticMessage}
+          addOptimisticMessages={addOptimisticMessages}
         />
       ) : (
         <ChatInput
@@ -205,7 +205,7 @@ export function ChatMessages({
           otherMember={props.otherMember}
           apiUrl={socketUrl}
           query={socketQuery}
-          addOptimisticMessage={addOptimisticMessage}
+          addOptimisticMessages={addOptimisticMessages}
         />
       )}
     </>

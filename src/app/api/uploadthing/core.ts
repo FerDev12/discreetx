@@ -18,7 +18,8 @@ export const ourFileRouter = {
     }),
   messageFile: f({
     image: { maxFileSize: '4MB', maxFileCount: 10 },
-    'video/mp4': { maxFileSize: '32MB', maxFileCount: 1 },
+    'video/mp4': { maxFileSize: '64MB', maxFileCount: 1 },
+    pdf: { maxFileCount: 1, maxFileSize: '4MB' },
   })
     .middleware(handleAuth)
     .onUploadComplete(({ metadata, file }) =>

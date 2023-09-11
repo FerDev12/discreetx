@@ -30,7 +30,16 @@ import { useModalStore } from '@/hooks/stores/use-modal-store';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
-  imageUrl: z.string().min(1, { message: 'Server image is required' }),
+  files: z
+    .array(
+      z.object({
+        name: z.string(),
+        size: z.number(),
+        url: z.string(),
+        key: z.string(),
+      })
+    )
+    .min(1, { message: 'Server image is required' }),
 });
 
 export default function CreateServerModal() {
@@ -42,7 +51,7 @@ export default function CreateServerModal() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      imageUrl: '',
+      files: [],
     },
   });
 
@@ -54,32 +63,12 @@ export default function CreateServerModal() {
     onClose();
   };
 
-  // const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append('name', values.name);
-  //     formData.append('imageUrl', values.imageUrl);
-  //     const server = await createServer(formData);
-
-  //     if (!server) {
-  //       throw new Error('Server not created');
-  //     }
-
-  //     form.reset();
-  //     router.refresh();
-  //     router.push(`/servers/${server.id}`);
-  //     onClose();
-  //   } catch (err: any) {
-  //     console.error(err);
-  //   }
-  // };
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      //   const formData = new FormData();
-      // formData.append('name', values.name);
-      // formData.append('imageUrl', values.imageUrl);
-      // const server = await createServer(formData);
-      const { data: server } = await axios.post(`/api/servers`, values);
+      const { data: server } = await axios.post(`/api/servers`, {
+        name: values.name,
+        imageUrl: values.files.at(0)?.url ?? '',
+      });
 
       if (!server) {
         throw new Error('Server not created');
@@ -118,13 +107,13 @@ export default function CreateServerModal() {
               <div className='flex items-center justify-center text-center'>
                 <FormField
                   control={form.control}
-                  name='imageUrl'
+                  name='files'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
                         <FileUpload
                           endpoint='serverImage'
-                          value={field.value}
+                          values={field.value}
                           onChange={field.onChange}
                         />
                       </FormControl>
