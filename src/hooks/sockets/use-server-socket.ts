@@ -1,18 +1,23 @@
 import { useSocket } from '@/components/providers/socket-provider';
-import { Channel, Member } from '@prisma/client';
+import { Call, Channel, Conversation, Member } from '@prisma/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { ModalType, useModalStore } from '../stores/use-modal-store';
+import { useConversationStore } from '../stores/use-conversation-store';
 
 type UseServerSocketProps = {
   serverId: string;
+  profileId: string;
 };
 
-export function useServerSocket({ serverId }: UseServerSocketProps) {
+export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
   const { socket } = useSocket();
   const router = useRouter();
   const params = useParams();
   const queryClient = useQueryClient();
+  const { activeCall, setActiveCall } = useConversationStore();
+  const { onOpen, onClose, isOpen, type } = useModalStore();
 
   // KEYS
   const serverDeletedKey = `server:${serverId}:deleted`;
@@ -23,6 +28,9 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
   const memberAddedKey = `server:${serverId}:member:added`;
   const memberUpdatedKey = `server:${serverId}:member:updated`;
   const memberDeletedKey = `server:${serverId}:member:deleted `;
+  const answerCallKey = `server:${serverId}:call:${profileId}:answer`;
+  const callEditedKey = `server:${serverId}:call:${profileId}:edited`;
+  const callEndedKey = `server:${serverId}:call:${profileId}:ended`;
 
   useEffect(() => {
     if (!socket) return;
@@ -79,6 +87,72 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
       }
     };
 
+    const onReceiveCall = async ({
+      call,
+      from,
+    }: {
+      call: Call & { conversation: Conversation };
+      from: {
+        id: string;
+        name: string;
+        imageUrl: string;
+      };
+    }) => {
+      if (params.callId?.length > 0 || !!activeCall) {
+        // FIXME DECLINE CALL
+        const query = new URLSearchParams({
+          conversationId: call.conversationId,
+        });
+        fetch(`/api/socket/calls/${call.id}?${query}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            declined: true,
+            answered: false,
+            cancelled: false,
+          }),
+        }).catch((err) => console.error(err));
+        return;
+      }
+
+      onOpen({
+        type: ModalType.ANSWER_CALL,
+        data: {
+          callId: call.id,
+          conversationId: call.conversationId,
+          from,
+          type: 'VIDEO',
+        },
+      });
+    };
+
+    const onCallEdited = (call: Call & { conversation: Conversation }) => {
+      if (call.answered) {
+        onClose();
+        router.push(
+          `/servers/${serverId}/conversations/${call.conversationId}/calls/${call.id}`
+        );
+        return;
+      }
+      if (call.declined || call.cancelled) {
+        setActiveCall(null);
+        if (
+          isOpen &&
+          type &&
+          [ModalType.ANSWER_CALL, ModalType.CREATE_CALL].includes(type)
+        ) {
+          return onClose();
+        }
+      }
+    };
+    const onCallEnded = (call: Call & { conversation: Conversation }) => {
+      if (params?.callId === call.id) {
+        setActiveCall(null);
+        router.push(
+          `/servers/${serverId}/conversations/${call.conversationId}`
+        );
+      }
+    };
+
     socket.on(serverDeletedKey, onServerDeleted);
     socket.on(serverLeaveKey, onServerLeave);
     socket.on(channelCreatedKey, onChannelCreated);
@@ -87,6 +161,9 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
     socket.on(memberAddedKey, onMemberAdded);
     socket.on(memberUpdatedKey, onMemberUpdated);
     socket.on(memberDeletedKey, onMemberDeleted);
+    socket.on(answerCallKey, onReceiveCall);
+    socket.on(callEditedKey, onCallEdited);
+    socket.on(callEndedKey, onCallEnded);
 
     return () => {
       socket.off(serverDeletedKey, onServerDeleted);
@@ -97,12 +174,17 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
       socket.off(memberAddedKey, onMemberAdded);
       socket.off(memberUpdatedKey, onMemberUpdated);
       socket.off(memberDeletedKey, onMemberDeleted);
+      socket.off(answerCallKey, onReceiveCall);
+      socket.off(callEditedKey, onCallEdited);
+      socket.off(callEndedKey, onCallEnded);
     };
   }, [
     router,
     params,
     socket,
     serverId,
+    isOpen,
+    type,
     queryClient,
     serverDeletedKey,
     serverLeaveKey,
@@ -112,5 +194,12 @@ export function useServerSocket({ serverId }: UseServerSocketProps) {
     memberAddedKey,
     memberUpdatedKey,
     memberDeletedKey,
+    answerCallKey,
+    callEditedKey,
+    callEndedKey,
+    activeCall,
+    onOpen,
+    onClose,
+    setActiveCall,
   ]);
 }

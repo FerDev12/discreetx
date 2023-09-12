@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import {
@@ -24,10 +24,10 @@ export default function AnswerCallModal() {
   const [isLoading, setIsLoading] = useState(false);
   const { setActiveCall } = useConversationStore();
   const router = useRouter();
-  const pathname = usePathname();
+  const { serverId } = useParams();
   const {
     conversationId,
-    member,
+    from,
     callId,
     type: callType,
   } = data as AnswerCallModalData;
@@ -81,7 +81,9 @@ export default function AnswerCallModal() {
 
       onClose();
       setActiveCall({ id: call.id, type: call.type });
-      router.push(`${pathname}/calls/${call.id}`);
+      router.push(
+        `/servers/${serverId}/conversations/${conversationId}/calls/${call.id}`
+      );
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -98,18 +100,22 @@ export default function AnswerCallModal() {
       <DialogContent className='dark:bg-zinc-900 border-2 border-indigo-500 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
-            Anser {callType?.toLowerCase()} call from {member?.profile.name}?
+            Anser {callType?.toLowerCase()} call from {from?.name}?
           </DialogTitle>
         </DialogHeader>
 
         <DialogFooter className='py-4'>
-          <Button onClick={onDeclineCall} disabled={isLoading} variant='ghost'>
+          <Button
+            onClick={onDeclineCall}
+            disabled={isLoading}
+            variant='destructive'
+          >
             Decline
           </Button>
-          <Button onClick={onAnswerCall} disabled={isLoading} variant='danger'>
+          <Button onClick={onAnswerCall} disabled={isLoading} variant='primary'>
             {!isLoading ? 'Answer' : 'Answer'}
             {isLoading && (
-              <Loader2 className='w-4 h-4 ml-2 animate-spin text-rose-50' />
+              <Loader2 className='w-4 h-4 ml-2 animate-spin text-teal-50' />
             )}
           </Button>
         </DialogFooter>

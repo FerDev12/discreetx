@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useConversationStore } from '../stores/use-conversation-store';
 import { ModalType, useModalStore } from '../stores/use-modal-store';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { MemberWithProfile } from '@/types';
 
 type ChatSocketProps = {
@@ -13,7 +13,6 @@ type ChatSocketProps = {
   queryKey: string;
   // -------------
   typingKey?: string | null;
-  callKey?: string | null;
 };
 
 type MessageWithMemberWithProfile = Message & {
@@ -27,14 +26,10 @@ export function useChatSocket({
   updateKey,
   queryKey,
   typingKey,
-  callKey,
 }: ChatSocketProps) {
-  const router = useRouter();
   const { socket } = useSocket();
   const queryClient = useQueryClient();
-  const { setIsTyping, setActiveCall } = useConversationStore();
-  const { onOpen, onClose } = useModalStore();
-
+  const { setIsTyping } = useConversationStore();
   useEffect(() => {
     if (!socket) {
       return;
@@ -111,65 +106,4 @@ export function useChatSocket({
       socket.off(typingKey, typingKeyListener);
     };
   }, [typingKey, socket, setIsTyping]);
-
-  useEffect(() => {
-    if (!callKey || !socket) return;
-
-    const socketListener = (
-      call: Call & { conversation: Conversation; member: MemberWithProfile }
-    ) => {
-      if (call.active && !call.ended) {
-        setActiveCall({ id: call.id, type: call.type });
-
-        if (!call.answered) {
-          // Show modal to decline or answer call
-          // return onOpen('answerCall', {
-          //   callId: call.id,
-          //   conversationId: call.conversationId,
-          //   callType: call.type,
-          //   member: call.member,
-          // });
-          return onOpen({
-            type: ModalType.ANSWER_CALL,
-            data: {
-              callId: call.id,
-              conversationId: call.conversationId,
-              type: call.type,
-              member: call.member,
-            },
-          });
-        }
-
-        if (call.answered) {
-          onClose();
-          return router.push(
-            `/servers/${call.conversation.serverId}/conversations/${call.conversationId}/calls/${call.id}`
-          );
-        }
-      }
-
-      if (!call.active && call.ended) {
-        setActiveCall(null);
-
-        if (call.declined) return onClose();
-        if (call.cancelled) return onClose();
-
-        onClose();
-
-        onOpen({
-          type: ModalType.CALL_ENDED,
-          data: {
-            serverId: call.conversation.serverId,
-            conversationId: call.conversationId,
-          },
-        });
-      }
-    };
-
-    socket.on(callKey, socketListener);
-
-    return () => {
-      socket.off(callKey, socketListener);
-    };
-  }, [callKey, socket, onOpen, onClose, setActiveCall, router]);
 }

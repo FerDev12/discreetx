@@ -63,10 +63,6 @@ export function ChatMessages({
     props.type === 'conversation'
       ? `chat:${chatId}:istyping:${props.otherMember.id}`
       : null;
-  const callKey =
-    props.type === 'conversation'
-      ? `chat:${chatId}:call:${props.otherMember.profileId}`
-      : null;
 
   const chatRef = useRef<ElementRef<'div'>>(null);
   const bottomRef = useRef<ElementRef<'div'>>(null);
@@ -77,7 +73,7 @@ export function ChatMessages({
       paramKey,
       paramValue,
     });
-  useChatSocket({ addKey, updateKey, queryKey, typingKey, callKey });
+  useChatSocket({ addKey, updateKey, queryKey, typingKey });
 
   const messages: MessageWithMemberWithProfile[] = useMemo(
     () =>

@@ -70,7 +70,11 @@ export interface AnswerCallModalData {
   callId: string;
   conversationId: string;
   type: CallType;
-  member: MemberWithProfile;
+  from: {
+    id: string;
+    name: string;
+    imageUrl: string;
+  };
 }
 export interface CallEndedAlertModalData {
   serverId: string;
