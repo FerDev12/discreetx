@@ -2,7 +2,8 @@
 
 import { ServerMember } from './server-member';
 import { useMembersQuery } from '@/hooks/queries/use-members-query';
-import { MemberWithProfile } from '@/types';
+import { MemberWithProfile, MemberWithSimpleProfile } from '@/types';
+import { MemberRole } from '@prisma/client';
 import { Loader2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
@@ -24,7 +25,24 @@ export function ServerMembers({
   const members = useMemo(() => {
     if (!server) return null;
 
-    return server.members.map((member) => {
+    const orderedServerMembers = server.members.sort((a, b) => {
+      if (
+        a.role === MemberRole.ADMIN &&
+        (b.role === MemberRole.MODERATOR || b.role === MemberRole.GUEST)
+      ) {
+        return -1;
+      }
+
+      if (a.role === MemberRole.MODERATOR && b.role === MemberRole.GUEST) {
+        return -1;
+      }
+
+      if (a.id === currentMember.id && b.role === MemberRole.GUEST) return -1;
+
+      return 0;
+    });
+
+    return orderedServerMembers.map((member) => {
       if (member.id === currentMember.id) {
         return (
           <ServerMember

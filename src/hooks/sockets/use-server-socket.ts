@@ -17,7 +17,7 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
   const params = useParams();
   const queryClient = useQueryClient();
   const { activeCall, setActiveCall } = useConversationStore();
-  const { onOpen, onClose } = useModalStore();
+  const { onOpen, onClose, isOpen, type } = useModalStore();
 
   // KEYS
   const serverDeletedKey = `server:${serverId}:deleted`;
@@ -127,12 +127,21 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
 
     const onCallEdited = (call: Call & { conversation: Conversation }) => {
       if (call.answered) {
+        onClose();
         router.push(
           `/servers/${serverId}/conversations/${call.conversationId}/calls/${call.id}`
         );
+        return;
       }
       if (call.declined || call.cancelled) {
-        onClose();
+        setActiveCall(null);
+        if (
+          isOpen &&
+          type &&
+          [ModalType.ANSWER_CALL, ModalType.CREATE_CALL].includes(type)
+        ) {
+          return onClose();
+        }
       }
     };
     const onCallEnded = (call: Call & { conversation: Conversation }) => {
@@ -174,6 +183,8 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
     params,
     socket,
     serverId,
+    isOpen,
+    type,
     queryClient,
     serverDeletedKey,
     serverLeaveKey,

@@ -78,8 +78,8 @@ export function MediaRoom({ chatId, video, audio, callId }: MediaRoomProps) {
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       token={token}
       connect={true}
-      video={false}
-      audio={true}
+      video={video}
+      audio={audio}
       connectOptions={{
         autoSubscribe: false,
       }}

@@ -13,7 +13,6 @@ import {
   TooltipTrigger,
 } from '../ui/tooltip';
 import { MemberWithSimpleProfile } from '@/types';
-import { useQueryClient } from '@tanstack/react-query';
 
 const roleIconMap = new Map<MemberRole, ReactNode>();
 roleIconMap.set(MemberRole.GUEST, null);
@@ -64,15 +63,22 @@ export function ServerMember({
           className='w-8 h-8 md:w-8 md:h-8'
           badgeCount={badgeCount}
         />
-        <p
-          className={cn(
-            'font-semibold text-sm text-zinc-500 group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 transition',
-            params?.memberId === member.id &&
-              'text-primary dark:text-zinc-200 dark:group-hover:text-zinc-50'
+        <div className='flex flex-col items-start'>
+          <p
+            className={cn(
+              'font-semibold text-sm text-zinc-500 group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 transition',
+              params?.memberId === member.id &&
+                'text-primary dark:text-zinc-200 dark:group-hover:text-zinc-50',
+              currentMember.id === member.id &&
+                'text-teal-500 dark:text-teal-500'
+            )}
+          >
+            {member.profile.name}
+          </p>
+          {member.id === currentMember.id && (
+            <span className='text-[8px]'>{'(YOU)'}</span>
           )}
-        >
-          {member.profile.name}
-        </p>
+        </div>
         {icon}
       </div>
 
