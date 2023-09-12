@@ -47,7 +47,7 @@ iconMap.set(
 );
 
 const formSchema = z.object({
-  content: z.string().min(1, { message: 'Sever name is required' }),
+  content: z.string(),
   fileUrl: z
     .string()
     .url('Value is not a valid url')
@@ -84,11 +84,12 @@ export default function MessageFileModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      let c = values.content.length > 0 ? values.content : values.fileUrl;
       if (channelId) {
         const date = new Date();
         addOptimisticMessage({
           id: uuidv4(),
-          content: values.content,
+          content: c,
           fileUrl: values.fileUrl,
           member,
           channelId,
@@ -103,11 +104,14 @@ export default function MessageFileModal() {
       const params = new URLSearchParams({
         ...query,
       });
-      await axios.post(`${apiUrl}?${params}`);
+      await axios.post(`${apiUrl}?${params}`, {
+        ...values,
+        content: c,
+      });
       handleClose();
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
-        console.error(err);
+        console.error(err.response?.data);
       } else {
         console.error(err);
       }
@@ -194,7 +198,7 @@ export default function MessageFileModal() {
               </Button>
 
               <Button type='submit' disabled={isLoading} variant='primary'>
-                {!isLoading ? 'Create' : 'Creating...'}
+                {!isLoading ? 'Send' : 'Sending...'}
                 {isLoading && <Loader2 className='w-4 h-4 ml-2 animate-spin' />}
               </Button>
             </DialogFooter>
