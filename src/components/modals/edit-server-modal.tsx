@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import FileUpload from '@/components/file-upload';
+import FileUpload from '@/components/server-file-upload';
 import {
   EditServerModalData,
   useModalStore,

@@ -89,11 +89,12 @@ export interface DeleteMessageModalData {
   deleteOptimisticMessage: (messageId: string) => void;
 }
 export interface MessageFileModalData {
+  type: 'image' | 'video' | 'pdf';
   apiUrl: string;
   query: Record<string, string>;
   channelId: string;
   member: MemberWithProfile;
-  addOptimisticMessages: (messages: MessageWithMemberWithProfile[]) => void;
+  addOptimisticMessage: (message: MessageWithMemberWithProfile) => void;
 }
 
 type ModalDataType =
@@ -118,14 +119,6 @@ export type ModalStore = {
   onOpen: (args: ModalDataType) => void;
   onClose: () => void;
 } & ModalDataType;
-
-// export type ModalStore = {
-//   type: ModalType | null;
-//   data: ModalData;
-//   isOpen: boolean;
-//   onOpen: (type: ModalType, data?: ModalData) => void;
-//   onClose: () => void;
-// };
 
 export const useModalStore = create<ModalStore>((set) => ({
   type: null,

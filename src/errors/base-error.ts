@@ -2,7 +2,6 @@ export interface SerializedError {
   name: string;
   message: string;
   validationErrors?: { path: (string | number)[]; message: string }[];
-  // issues?: ValidationIssue[];
 }
 
 export abstract class BaseError extends Error {
