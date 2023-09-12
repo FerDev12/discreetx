@@ -25,21 +25,16 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import FileUpload from '@/components/server-file-upload';
+import { ServerFileUpload } from '@/components/server-file-upload';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createServer } from '@/actions/server/create';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
-  files: z
-    .array(
-      z.object({
-        name: z.string(),
-        size: z.number(),
-        url: z.string(),
-        key: z.string(),
-      })
-    )
-    .min(1, { message: 'Server image is required' }),
+  fileUrl: z
+    .string()
+    .url('Value is not a valid url')
+    .min(1, { message: 'File url is required s' }),
 });
 
 export default function InitialModal() {
@@ -53,7 +48,7 @@ export default function InitialModal() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      files: [],
+      fileUrl: '',
     },
   });
 
@@ -61,20 +56,16 @@ export default function InitialModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post('/api/servers', {
-        name: values.name,
-        imageUrl: values.files.at(0)?.url ?? '',
-      });
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('imageUrl', values.fileUrl);
+      await createServer(formData);
 
       form.reset();
       router.refresh();
       window.location.reload();
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        console.error(err.response?.data);
-      } else {
-        console.error(err);
-      }
+      console.error(err);
     }
   };
 
@@ -105,13 +96,13 @@ export default function InitialModal() {
               <div className='flex items-center justify-center text-center'>
                 <FormField
                   control={form.control}
-                  name='files'
+                  name='fileUrl'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <FileUpload
+                        <ServerFileUpload
                           endpoint='serverImage'
-                          values={field.value}
+                          fileUrl={field.value}
                           onChange={field.onChange}
                         />
                       </FormControl>

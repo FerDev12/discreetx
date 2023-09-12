@@ -1,11 +1,12 @@
 'use client';
 
 import axios from 'axios';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import Image from 'next/image';
+import * as z from 'zod';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -20,20 +21,16 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { FileIcon, Loader2, X } from 'lucide-react';
 import {
   MessageFileModalData,
   useModalStore,
 } from '@/hooks/stores/use-modal-store';
-import { UploadButton } from '@/lib/uploadthing';
-import { useToast } from '../ui/use-toast';
-import { useState } from 'react';
-import { UploadFileResponse } from 'uploadthing/client';
-import { Input } from '../ui/input';
-
-const getFileType = (url: string) => url.split('.')?.at(-1);
+import { Input } from '@/components/ui/input';
+import { MessageFileUpload } from '../message-file-upload';
+import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   content: z.string(),
@@ -42,8 +39,6 @@ const formSchema = z.object({
 
 export default function MessageFileModal() {
   const { isOpen, onClose, type, data } = useModalStore();
-  const [file, setFile] = useState<UploadFileResponse | null>(null);
-  const { toast } = useToast();
   const {
     apiUrl,
     query,
@@ -52,6 +47,13 @@ export default function MessageFileModal() {
     type: fileType,
     addOptimisticMessage,
   } = data as MessageFileModalData;
+
+  const endpoint =
+    fileType === 'image'
+      ? 'messageImage'
+      : fileType === 'video'
+      ? 'messageVideo'
+      : 'messagePdf';
 
   const isModalOpen = isOpen && type === 'messageFile';
 
@@ -66,27 +68,10 @@ export default function MessageFileModal() {
 
   const handleClose = () => {
     form.reset();
-    setFile(null);
     onClose();
   };
 
   const isLoading = form.formState.isSubmitting;
-
-  const onDeleteImage = async (key: string) => {
-    try {
-      const query = new URLSearchParams({
-        imageId: key,
-      });
-      await axios.delete(`/api/uploadthing?${query}`);
-      setFile(null);
-      form.resetField('fileUrl');
-    } catch (err: any) {
-      if (axios.isAxiosError(err)) {
-        return console.error(err.response?.data);
-      }
-      console.error(err);
-    }
-  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (addOptimisticMessage && channelId?.length && member) {
@@ -125,7 +110,7 @@ export default function MessageFileModal() {
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent
-        className='dark:bg-zinc-900 border-2 border-teal-500 p-0 overflow-hidden'
+        className='dark:bg-zinc-900 border-2 border-teal-500  overflow-hidden'
         hideCloseButton
       >
         <DialogHeader className='pt-8 px-6'>
@@ -140,129 +125,34 @@ export default function MessageFileModal() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className='flex flex-col space-y-8 items-center justify-center text-center'>
-              <FormField
-                control={form.control}
-                name='fileUrl'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      {!file && (
-                        <UploadButton
-                          endpoint={
-                            fileType === 'image'
-                              ? 'messageImage'
-                              : fileType === 'video'
-                              ? 'messageVideo'
-                              : 'messagePdf'
-                          }
-                          onClientUploadComplete={(res) => {
-                            const file = res?.at(0);
-                            if (file) {
-                              field.onChange(file);
-                              setFile(file);
-                            }
-                          }}
-                          onUploadError={(err) => {
-                            console.error(err);
-                            toast({
-                              title: 'File Upload failed',
-                              description: err.message,
-                              variant: 'destructive',
-                            });
-                          }}
-                        />
-                      )}
+            <FormField
+              control={form.control}
+              name='fileUrl'
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    {/* <MessageFileUpload
+                        endpoint={endpoint}
+                        fileUrl={field.value}
+                        onChange={field.onChange}
+                      /> */}
+                  </FormControl>
 
-                      {!!file &&
-                        ['jpg', 'jpeg', 'png', 'webd'].includes(
-                          getFileType(file.url) ?? ''
-                        ) && (
-                          <div className='relative h-24 w-24 rounded-full'>
-                            <Image
-                              fill
-                              src={file.url}
-                              alt='Upload'
-                              className='rounded-md'
-                            />
-                            <Button
-                              size='icon'
-                              variant='destructive'
-                              className='rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4'
-                              type='button'
-                              onClick={() => onDeleteImage(file.key)}
-                            >
-                              <X className='w-3 h-3' />
-                            </Button>
-                          </div>
-                        )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                      {!!file &&
-                        ['mp4', 'flv', 'mov', 'ogg'].includes(
-                          getFileType(file.url) ?? ''
-                        ) && (
-                          <div className='relative'>
-                            <video className='h-24 w-48 rounded-sm' muted>
-                              <source
-                                src={file.url}
-                                type={`video/${fileType}`}
-                              ></source>
-                            </video>
-
-                            <Button
-                              size='icon'
-                              variant='destructive'
-                              className='rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4'
-                              type='button'
-                              disabled={isLoading}
-                              onClick={() => onDeleteImage(file.key)}
-                            >
-                              <X className='w-3 h-3' />
-                            </Button>
-                          </div>
-                        )}
-
-                      {!!file && getFileType(file.url) === 'pdf' && (
-                        <div className='relative flex items-center p-2 mt-2 rounded-md bg-bakcground/10 bg-indigo-50'>
-                          <FileIcon className='h-10 w-10 fill-indigo-200 stroke-indigo-400 ' />
-                          <a
-                            href={file.url}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            className='ml-2 text-start text-sm text-indigo-500 dark:text-indigo-400 hover:underline'
-                          >
-                            <Button
-                              size='icon'
-                              variant='destructive'
-                              className='rounded-full absolute -top-2 -right-2 shadow-sm w-6 h-6'
-                              type='button'
-                              disabled={isLoading}
-                              onClick={() => onDeleteImage(file.key)}
-                            >
-                              <X className='w-3 h-3' />
-                            </Button>
-                            {file.url}
-                          </a>
-                        </div>
-                      )}
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name='content'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input {...field} type='text' disabled={isLoading} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              name='content'
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea {...field} disabled={isLoading} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
             <DialogFooter className=' px-6 py-4'>
               <Button

@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 
@@ -41,6 +41,7 @@ export function MessageFileUpload({
         addOptimisticMessage,
       },
     });
+
   const onUploadVideo = () =>
     onOpen({
       type: ModalType.MESSAGE_FILE,
@@ -53,6 +54,7 @@ export function MessageFileUpload({
         addOptimisticMessage,
       },
     });
+
   const onUploadPdf = () =>
     onOpen({
       type: ModalType.MESSAGE_FILE,

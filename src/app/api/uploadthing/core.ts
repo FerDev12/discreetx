@@ -27,7 +27,10 @@ export const ourFileRouter = {
       });
     }),
   messageVideo: f({
-    video: { maxFileCount: 1, maxFileSize: '64MB' },
+    'video/mp4': { maxFileCount: 1, maxFileSize: '64MB' },
+    'video/webm': { maxFileCount: 1, maxFileSize: '64MB' },
+    'video/ogg': { maxFileCount: 1, maxFileSize: '64MB' },
+    'video/mpeg': { maxFileCount: 1, maxFileSize: '64MB' },
   })
     .middleware(handleAuth)
     .onUploadComplete(({ metadata, file }) => {

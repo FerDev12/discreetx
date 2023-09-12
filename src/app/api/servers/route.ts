@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { MemberRole } from '@prisma/client';
+import { UnauthorizedError } from '@/errors/unauthorized-error';
+import { BadRequestError } from '@/errors/bad-request-error';
+import { handleApiError } from '@/lib/api-error-handler';
 
 export async function POST(req: Request) {
   try {
@@ -10,7 +13,7 @@ export async function POST(req: Request) {
     const profile = await currentProfile();
 
     if (!profile) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const server = await db.server.create({
@@ -33,9 +36,12 @@ export async function POST(req: Request) {
       },
     });
 
+    if (!server) {
+      throw new BadRequestError('Something went wrong');
+    }
+
     return NextResponse.json(server);
   } catch (err: unknown) {
-    console.error('[SERVERS_POST]', err);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return handleApiError(err, '[SERVER_POST]');
   }
 }

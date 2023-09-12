@@ -27,6 +27,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { ServerFileUpload } from '@/components/server-file-upload';
 import { useModalStore } from '@/hooks/stores/use-modal-store';
+import { editServer } from '@/actions/server/edit';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
@@ -59,10 +60,17 @@ export default function CreateServerModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { data: server } = await axios.post(`/api/servers`, values);
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('imageUrl', values.fileUrl);
+      const server = await editServer(formData);
 
       if (!server) {
         throw new Error('Server not created');
+      }
+
+      if ('errors' in server) {
+        return console.error(server.errors);
       }
 
       form.reset();
