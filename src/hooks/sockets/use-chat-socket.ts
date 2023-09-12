@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useConversationStore } from '../stores/use-conversation-store';
 import { ModalType, useModalStore } from '../stores/use-modal-store';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { MemberWithProfile } from '@/types';
 
 type ChatSocketProps = {
@@ -32,9 +32,9 @@ export function useChatSocket({
   const router = useRouter();
   const { socket } = useSocket();
   const queryClient = useQueryClient();
-  const { setIsTyping, setActiveCall } = useConversationStore();
+  const { setIsTyping, setActiveCall, activeCall } = useConversationStore();
   const { onOpen, onClose } = useModalStore();
-
+  const { callId } = useParams();
   useEffect(() => {
     if (!socket) {
       return;
@@ -122,13 +122,7 @@ export function useChatSocket({
         setActiveCall({ id: call.id, type: call.type });
 
         if (!call.answered) {
-          // Show modal to decline or answer call
-          // return onOpen('answerCall', {
-          //   callId: call.id,
-          //   conversationId: call.conversationId,
-          //   callType: call.type,
-          //   member: call.member,
-          // });
+          if (activeCall || callId?.length > 0) return;
           return onOpen({
             type: ModalType.ANSWER_CALL,
             data: {
@@ -148,21 +142,20 @@ export function useChatSocket({
         }
       }
 
-      if (!call.active && call.ended) {
-        setActiveCall(null);
-
-        if (call.declined) return onClose();
-        if (call.cancelled) return onClose();
-
+      if (call.declined) {
         onClose();
+      }
 
-        onOpen({
-          type: ModalType.CALL_ENDED,
-          data: {
-            serverId: call.conversation.serverId,
-            conversationId: call.conversationId,
-          },
-        });
+      if (call.cancelled) {
+        onClose();
+      }
+
+      if (!call.active && call.ended && callId === call.id) {
+        setActiveCall(null);
+        onClose();
+        router.push(
+          `/servers/${call.conversation.serverId}/conversations/${call.conversationId}`
+        );
       }
     };
 
@@ -171,5 +164,14 @@ export function useChatSocket({
     return () => {
       socket.off(callKey, socketListener);
     };
-  }, [callKey, socket, onOpen, onClose, setActiveCall, router]);
+  }, [
+    callKey,
+    socket,
+    onOpen,
+    onClose,
+    setActiveCall,
+    router,
+    callId,
+    activeCall,
+  ]);
 }

@@ -65,7 +65,7 @@ export function ChatMessages({
       : null;
   const callKey =
     props.type === 'conversation'
-      ? `chat:${chatId}:call:${props.otherMember.profileId}`
+      ? `server:${currentMember.serverId}:call:${props.otherMember.profileId}`
       : null;
 
   const chatRef = useRef<ElementRef<'div'>>(null);

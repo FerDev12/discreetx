@@ -103,13 +103,17 @@ export default function AnswerCallModal() {
         </DialogHeader>
 
         <DialogFooter className='py-4'>
-          <Button onClick={onDeclineCall} disabled={isLoading} variant='ghost'>
+          <Button
+            onClick={onDeclineCall}
+            disabled={isLoading}
+            variant='destructive'
+          >
             Decline
           </Button>
-          <Button onClick={onAnswerCall} disabled={isLoading} variant='danger'>
+          <Button onClick={onAnswerCall} disabled={isLoading} variant='primary'>
             {!isLoading ? 'Answer' : 'Answer'}
             {isLoading && (
-              <Loader2 className='w-4 h-4 ml-2 animate-spin text-rose-50' />
+              <Loader2 className='w-4 h-4 ml-2 animate-spin text-teal-50' />
             )}
           </Button>
         </DialogFooter>

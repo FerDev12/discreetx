@@ -6,6 +6,7 @@ import { LiveKitRoom, VideoConference } from '@livekit/components-react';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 type MediaRoomProps = {
   callId?: string;
@@ -16,7 +17,7 @@ type MediaRoomProps = {
 
 export function MediaRoom({ chatId, video, audio, callId }: MediaRoomProps) {
   const { user } = useUser();
-
+  const router = useRouter();
   const [token, setToken] = useState('');
 
   useEffect(() => {
@@ -43,9 +44,15 @@ export function MediaRoom({ chatId, video, audio, callId }: MediaRoomProps) {
     try {
       const query = new URLSearchParams({
         conversationId: chatId,
+        callId,
       });
 
-      await axios.delete(`/api/socket/calls/${callId}?${query}`);
+      const { data: call } = await axios.delete(
+        `/api/socket/calls/${callId}?${query}`
+      );
+      router.push(
+        `/servers/${call.conversation.serverId}/conversations/${call.conversationId}`
+      );
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
