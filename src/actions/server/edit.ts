@@ -11,8 +11,8 @@ import { z } from 'zod';
 
 const formSchema = z.object({
   serverId: z.string().uuid().nonempty(),
-  name: z.string(),
-  imageUrl: z.string().url().nullish(),
+  name: z.string().nonempty(),
+  imageUrl: z.string().url().nonempty(),
 });
 
 export async function editServer(formData: FormData) {
@@ -42,7 +42,7 @@ export async function editServer(formData: FormData) {
       },
       data: {
         name,
-        imageUrl: imageUrl ?? undefined,
+        imageUrl,
       },
     });
 

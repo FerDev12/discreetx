@@ -27,7 +27,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { ServerFileUpload } from '@/components/server-file-upload';
 import { useModalStore } from '@/hooks/stores/use-modal-store';
-import { editServer } from '@/actions/server/edit';
+import { createServer } from '@/actions/server/create';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
@@ -63,7 +63,7 @@ export default function CreateServerModal() {
       const formData = new FormData();
       formData.append('name', values.name);
       formData.append('imageUrl', values.fileUrl);
-      const server = await editServer(formData);
+      const server = await createServer(formData);
 
       if (!server) {
         throw new Error('Server not created');

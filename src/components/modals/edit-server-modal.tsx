@@ -30,14 +30,11 @@ import {
   EditServerModalData,
   useModalStore,
 } from '@/hooks/stores/use-modal-store';
-import { Server } from '@prisma/client';
+import { editServer } from '@/actions/server/edit';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
-  fileUrl: z
-    .string()
-    .url('Value is not a valid url')
-    .min(1, { message: 'Server image is required' }),
+  fileUrl: z.string().url('Value is not a valid url').nullable(),
 });
 
 export default function EditServerModal() {
@@ -70,7 +67,12 @@ export default function EditServerModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch<Server>(`/api/socket/servers/${server?.id}`, values);
+      // await axios.patch<Server>(`/api/socket/servers/${server?.id}`, values);
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('imageUrl', values.fileUrl ?? server.imageUrl);
+      formData.append('serverId', server.id);
+      await editServer(formData);
 
       form.reset();
       onClose();
