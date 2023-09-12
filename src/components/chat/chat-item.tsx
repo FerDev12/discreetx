@@ -158,6 +158,34 @@ export function ChatItem({
     ['mov', 'mp4', 'flv', 'wmv', 'ogg', 'webm'].includes(fileType ?? '') &&
     fileUrl;
 
+  const messageContent = (
+    <p
+      className={cn(
+        'text-sm text-zinc-600 dark:text-zinc-300',
+        deleted && 'italic text-zinc-500 dark:text-zinc-400 text-xs mt-1'
+      )}
+    >
+      {isLink(optimisticContent) ? (
+        <a
+          href={optimisticContent}
+          className='text-indigo-500 text-sm hover:underline'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          {optimisticContent}
+        </a>
+      ) : (
+        optimisticContent
+      )}
+
+      {isUpdated && !deleted && (
+        <span className='text-[10px] mx-2 text-zinc-500 dark:text-zinc-400'>
+          {'(edited)'}
+        </span>
+      )}
+    </p>
+  );
+
   return (
     <div>
       <li
@@ -211,73 +239,55 @@ export function ChatItem({
             </div>
 
             {isImage && (
-              <a
-                href={fileUrl}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary h-48 w-48'
-              >
-                <Image
-                  src={fileUrl}
-                  alt={content}
-                  fill
-                  className='object-cover'
-                />
-              </a>
-            )}
-
-            {isPDF && (
-              <a>
-                <div className='relative flex items-center p-2 mt-2 rounded-md bg-bakcground/10 bg-indigo-50'>
-                  <FileIcon className='h-10 w-10 fill-indigo-200 stroke-indigo-400 ' />
-                  <a
-                    href={fileUrl}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='ml-2 text-start text-sm text-indigo-500 dark:text-indigo-400 hover:underline'
-                  >
-                    PDF File
-                  </a>
-                </div>
-              </a>
-            )}
-
-            {isVideo && (
-              <div className='relative z-10 hover:border-red-500 hover:border-2 rounded-sm h-44 w-80 overflow-hidden'>
-                <video controls muted className='absolute inset-0'>
-                  <source src={fileUrl} type={`video/${fileType}`}></source>
-                </video>
+              <div>
+                <a
+                  href={fileUrl}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary h-48 w-48'
+                >
+                  <Image
+                    src={fileUrl}
+                    alt={content}
+                    fill
+                    className='object-cover'
+                  />
+                </a>
+                {fileUrl !== optimisticContent && messageContent}
               </div>
             )}
 
-            {!fileUrl && !isEditing && (
-              <p
-                className={cn(
-                  'text-sm text-zinc-600 dark:text-zinc-300',
-                  deleted &&
-                    'italic text-zinc-500 dark:text-zinc-400 text-xs mt-1'
-                )}
-              >
-                {isLink(optimisticContent) ? (
-                  <a
-                    href={optimisticContent}
-                    className='text-indigo-500 text-sm hover:underline'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    {optimisticContent}
-                  </a>
-                ) : (
-                  optimisticContent
-                )}
-
-                {isUpdated && !deleted && (
-                  <span className='text-[10px] mx-2 text-zinc-500 dark:text-zinc-400'>
-                    {'(edited)'}
-                  </span>
-                )}
-              </p>
+            {isPDF && (
+              <div className='mt-2'>
+                <a>
+                  <div className='relative flex items-center p-2 mt-2 rounded-md bg-bakcground/10 bg-indigo-50'>
+                    <FileIcon className='h-10 w-10 fill-indigo-200 stroke-indigo-400 ' />
+                    <a
+                      href={fileUrl}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='ml-2 text-start text-sm text-indigo-500 dark:text-indigo-400 hover:underline'
+                    >
+                      PDF File
+                    </a>
+                  </div>
+                </a>
+                {fileUrl !== content && messageContent}
+              </div>
             )}
+
+            {isVideo && (
+              <div className='mt-2'>
+                <div className='relative z-10 hover:border-red-500 hover:border-2 rounded-sm h-44 w-80 overflow-hidden'>
+                  <video controls muted className='absolute inset-0'>
+                    <source src={fileUrl} type={`video/${fileType}`}></source>
+                  </video>
+                </div>
+                {fileUrl !== content && messageContent}
+              </div>
+            )}
+
+            {!fileUrl && !isEditing && messageContent}
 
             {!fileUrl && isEditing && (
               <Form {...form}>
