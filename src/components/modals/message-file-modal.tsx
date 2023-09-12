@@ -123,7 +123,7 @@ export default function MessageFileModal() {
   const isVideo = fileType === 'video';
 
   return (
-    <Dialog open={isModalOpen} onOpenChange={handleClose}>
+    <Dialog open={isModalOpen || isLoading} onOpenChange={handleClose}>
       <DialogContent className='dark:bg-zinc-900 border-2 border-teal-500 p-0 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <div className='flex items-center justify-center'>
@@ -151,7 +151,6 @@ export default function MessageFileModal() {
                       <FormControl>
                         <MessageFileUpload
                           fileType={fileType}
-                          fileUrl={field.value}
                           onChange={field.onChange}
                           isLoading={isLoading}
                         />

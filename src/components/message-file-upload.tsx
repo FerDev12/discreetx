@@ -9,32 +9,31 @@ import { useState } from 'react';
 import { UploadButton } from '@/lib/uploadthing';
 import { Button } from './ui/button';
 import { useToast } from './ui/use-toast';
+import { UploadFileResponse } from 'uploadthing/client';
 
 type MessageFileUploadProps = {
-  fileUrl?: string;
   fileType: 'image' | 'video' | 'pdf';
   isLoading: boolean;
   onChange: (fileUrl: string) => void;
 };
 
 export function MessageFileUpload({
-  fileUrl,
   fileType,
   isLoading,
   onChange,
 }: MessageFileUploadProps) {
-  const [fileKey, setFileKey] = useState('');
+  const [file, setFile] = useState<UploadFileResponse | null>(null);
   const { toast } = useToast();
 
   const onDeleteFile = async () => {
     try {
       const query = new URLSearchParams({
-        imageId: fileKey,
+        imageId: file?.key ?? '',
       });
 
       await axios.delete(`/api/uploadthing?${query}`);
       onChange('');
-      setFileKey('');
+      setFile(null);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         return console.error(err.response?.data);
@@ -53,12 +52,12 @@ export function MessageFileUpload({
     ? 'messageImage'
     : 'messageVideo';
 
-  if (fileUrl && isPdf) {
+  if (!!file && isPdf) {
     return (
       <div className='relative flex items-center p-2 mt-2 rounded-md bg-bakcground/10 bg-indigo-50'>
         <FileIcon className='h-16 w-16 fill-indigo-200 stroke-indigo-400 ' />
         <a
-          href={fileUrl}
+          href={file.url}
           target='_blank'
           rel='noopener noreferrer'
           className='ml-2 text-start text-sm text-indigo-500 dark:text-indigo-400 hover:underline'
@@ -66,34 +65,34 @@ export function MessageFileUpload({
           <Button
             size='icon'
             variant='destructive'
-            className='rounded-full absolute -top-2 -right-2 shadow-sm w-6 h-6'
+            className='rounded-full absolute -top-2 -right-2 shadow-sm w-6 h-6 bg-rose-500'
             type='button'
             onClick={onDeleteFile}
             disabled={isLoading}
           >
             <X className='w-3 h-3' />
           </Button>
-          {fileUrl}
+          {file?.name}
         </a>
       </div>
     );
   }
 
-  if (fileUrl && isVideo) {
+  if (!!file && isVideo) {
     return (
       <div className='relative'>
-        <div className='overflow-hidden rounded-sm h-44 w-80'>
+        <div className='overflow-hidden rounded-sm h-44 w-80 border border-zinc-800 dark:border-zinc-200'>
           <video autoPlay muted controls className='w-full h-full'>
             <source
-              src={fileUrl}
-              type={`video/${fileUrl.split('.').at(-1)}`}
+              src={file.url}
+              type={`video/${file.url.split('.').at(-1)}`}
             ></source>
           </video>
 
           <Button
             size='icon'
             variant='destructive'
-            className='rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4'
+            className='rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4 bg-rose-500'
             type='button'
             onClick={onDeleteFile}
             disabled={isLoading}
@@ -101,24 +100,30 @@ export function MessageFileUpload({
             <X className='w-3 h-3' />
           </Button>
         </div>
+        <p className='text-sm text-muted-foreground text-center'>{file.name}</p>
       </div>
     );
   }
 
-  if (fileUrl && isImage) {
+  if (!!file && isImage) {
     return (
-      <div className='relative w-48 h-48 rounded-full'>
-        <Image fill src={fileUrl} alt='Upload' className='rounded-md' />
-        <Button
-          size='icon'
-          variant='destructive'
-          className='rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4'
-          type='button'
-          onClick={onDeleteFile}
-          disabled={isLoading}
-        >
-          <X className='w-3 h-3' />
-        </Button>
+      <div>
+        <div className='relative w-48 h-48 border border-zinc-800 dark:border-zinc-200'>
+          <Image fill src={file.url} alt='Upload' className='rounded-md' />
+          <Button
+            size='icon'
+            variant='destructive'
+            className='rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4 bg-rose-500'
+            type='button'
+            onClick={onDeleteFile}
+            disabled={isLoading}
+          >
+            <X className='w-3 h-3' />
+          </Button>
+        </div>
+        <p className='mt-2 text-sm text-muted-foreground text-center'>
+          {file.name}
+        </p>
       </div>
     );
   }
@@ -130,7 +135,7 @@ export function MessageFileUpload({
         const file = res?.at(0);
         if (file) {
           onChange(file.url);
-          setFileKey(file.key);
+          setFile(file);
         }
       }}
       onUploadError={(err) => {
