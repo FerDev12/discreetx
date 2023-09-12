@@ -13,7 +13,6 @@ type ChatSocketProps = {
   queryKey: string;
   // -------------
   typingKey?: string | null;
-  callKey?: string | null;
 };
 
 type MessageWithMemberWithProfile = Message & {
@@ -27,14 +26,10 @@ export function useChatSocket({
   updateKey,
   queryKey,
   typingKey,
-  callKey,
 }: ChatSocketProps) {
-  const router = useRouter();
   const { socket } = useSocket();
   const queryClient = useQueryClient();
-  const { setIsTyping, setActiveCall, activeCall } = useConversationStore();
-  const { onOpen, onClose } = useModalStore();
-  const { callId } = useParams();
+  const { setIsTyping } = useConversationStore();
   useEffect(() => {
     if (!socket) {
       return;
@@ -111,67 +106,4 @@ export function useChatSocket({
       socket.off(typingKey, typingKeyListener);
     };
   }, [typingKey, socket, setIsTyping]);
-
-  useEffect(() => {
-    if (!callKey || !socket) return;
-
-    const socketListener = (
-      call: Call & { conversation: Conversation; member: MemberWithProfile }
-    ) => {
-      if (call.active && !call.ended) {
-        setActiveCall({ id: call.id, type: call.type });
-
-        if (!call.answered) {
-          if (activeCall || callId?.length > 0) return;
-          return onOpen({
-            type: ModalType.ANSWER_CALL,
-            data: {
-              callId: call.id,
-              conversationId: call.conversationId,
-              type: call.type,
-              member: call.member,
-            },
-          });
-        }
-
-        if (call.answered) {
-          onClose();
-          return router.push(
-            `/servers/${call.conversation.serverId}/conversations/${call.conversationId}/calls/${call.id}`
-          );
-        }
-      }
-
-      if (call.declined) {
-        onClose();
-      }
-
-      if (call.cancelled) {
-        onClose();
-      }
-
-      if (!call.active && call.ended && callId === call.id) {
-        setActiveCall(null);
-        onClose();
-        router.push(
-          `/servers/${call.conversation.serverId}/conversations/${call.conversationId}`
-        );
-      }
-    };
-
-    socket.on(callKey, socketListener);
-
-    return () => {
-      socket.off(callKey, socketListener);
-    };
-  }, [
-    callKey,
-    socket,
-    onOpen,
-    onClose,
-    setActiveCall,
-    router,
-    callId,
-    activeCall,
-  ]);
 }

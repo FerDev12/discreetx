@@ -9,7 +9,7 @@ type ServerSocketProps = {
 };
 
 export function ServerSocket({ serverId, profileId }: ServerSocketProps) {
-  useServerSocket({ serverId });
+  useServerSocket({ serverId, profileId });
   useNotificationsSocket({ serverId, profileId });
   return <></>;
 }
