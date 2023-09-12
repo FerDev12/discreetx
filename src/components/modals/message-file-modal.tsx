@@ -105,14 +105,14 @@ export default function MessageFileModal() {
       });
     }
 
-    handleClose();
-
     try {
       const params = new URLSearchParams({
         ...query,
       });
 
       await axios.post(`${apiUrl}?${params}`, values);
+
+      handleClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -139,7 +139,7 @@ export default function MessageFileModal() {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='flex flex-col space-y-8 items-center justify-center text-center'>
               <FormField
                 control={form.control}
@@ -178,7 +178,7 @@ export default function MessageFileModal() {
                         ['jpg', 'jpeg', 'png', 'webd'].includes(
                           getFileType(file.url) ?? ''
                         ) && (
-                          <div className='relative h-20 w-20'>
+                          <div className='relative h-24 w-24 rounded-full'>
                             <Image
                               fill
                               src={file.url}
@@ -196,12 +196,13 @@ export default function MessageFileModal() {
                             </Button>
                           </div>
                         )}
+
                       {!!file &&
                         ['mp4', 'flv', 'mov', 'ogg'].includes(
                           getFileType(file.url) ?? ''
                         ) && (
                           <div className='relative'>
-                            <video className='h-20 w-20 rounded-sm' muted>
+                            <video className='h-24 w-48 rounded-sm' muted>
                               <source
                                 src={file.url}
                                 type={`video/${fileType}`}
@@ -213,6 +214,7 @@ export default function MessageFileModal() {
                               variant='destructive'
                               className='rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4'
                               type='button'
+                              disabled={isLoading}
                               onClick={() => onDeleteImage(file.key)}
                             >
                               <X className='w-3 h-3' />
@@ -234,16 +236,15 @@ export default function MessageFileModal() {
                               variant='destructive'
                               className='rounded-full absolute -top-2 -right-2 shadow-sm w-6 h-6'
                               type='button'
+                              disabled={isLoading}
                               onClick={() => onDeleteImage(file.key)}
                             >
-                              <X className='w-4 h-4' />
+                              <X className='w-3 h-3' />
                             </Button>
                             {file.url}
                           </a>
                         </div>
                       )}
-
-                      {!!file && getFileType(file.url) === 'pdf' && <></>}
                     </FormControl>
 
                     <FormMessage />
@@ -256,7 +257,7 @@ export default function MessageFileModal() {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} type='text' />
+                      <Input {...field} type='text' disabled={isLoading} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -264,7 +265,12 @@ export default function MessageFileModal() {
             </div>
 
             <DialogFooter className=' px-6 py-4'>
-              <Button variant='ghost' type='button' onClick={handleClose}>
+              <Button
+                variant='ghost'
+                type='button'
+                disabled={isLoading}
+                onClick={handleClose}
+              >
                 Cancel
               </Button>
               <Button variant='primary' disabled={isLoading}>

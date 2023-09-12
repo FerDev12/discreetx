@@ -25,21 +25,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import FileUpload from '@/components/server-file-upload';
+import { ServerFileUpload } from '@/components/server-file-upload';
 import { useModalStore } from '@/hooks/stores/use-modal-store';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
-  files: z
-    .array(
-      z.object({
-        name: z.string(),
-        size: z.number(),
-        url: z.string(),
-        key: z.string(),
-      })
-    )
-    .min(1, { message: 'Server image is required' }),
+  fileUrl: z
+    .string()
+    .url('Value is not a valid url')
+    .min(1, { message: 'Server image required' }),
 });
 
 export default function CreateServerModal() {
@@ -51,7 +45,7 @@ export default function CreateServerModal() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      files: [],
+      fileUrl: '',
     },
   });
 
@@ -65,10 +59,7 @@ export default function CreateServerModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { data: server } = await axios.post(`/api/servers`, {
-        name: values.name,
-        imageUrl: values.files.at(0)?.url ?? '',
-      });
+      const { data: server } = await axios.post(`/api/servers`, values);
 
       if (!server) {
         throw new Error('Server not created');
@@ -107,13 +98,13 @@ export default function CreateServerModal() {
               <div className='flex items-center justify-center text-center'>
                 <FormField
                   control={form.control}
-                  name='files'
+                  name='fileUrl'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <FileUpload
+                        <ServerFileUpload
                           endpoint='serverImage'
-                          values={field.value}
+                          fileUrl={field.value}
                           onChange={field.onChange}
                         />
                       </FormControl>

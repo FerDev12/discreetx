@@ -8,15 +8,14 @@ import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import * as z from 'zod';
 
-import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
-import { EmojiPicker } from '@/components/emoji-picker';
-
-import { ActionTooltip } from '@/components/action-tooltip';
-import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
-import { Member } from '@prisma/client';
 import { MessageFileUpload } from './chat-attach-file';
+import { ActionTooltip } from '@/components/action-tooltip';
+import { EmojiPicker } from '@/components/emoji-picker';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { cn } from '@/lib/utils';
-import { Input } from '../ui/input';
+import { Member } from '@prisma/client';
 
 type ChatInputProps = {
   apiUrl: string;
