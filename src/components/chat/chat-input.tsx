@@ -2,18 +2,19 @@
 
 import axios from 'axios';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader, Plus, SendHorizonal } from 'lucide-react';
+import { Loader, SendHorizonal } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import * as z from 'zod';
 
+import { MessageFileUpload } from './chat-attach-file';
+import { ActionTooltip } from '@/components/action-tooltip';
+import { EmojiPicker } from '@/components/emoji-picker';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { EmojiPicker } from '@/components/emoji-picker';
-import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
-import { ActionTooltip } from '@/components/action-tooltip';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
+import { cn } from '@/lib/utils';
 import { Member } from '@prisma/client';
 
 type ChatInputProps = {
@@ -22,7 +23,7 @@ type ChatInputProps = {
   name: string;
   currentMember: MemberWithProfile;
   chatId: string;
-  addOptimisticMessages: (messages: MessageWithMemberWithProfile[]) => void;
+  addOptimisticMessage: (message: MessageWithMemberWithProfile) => void;
 } & (
   | {
       type: 'channel';
@@ -44,7 +45,7 @@ export function ChatInput({
   type,
   currentMember,
   chatId,
-  addOptimisticMessages,
+  addOptimisticMessage,
 }: ChatInputProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     // @ts-ignore
@@ -58,8 +59,6 @@ export function ChatInput({
     handleSubmit,
     formState: { isSubmitting },
   } = form;
-
-  const { onOpen } = useModalStore();
 
   const isTyping = form.getValues('content').length > 0;
 
@@ -86,22 +85,20 @@ export function ChatInput({
       form.setFocus('content');
       const date = new Date();
 
-      addOptimisticMessages([
-        {
-          id: uuidv4(),
-          content: values.content,
-          channelId: query.channelId,
-          fileUrl: null,
-          memberId: currentMember.id,
-          member: {
-            ...currentMember,
-          },
-          sent: false,
-          deleted: false,
-          updatedAt: date,
-          createdAt: date,
+      addOptimisticMessage({
+        id: uuidv4(),
+        content: values.content,
+        channelId: query.channelId,
+        fileUrl: null,
+        memberId: currentMember.id,
+        member: {
+          ...currentMember,
         },
-      ]);
+        sent: false,
+        deleted: false,
+        updatedAt: date,
+        createdAt: date,
+      });
 
       const params = new URLSearchParams({
         ...query,
@@ -134,7 +131,9 @@ export function ChatInput({
                     placeholder={`Message ${
                       type === 'conversation' ? name : `#${name}`
                     }`}
-                    className='px-8 bg-zinc-50 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-400'
+                    className={cn(
+                      'px-8 bg-zinc-50 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-400'
+                    )}
                   />
                 </FormControl>
               </FormItem>
@@ -144,27 +143,14 @@ export function ChatInput({
       </Form>
 
       <div className='flex justify-between items-center mt-2 px-2'>
-        <div className='flex gap-x-2'>
-          <ActionTooltip label='Attach file'>
-            <button
-              type='button'
-              onClick={() =>
-                onOpen({
-                  type: ModalType.MESSAGE_FILE,
-                  data: {
-                    apiUrl,
-                    query,
-                    channelId: query.channelId,
-                    member: currentMember,
-                    addOptimisticMessages,
-                  },
-                })
-              }
-              className='h-[20px] w-[20px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex items-center justify-center'
-            >
-              <Plus className='text-zinc-50 dark:text-[#313338]' />
-            </button>
-          </ActionTooltip>
+        <div className='flex gap-x-1.5'>
+          <MessageFileUpload
+            apiUrl={apiUrl}
+            query={query}
+            channelId={chatId}
+            member={currentMember}
+            addOptimisticMessage={addOptimisticMessage}
+          />
 
           <EmojiPicker
             onChange={(emoji: string) => {

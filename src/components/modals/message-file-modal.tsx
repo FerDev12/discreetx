@@ -1,18 +1,18 @@
 'use client';
 
+import { Camera, FileIcon, Film, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { v4 as uuidv4 } from 'uuid';
+import * as z from 'zod';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
 import {
@@ -20,102 +20,96 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import FileUpload from '@/components/file-upload';
-import { Loader2 } from 'lucide-react';
 import {
   MessageFileModalData,
+  ModalType,
   useModalStore,
 } from '@/hooks/stores/use-modal-store';
+import { MessageFileUpload } from '@/components/message-file-upload';
+import { ReactNode } from 'react';
+import { Textarea } from '@/components/ui/textarea';
+
+const iconMap = new Map<'image' | 'video' | 'pdf', ReactNode>();
+iconMap.set(
+  'pdf',
+  <FileIcon className='h-10 w-10 fill-indigo-200 stroke-indigo-400' />
+);
+iconMap.set(
+  'image',
+  <Camera className='h-10 w-10 fill-teal-200 stroke-teal-400' />
+);
+iconMap.set(
+  'video',
+  <Film className='h-10 w-10 fill-rose-200 stroke-rose-400' />
+);
 
 const formSchema = z.object({
-  // fileUrl: z.string().min(1, { message: 'File is required' }),
-  // fileUrls: z.array(z.string().min(1, { message: 'File is required' })),
-  fileUrls: z.array(
-    z.object({
-      name: z.string(),
-      size: z.number(),
-      url: z.string(),
-      key: z.string(),
-    })
-  ),
+  content: z.string(),
+  fileUrl: z
+    .string()
+    .url('Value is not a valid url')
+    .min(1, { message: 'Server image required' }),
 });
 
 export default function MessageFileModal() {
   const { isOpen, onClose, type, data } = useModalStore();
-  const { apiUrl, query, channelId, member, addOptimisticMessages } =
-    data as MessageFileModalData;
-
-  const isModalOpen = isOpen && type === 'messageFile';
+  const {
+    apiUrl,
+    query,
+    channelId,
+    member,
+    type: fileType,
+    addOptimisticMessage,
+  } = data as MessageFileModalData;
 
   const form = useForm({
     // @ts-ignore
     resolver: zodResolver(formSchema),
     defaultValues: {
-      // fileUrl: '',
-      fileUrls: [],
+      content: '',
+      fileUrl: '',
     },
   });
+
+  const isModalOpen = isOpen && type === ModalType.MESSAGE_FILE;
+  const isLoading = form.formState.isSubmitting;
 
   const handleClose = () => {
     form.reset();
     onClose();
   };
 
-  const isLoading = form.formState.isSubmitting;
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (addOptimisticMessages && channelId?.length && member) {
-      const date = new Date();
-
-      addOptimisticMessages(
-        values.fileUrls.map(({ url }) => ({
+    try {
+      let c = values.content.length > 0 ? values.content : values.fileUrl;
+      if (channelId) {
+        const date = new Date();
+        addOptimisticMessage({
           id: uuidv4(),
-          content: url,
-          fileUrl: url,
-          createdAt: date,
-          updatedAt: date,
+          content: c,
+          fileUrl: values.fileUrl,
+          member,
+          channelId,
           deleted: false,
           sent: false,
-          channelId,
-          member,
           memberId: member.id,
-        }))
-      );
-      // addOptimisticMessages([
-      //   {
-      //     id: uuidv4(),
-      //     content: values.fileUrl,
-      //     fileUrl: values.fileUrl,
-      //     createdAt: date,
-      //     updatedAt: date,
-      //     deleted: false,
-      //     sent: false,
-      //     channelId,
-      //     member,
-      //     memberId: member.id,
-      //   },
-      // ]);
-    }
+          createdAt: date,
+          updatedAt: date,
+        });
+      }
 
-    handleClose();
-
-    try {
       const params = new URLSearchParams({
         ...query,
       });
-
-      await Promise.all(
-        values.fileUrls.map(
-          async ({ url }) =>
-            await axios.post(`${apiUrl}?${params}`, {
-              fileUrl: url,
-              content: url,
-            })
-        )
-      );
-    } catch (err: unknown) {
+      await axios.post(`${apiUrl}?${params}`, {
+        ...values,
+        content: c,
+      });
+      handleClose();
+    } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
       } else {
@@ -124,20 +118,25 @@ export default function MessageFileModal() {
     }
   };
 
-  return (
-    <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent
-        className='dark:bg-zinc-900 border-2 border-teal-500 p-0 overflow-hidden'
-        hideCloseButton
-      >
-        <DialogHeader className='pt-8 px-6'>
-          <DialogTitle className='text-2xl text-center font-bold'>
-            Add an attachment
-          </DialogTitle>
+  const isPdf = fileType === 'pdf';
+  const isImage = fileType === 'image';
+  const isVideo = fileType === 'video';
 
-          <DialogDescription className='text-center text-muted-foreground'>
-            Send a file as a message
-          </DialogDescription>
+  return (
+    <Dialog open={isModalOpen || isLoading} onOpenChange={handleClose}>
+      <DialogContent className='dark:bg-zinc-900 border-2 border-teal-500 p-0 overflow-hidden'>
+        <DialogHeader className='pt-8 px-6'>
+          <div className='flex items-center justify-center'>
+            {isPdf && iconMap.get('pdf')}
+            {isImage && iconMap.get('image')}
+            {isVideo && iconMap.get('video')}
+          </div>
+
+          <DialogTitle className='text-2xl text-center font-bold'>
+            {isPdf && 'Send a PDF file'}
+            {isImage && 'Send an image'}
+            {isVideo && 'Send a video'}
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -146,14 +145,14 @@ export default function MessageFileModal() {
               <div className='flex items-center justify-center text-center'>
                 <FormField
                   control={form.control}
-                  name='fileUrls'
+                  name='fileUrl'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <FileUpload
-                          endpoint='messageFile'
-                          values={field.value}
+                        <MessageFileUpload
+                          fileType={fileType}
                           onChange={field.onChange}
+                          isLoading={isLoading}
                         />
                       </FormControl>
 
@@ -162,14 +161,43 @@ export default function MessageFileModal() {
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name='content'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='uppercase text-xs font-bold text-secondary-foreground/90'>
+                      Attach a message to your {fileType}
+                    </FormLabel>
+
+                    <FormControl>
+                      <Textarea
+                        autoComplete='off'
+                        disabled={isLoading}
+                        placeholder='Enter server name'
+                        {...field}
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
-            <DialogFooter className=' px-6 py-4'>
-              <Button variant='ghost' type='button' onClick={handleClose}>
+            <DialogFooter className='flex flex-col-reverse gap-y-2 px-6 py-4 '>
+              <Button
+                disabled={isLoading}
+                type='button'
+                variant='ghost'
+                onClick={handleClose}
+              >
                 Cancel
               </Button>
-              <Button variant='primary' disabled={isLoading}>
-                {isLoading ? 'Sending...' : 'Send'}
+
+              <Button type='submit' disabled={isLoading} variant='primary'>
+                {!isLoading ? 'Send' : 'Sending...'}
                 {isLoading && <Loader2 className='w-4 h-4 ml-2 animate-spin' />}
               </Button>
             </DialogFooter>

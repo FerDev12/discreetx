@@ -77,8 +77,8 @@ export function ServerMember({
       </div>
 
       <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
+        <Tooltip delayDuration={500}>
+          <TooltipTrigger asChild>
             <div
               className={cn(
                 'w-2 h-2 rounded-full bg-muted-foreground relative before:w-3 before:h-3 before:border before:rounded-full before:border-muted-foreground before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2',
@@ -88,7 +88,16 @@ export function ServerMember({
               )}
             />
           </TooltipTrigger>
-          <TooltipContent side='right' sideOffset={8}>
+          <TooltipContent
+            side='right'
+            sideOffset={8}
+            className={cn(
+              'text-xs font-medium',
+              isOnline && 'bg-teal-500 text-teal-50',
+              isIdle && 'bg-yellow-500 text-yellow-50',
+              !isOnline && !isIdle && 'bg-zinc-500 text-zinc-50'
+            )}
+          >
             {isOnline ? 'online' : isIdle ? 'idle' : 'offline'}
           </TooltipContent>
         </Tooltip>

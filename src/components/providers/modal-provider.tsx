@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 
 import CreateServerModal from '@/components/modals/create-server-modal';
@@ -29,20 +30,20 @@ export function ModalProvider() {
 
   return (
     <>
-      <CreateServerModal />
-      <InviteModal />
-      <EditServerModal />
-      <MembersModal />
-      <CreateChannelModal />
-      <LeaveServerModal />
-      <DeleteServerModal />
-      <DeleteChannelModal />
-      <EditChannelModal />
-      <MessageFileModal />
-      <DeleteMessageModal />
-      <CreateCallModal />
       <AnswerCallModal />
+      <CreateCallModal />
+      <CreateChannelModal />
       <CallEndedModal />
+      <CreateServerModal />
+      <DeleteChannelModal />
+      <DeleteMessageModal />
+      <DeleteServerModal />
+      <EditChannelModal />
+      <EditServerModal />
+      <InviteModal />
+      <MessageFileModal />
+      <MembersModal />
+      <LeaveServerModal />
     </>
   );
 }

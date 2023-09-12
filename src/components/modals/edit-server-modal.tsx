@@ -25,25 +25,16 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import FileUpload from '@/components/file-upload';
+import { ServerFileUpload } from '@/components/server-file-upload';
 import {
   EditServerModalData,
   useModalStore,
 } from '@/hooks/stores/use-modal-store';
-import { Server } from '@prisma/client';
+import { editServer } from '@/actions/server/edit';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
-  files: z
-    .array(
-      z.object({
-        name: z.string(),
-        size: z.number(),
-        url: z.string(),
-        key: z.string(),
-      })
-    )
-    .min(1, { message: 'Server image is required' }),
+  fileUrl: z.string().url('Value is not a valid url').nullable(),
 });
 
 export default function EditServerModal() {
@@ -55,28 +46,14 @@ export default function EditServerModal() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      files: [
-        {
-          name: '',
-          key: '',
-          url: '',
-          size: 0,
-        },
-      ],
+      fileUrl: '',
     },
   });
 
   useEffect(() => {
     if (server) {
       form.setValue('name', server.name);
-      form.setValue('files', [
-        {
-          name: 'temp-name',
-          size: 1234,
-          url: server.imageUrl,
-          key: 'temp-key',
-        },
-      ]);
+      form.setValue('fileUrl', server.imageUrl);
     }
   }, [server, form]);
 
@@ -90,10 +67,12 @@ export default function EditServerModal() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch<Server>(`/api/socket/servers/${server?.id}`, {
-        name: values.name,
-        imageUrl: values.files.at(0)?.url,
-      });
+      // await axios.patch<Server>(`/api/socket/servers/${server?.id}`, values);
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('imageUrl', values.fileUrl ?? server.imageUrl);
+      formData.append('serverId', server.id);
+      await editServer(formData);
 
       form.reset();
       onClose();
@@ -126,13 +105,13 @@ export default function EditServerModal() {
               <div className='flex items-center justify-center text-center'>
                 <FormField
                   control={form.control}
-                  name='files'
+                  name='fileUrl'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <FileUpload
+                        <ServerFileUpload
                           endpoint='serverImage'
-                          values={field.value}
+                          fileUrl={field.value}
                           onChange={field.onChange}
                         />
                       </FormControl>
