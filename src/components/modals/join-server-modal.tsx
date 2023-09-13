@@ -32,6 +32,10 @@ export function JoinServerModal({
     return null;
   }
 
+  const handleClose = () => {
+    router.push('/');
+  };
+
   const onJoin = async () => {
     if (isLoading) return;
 
@@ -59,7 +63,7 @@ export function JoinServerModal({
   };
 
   return (
-    <Dialog open>
+    <Dialog open onOpenChange={handleClose}>
       <DialogContent
         className='dark:bg-zinc-900 border-2 border-teal-500  overflow-hidden'
         hideCloseButton
@@ -86,11 +90,7 @@ export function JoinServerModal({
         </DialogHeader>
 
         <DialogFooter>
-          <Button
-            variant='ghost'
-            disabled={isLoading}
-            onClick={() => router.push(`/`)}
-          >
+          <Button variant='ghost' disabled={isLoading} onClick={handleClose}>
             No
           </Button>
           <Button variant='primary' disabled={isLoading} onClick={onJoin}>

@@ -98,13 +98,13 @@ export function ServerMember({
             side='right'
             sideOffset={8}
             className={cn(
-              'text-xs font-medium',
+              'text-xs font-bold',
               isOnline && 'bg-teal-500 text-teal-50',
               isIdle && 'bg-yellow-500 text-yellow-50',
               !isOnline && !isIdle && 'bg-zinc-500 text-zinc-50'
             )}
           >
-            {isOnline ? 'online' : isIdle ? 'idle' : 'offline'}
+            {isOnline ? 'Online' : isIdle ? 'Idle' : 'Offline'}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
