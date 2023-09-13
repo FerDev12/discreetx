@@ -279,8 +279,13 @@ export function ChatItem({
             {isVideo && (
               <div className='mt-2'>
                 <div className='relative z-10 hover:border-red-500 hover:border-2 rounded-sm h-44 w-80 overflow-hidden'>
-                  <video controls muted className='absolute inset-0'>
-                    <source src={fileUrl} type={`video/${fileType}`}></source>
+                  <video
+                    controls
+                    muted
+                    src={fileUrl}
+                    className='absolute inset-0'
+                  >
+                    {/* <source src={fileUrl} type={`video/${fileType}`}></source> */}
                   </video>
                 </div>
                 {fileUrl !== content && messageContent}

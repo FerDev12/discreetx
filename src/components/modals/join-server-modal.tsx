@@ -37,6 +37,7 @@ export function JoinServerModal({
 
     try {
       setIsLoading(true);
+
       const query = new URLSearchParams({
         serverId: server.id,
         inviteCode: server.inviteCode,
@@ -44,6 +45,7 @@ export function JoinServerModal({
 
       await axios.post(`/api/socket/members?${query}`);
 
+      router.refresh();
       router.push(`/servers/${server.id}`);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {

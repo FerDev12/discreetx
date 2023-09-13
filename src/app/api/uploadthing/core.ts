@@ -26,12 +26,7 @@ export const ourFileRouter = {
         file: file.url,
       });
     }),
-  messageVideo: f({
-    'video/mp4': { maxFileCount: 1, maxFileSize: '64MB' },
-    'video/webm': { maxFileCount: 1, maxFileSize: '64MB' },
-    'video/ogg': { maxFileCount: 1, maxFileSize: '64MB' },
-    'video/mpeg': { maxFileCount: 1, maxFileSize: '64MB' },
-  })
+  messageVideo: f({ video: { maxFileCount: 1, maxFileSize: '64MB' } })
     .middleware(handleAuth)
     .onUploadComplete(({ metadata, file }) => {
       console.log('[VIDEO UPLOAD]', {

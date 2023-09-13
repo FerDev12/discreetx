@@ -23,10 +23,12 @@ export function MessageFileUpload({
   onChange,
 }: MessageFileUploadProps) {
   const [file, setFile] = useState<UploadFileResponse | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
   const onDeleteFile = async () => {
     try {
+      setIsDeleting(true);
       const query = new URLSearchParams({
         imageId: file?.key ?? '',
       });
@@ -39,6 +41,8 @@ export function MessageFileUpload({
         return console.error(err.response?.data);
       }
       console.error(err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -68,7 +72,7 @@ export function MessageFileUpload({
             className='rounded-full absolute -top-2 -right-2 shadow-sm w-6 h-6 bg-rose-500'
             type='button'
             onClick={onDeleteFile}
-            disabled={isLoading}
+            disabled={isLoading || isDeleting}
           >
             <X className='w-3 h-3' />
           </Button>
@@ -80,27 +84,32 @@ export function MessageFileUpload({
 
   if (!!file && isVideo) {
     return (
-      <div className='relative'>
-        <div className='overflow-hidden rounded-sm h-44 w-80 border border-zinc-800 dark:border-zinc-200'>
-          <video autoPlay muted controls className='w-full h-full'>
-            <source
-              src={file.url}
-              type={`video/${file.url.split('.').at(-1)}`}
-            ></source>
-          </video>
-
-          <Button
-            size='icon'
-            variant='destructive'
-            className='rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4 bg-rose-500'
-            type='button'
-            onClick={onDeleteFile}
-            disabled={isLoading}
-          >
-            <X className='w-3 h-3' />
-          </Button>
+      <div className='relative h-44 w-80 mx-auto mb-4'>
+        <Button
+          size='icon'
+          variant='destructive'
+          className='z-10 rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4 bg-rose-500'
+          type='button'
+          onClick={onDeleteFile}
+          disabled={isLoading || isDeleting}
+        >
+          <X className='w-3 h-3' />
+        </Button>
+        <div className='overflow-hidden rounded-sm h-44 w-80 border border-zinc-800 dark:border-zinc-200 mx-auto'>
+          <video
+            autoPlay
+            muted
+            controls
+            src={file.url}
+            className='w-full h-full'
+          ></video>
         </div>
-        <p className='text-sm text-muted-foreground text-center'>{file.name}</p>
+
+        <p className='text-xs text-indigo-500 hover:underline mt-2 text-start overflow-hidden whitespace-nowrap text-ellipsis '>
+          <a target='_blank' href={file.url} rel='noreferrer noopener'>
+            {file.url}
+          </a>
+        </p>
       </div>
     );
   }
@@ -116,7 +125,7 @@ export function MessageFileUpload({
             className='rounded-full absolute -top-1 -right-1 shadow-sm w-4 h-4 bg-rose-500'
             type='button'
             onClick={onDeleteFile}
-            disabled={isLoading}
+            disabled={isLoading || isDeleting}
           >
             <X className='w-3 h-3' />
           </Button>
