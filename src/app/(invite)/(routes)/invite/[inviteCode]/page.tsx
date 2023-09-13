@@ -4,12 +4,30 @@ import { db } from '@/lib/db';
 import { redirectToSignIn } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import { Metadata } from 'next';
 
 type InviteCodePageProps = {
   params: {
     inviteCode: string;
   };
 };
+
+export async function generateMetadata({
+  params,
+}: InviteCodePageProps): Promise<Metadata> {
+  const server = await db.server.findFirst({
+    where: {
+      inviteCode: params.inviteCode,
+    },
+    select: {
+      name: true,
+    },
+  });
+
+  return {
+    title: `Join ${server?.name ?? 'Server'}!`,
+  };
+}
 
 export default async function InviteCodePage({ params }: InviteCodePageProps) {
   if (!params.inviteCode) {

@@ -2,16 +2,14 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
-import { ThemeProvider } from '@/components/providers/theme-provider';
 import { cn } from '@/lib/utils';
-import { ModalProvider } from '@/components/providers/modal-provider';
 import { Providers } from '@/components/providers';
 
 const font = Open_Sans({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Discord Clone',
-  description: 'A Next.js based Discord Clone',
+  title: 'Discreet',
+  description: 'A Next.js based Discord Clone App',
 };
 
 export default function RootLayout({

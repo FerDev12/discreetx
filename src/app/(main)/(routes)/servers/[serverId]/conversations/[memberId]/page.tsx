@@ -4,6 +4,7 @@ import { getOrCreateConversation } from '@/lib/conversation';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { redirectToSignIn } from '@clerk/nextjs';
+import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 type MemberIdPageProps = {
@@ -12,6 +13,28 @@ type MemberIdPageProps = {
     memberId: string;
   };
 };
+
+export async function generateMetadata({
+  params,
+}: MemberIdPageProps): Promise<Metadata> {
+  const member = await db.member.findUnique({
+    where: {
+      id: params.memberId,
+      serverId: params.serverId,
+    },
+    select: {
+      profile: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  return {
+    title: `${member?.profile?.name ?? 'Conversation'}`,
+  };
+}
 
 export default async function MemberIdPage({
   params: { serverId, memberId: otherMemberId },

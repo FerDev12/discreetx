@@ -38,7 +38,6 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
     const onServerDeleted = () => {
       router.push(`/servers/${serverId}`);
     };
-
     const onServerLeave = () => {
       queryClient.refetchQueries({
         queryKey: [`server:${serverId}:members`],
@@ -55,7 +54,6 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
         queryKey: [`server:${serverId}:channels`],
       });
     };
-
     const onChannelDeleted = (channelId: string) => {
       if ((params.channelId ?? '') === channelId) {
         router.push(`/servers/${serverId}`);

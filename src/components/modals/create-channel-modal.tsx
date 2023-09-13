@@ -51,7 +51,6 @@ const formSchema = z.object({
 
 export default function CreateChannelModal() {
   const router = useRouter();
-  const params = useParams();
   const { isOpen, onClose, type, data } = useModalStore();
 
   const { type: channelType, server } = data as CreateChannelModalData;
@@ -91,14 +90,14 @@ export default function CreateChannelModal() {
         serverId: server.id,
       });
 
-      const { data } = await axios.post<Server & { channels: Channel[] }>(
+      const { data } = await axios.post<Channel>(
         `/api/socket/channels?${query}`,
         values
       );
 
       form.reset();
       router.refresh();
-      router.push(`/servers/${data.id}/channels/${data.channels[0].id}`);
+      router.push(`/servers/${server.id}/channels/${data.id}`);
       onClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {

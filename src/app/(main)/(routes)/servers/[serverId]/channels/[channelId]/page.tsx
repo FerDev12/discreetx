@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { ChannelIdPageChildren } from './page-children';
+import { Metadata } from 'next';
 
 type ChannelIdPageProps = {
   params: {
@@ -11,6 +12,23 @@ type ChannelIdPageProps = {
     channelId: string;
   };
 };
+
+export async function generateMetadata({
+  params: { channelId },
+}: ChannelIdPageProps): Promise<Metadata> {
+  const channel = await db.channel.findUnique({
+    where: {
+      id: channelId,
+    },
+    select: {
+      name: true,
+    },
+  });
+
+  return {
+    title: `# ${channel?.name}`,
+  };
+}
 
 export default async function ChannelIdPage({
   params: { serverId, channelId },

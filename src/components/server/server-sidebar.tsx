@@ -160,6 +160,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
               channelType={ChannelType.TEXT}
               role={role}
               label='Text Channels'
+              server={server}
             />
 
             {textChannels.map((channel) => (
@@ -180,6 +181,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
               channelType={ChannelType.AUDIO}
               role={role}
               label='Audio Channels'
+              server={server}
             />
 
             {audioChannels.map((channel) => (
@@ -200,6 +202,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
               channelType={ChannelType.VIDEO}
               role={role}
               label='Video Channels'
+              server={server}
             />
 
             {videoChannels.map((channel) => (
@@ -217,7 +220,6 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
           <div className='mb-2'>
             <ServerSection
               sectionType='members'
-              channelType={ChannelType.VIDEO}
               role={role}
               label='Members'
               server={server}

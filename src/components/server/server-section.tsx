@@ -34,16 +34,17 @@ export function ServerSection({
           <button
             onClick={
               server &&
-              (() =>
+              (() => {
                 onOpen({
                   type: ModalType.CREATE_CHANNEL,
                   data: {
                     server,
                     type: channelType,
                   },
-                }))
+                });
+              })
             }
-            className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-400'
+            className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-400 z-10'
           >
             <Plus className='w-4 h-4' />
           </button>

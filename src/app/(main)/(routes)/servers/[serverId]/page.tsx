@@ -49,20 +49,5 @@ export default async function ServerIdPage({ params }: ServerIdPageProps) {
     );
   }
 
-  // if (initialChannel) {
-  //   axios
-  //     .patch(`/api/socket/servers/${server.id}`, {
-  //       eventType: 'server:member:joined',
-  //     })
-  //     .then((res) => res.data)
-  //     .catch((err) =>
-  //       console.error(isAxiosError(err) ? err.response?.data : err)
-  //     );
-
-  //   return redirect(
-  //     `/servers/${params.serverId}/channels/${initialChannel.id}`
-  //   );
-  // }
-
   return redirect(`/`);
 }

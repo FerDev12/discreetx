@@ -3,6 +3,7 @@ import { MediaRoom } from '@/components/media-room';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { redirectToSignIn } from '@clerk/nextjs';
+import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 type CallIdPageProps = {
@@ -12,6 +13,27 @@ type CallIdPageProps = {
     serverId: string;
   };
 };
+
+export async function generateMetadata({
+  params: { memberId },
+}: CallIdPageProps): Promise<Metadata> {
+  const member = await db.member.findUnique({
+    where: {
+      id: memberId,
+    },
+    select: {
+      profile: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  return {
+    title: `Call with ${member?.profile?.name}`,
+  };
+}
 
 export default async function CallIdPage({
   params: { callId, memberId, serverId },

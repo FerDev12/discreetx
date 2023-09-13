@@ -187,53 +187,55 @@ export function ChatMessages({
 
       <ScrollArea
         viewPortRef={chatRef}
-        viewPortClass='flex items-end px-4'
-        className='flex-1 py-4 h-full'
+        viewPortClass='h-full'
+        className='p-4 h-full'
       >
-        {!hasNextPage && <div className='flex-1' />}
+        <div className='h-full'>
+          {!hasNextPage && <div className='flex-1' />}
 
-        {!hasNextPage && <ChatWelcome type={props.type} name={name} />}
+          {!hasNextPage && <ChatWelcome type={props.type} name={name} />}
 
-        {hasNextPage && (
-          <div className='flex justify-center'>
-            {isFetchingNextPage ? (
-              <Loader2 className='h-6 w-6 text-zinc-500 animate-spin my-4' />
-            ) : (
-              <button
-                onClick={() => fetchNextPage()}
-                className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition text-xs my-4'
-              >
-                Load previous messages
-              </button>
-            )}
-          </div>
-        )}
+          {hasNextPage && (
+            <div className='flex justify-center'>
+              {isFetchingNextPage ? (
+                <Loader2 className='h-6 w-6 text-zinc-500 animate-spin my-4' />
+              ) : (
+                <button
+                  onClick={() => fetchNextPage()}
+                  className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition text-xs my-4'
+                >
+                  Load previous messages
+                </button>
+              )}
+            </div>
+          )}
 
-        <ul className='flex flex-col-reverse mt-auto'>
-          {optimisticMessages.map((message) => (
-            <ChatItem
-              key={message.id}
-              id={message.id}
-              content={message.content}
-              fileUrl={message.fileUrl}
-              sent={message.sent}
-              deleted={message.deleted}
-              timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
-              isUpdated={
-                'edited' in message
-                  ? !!message.edited
-                  : message.updatedAt !== message.createdAt
-              }
-              currentMember={currentMember}
-              member={message.member as Member & { profile: Profile }}
-              socketUrl={socketUrl}
-              socketQuery={socketQuery}
-              deleteOptimisticMessage={deleteOptimisiticMessage}
-            />
-          ))}
-        </ul>
+          <ul className='flex flex-col-reverse mt-auto'>
+            {optimisticMessages.map((message) => (
+              <ChatItem
+                key={message.id}
+                id={message.id}
+                content={message.content}
+                fileUrl={message.fileUrl}
+                sent={message.sent}
+                deleted={message.deleted}
+                timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                isUpdated={
+                  'edited' in message
+                    ? !!message.edited
+                    : message.updatedAt !== message.createdAt
+                }
+                currentMember={currentMember}
+                member={message.member as Member & { profile: Profile }}
+                socketUrl={socketUrl}
+                socketQuery={socketQuery}
+                deleteOptimisticMessage={deleteOptimisiticMessage}
+              />
+            ))}
+          </ul>
 
-        <div ref={bottomRef} />
+          <div ref={bottomRef} />
+        </div>
       </ScrollArea>
 
       {props.type === 'channel' ? (
