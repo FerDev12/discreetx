@@ -1,19 +1,13 @@
 import JSConfetti from 'js-confetti';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 export function useConfeti() {
-  const confettiRef = useRef<JSConfetti | null>(null);
+  const [confetti, setConfetti] = useState<JSConfetti | null>(null);
+
   useEffect(() => {
-    if (confettiRef.current) return;
-    const confetti = new JSConfetti();
-    confettiRef.current = confetti;
-  }, []);
+    if (confetti) return;
+    setConfetti(new JSConfetti());
+  }, [confetti]);
 
-  const play = () => confettiRef.current?.addConfetti();
-
-  return {
-    confetti: {
-      play,
-    },
-  };
+  return { confetti };
 }

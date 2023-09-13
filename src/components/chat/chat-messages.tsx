@@ -39,6 +39,7 @@ type ChatMessagesProps = {
       socketQuery: {
         channelId: string;
         serverId: string;
+        memberId: string;
       };
     }
   | {
@@ -48,6 +49,7 @@ type ChatMessagesProps = {
       paramKey: 'conversationId';
       socketUrl: string;
       socketQuery: {
+        serverId: string;
         conversationId: string;
         memberId: string;
       };
@@ -74,6 +76,7 @@ export function ChatMessages({
       : null;
 
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
+  const [animateWelcomeMessage, setAnimateWelcomeMessage] = useState('');
   const chatRef = useRef<ElementRef<'div'>>(null);
   const bottomRef = useRef<ElementRef<'div'>>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -88,22 +91,25 @@ export function ChatMessages({
   const { confetti } = useConfeti();
 
   useEffect(() => {
+    if (props.type === 'conversation') return;
+
     let timer = timeoutRef.current;
     if (Date.now() - new Date(currentMember.createdAt).getTime() < 10000) {
-      confetti.play();
+      confetti?.addConfetti();
       setShowWelcomeMessage(true);
+      setAnimateWelcomeMessage('animate-transform');
       if (timer) {
         clearTimeout(timer);
         timer = setTimeout(() => {
           setShowWelcomeMessage(false);
-        }, 10000);
+        }, 5000);
       }
     }
 
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [currentMember.createdAt, confetti]);
+  }, [currentMember.createdAt, confetti, props.type]);
 
   const messages: MessageWithMemberWithProfile[] = useMemo(
     () =>
@@ -168,7 +174,8 @@ export function ChatMessages({
       <div
         className={cn(
           'fixed top-0 left-1/2 -translate-x-1/2 border border-t-0 border-teal-500 rounded-b-sm py-2 px-4 bg-zinc-50 dark:bg-zinc-900 -translate-y-full',
-          showWelcomeMessage && 'translate-y-0 transition-transform'
+          showWelcomeMessage && 'translate-y-0',
+          animateWelcomeMessage
         )}
       >
         <h2 className='text-md text-center font-semibold'>

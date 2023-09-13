@@ -165,7 +165,7 @@ export function ChatItem({
         deleted && 'italic text-zinc-500 dark:text-zinc-400 text-xs mt-1'
       )}
     >
-      {isLink(optimisticContent) ? (
+      {/* {isLink(optimisticContent) ? (
         <a
           href={optimisticContent}
           className='text-indigo-500 text-sm hover:underline'
@@ -176,7 +176,25 @@ export function ChatItem({
         </a>
       ) : (
         optimisticContent
-      )}
+      )} */}
+      {optimisticContent
+        .split(' ')
+        .map((c, i) =>
+          isLink(c) ? (
+            <a
+              key={i}
+              href={c}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-indigo-500 text-sm hover:underline'
+            >
+              {c}
+            </a>
+          ) : (
+            c
+          )
+        )
+        .join(' ')}
 
       {isUpdated && !deleted && (
         <span className='text-[10px] mx-2 text-zinc-500 dark:text-zinc-400'>

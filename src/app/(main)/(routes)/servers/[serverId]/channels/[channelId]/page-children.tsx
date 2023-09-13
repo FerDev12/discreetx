@@ -32,6 +32,7 @@ export function ChannelIdPageChildren({
           socketQuery={{
             channelId: channel.id,
             serverId: channel.serverId,
+            memberId: member.id,
           }}
         />
       )}
