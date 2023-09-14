@@ -62,6 +62,7 @@ export function ServerMember({
           className='w-8 h-8 md:w-8 md:h-8'
           badgeCount={badgeCount}
         />
+
         <div className='flex flex-col items-start'>
           <p
             className={cn(
@@ -74,6 +75,7 @@ export function ServerMember({
           >
             {member.username}
           </p>
+
           {member.id === currentMember.id && (
             <span className='text-[8px]'>{'(YOU)'}</span>
           )}
@@ -81,32 +83,34 @@ export function ServerMember({
         {icon}
       </div>
 
-      <TooltipProvider>
-        <Tooltip delayDuration={500}>
-          <TooltipTrigger asChild>
-            <div
+      <div className='flex items-center gap-x-2'>
+        <TooltipProvider>
+          <Tooltip delayDuration={500}>
+            <TooltipTrigger asChild>
+              <div
+                className={cn(
+                  'w-2 h-2 rounded-full bg-muted-foreground relative before:w-3 before:h-3 before:border before:rounded-full before:border-muted-foreground before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2',
+                  isOnline &&
+                    'bg-teal-500  before:border-teal-500 before:animate-pulse',
+                  isIdle && 'bg-yellow-500 before:border-yellow-500'
+                )}
+              />
+            </TooltipTrigger>
+            <TooltipContent
+              side='right'
+              sideOffset={8}
               className={cn(
-                'w-2 h-2 rounded-full bg-muted-foreground relative before:w-3 before:h-3 before:border before:rounded-full before:border-muted-foreground before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2',
-                isOnline &&
-                  'bg-teal-500  before:border-teal-500 before:animate-pulse',
-                isIdle && 'bg-yellow-500 before:border-yellow-500'
+                'text-xs font-bold',
+                isOnline && 'bg-teal-500 text-teal-50',
+                isIdle && 'bg-yellow-500 text-yellow-50',
+                !isOnline && !isIdle && 'bg-zinc-500 text-zinc-50'
               )}
-            />
-          </TooltipTrigger>
-          <TooltipContent
-            side='right'
-            sideOffset={8}
-            className={cn(
-              'text-xs font-bold',
-              isOnline && 'bg-teal-500 text-teal-50',
-              isIdle && 'bg-yellow-500 text-yellow-50',
-              !isOnline && !isIdle && 'bg-zinc-500 text-zinc-50'
-            )}
-          >
-            {isOnline ? 'Online' : isIdle ? 'Idle' : 'Offline'}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+            >
+              {isOnline ? 'Online' : isIdle ? 'Idle' : 'Offline'}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
     </button>
   );
 }
