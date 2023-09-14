@@ -13,21 +13,6 @@ import {
 } from '@prisma/client';
 import { create } from 'zustand';
 
-// export type ModalType =
-//   | 'createServer'
-//   | 'invite'
-//   | 'editServer'
-//   | 'members'
-//   | 'createChannel'
-//   | 'leaveServer'
-//   | 'deleteServer'
-//   | 'deleteChannel'
-//   | 'editChannel'
-//   | 'messageFile'
-//   | 'deleteMessage'
-//   | 'createCall'
-//   | 'answerCall'
-//   | 'callEnded';
 export enum ModalType {
   CREATE_SERVER = 'createServer',
   INVITE = 'invite',
@@ -45,7 +30,7 @@ export enum ModalType {
   CALL_ENDED = 'callEnded',
 }
 
-// interface CreateServerMdoalData {}
+interface CreateServerMdoalData {}
 export interface EditServerModalData {
   server: Server;
 }

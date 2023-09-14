@@ -1,4 +1,5 @@
 'use server';
+
 import { BaseError } from '@/errors/base-error';
 import { InternalServerError } from '@/errors/internal-server-error';
 import { UnauthorizedError } from '@/errors/unauthorized-error';

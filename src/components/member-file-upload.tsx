@@ -27,21 +27,12 @@ type MemberFileUploadProps = {
   onChange: (fileUrl: string) => void;
 };
 
+const baseUrl = 'https://xdiscreet.vercel.app';
+
 export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
   const [file, setFile] = useState<UploadFileResponse | null>(null);
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [baseUrl, setBaseUrl] = useState<string>(
-    'https://xdiscreet.vercel.app'
-  );
-
-  useEffect(() => {
-    setBaseUrl(
-      new URL(
-        process.env.NEXT_PUBLIC_VERCEL_URL ?? 'https://xdiscreet.vercel.app'
-      ).origin
-    );
-  }, []);
 
   const onDeleteImage = async () => {
     if (!file) return;
