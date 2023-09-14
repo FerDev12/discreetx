@@ -32,6 +32,10 @@ export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  const baseUrl = new URL(
+    process.env.NEXT_PUBLIC_VERCEL_URL ?? 'https://xdiscreet.vercel.app'
+  ).origin;
+
   const onDeleteImage = async () => {
     if (!file) return;
 
@@ -80,10 +84,7 @@ export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
               setUploadingImage(false);
               setFile(null);
               setSelectedAvatar(val);
-              onChange(
-                (process.env.NEXT_PUBLIC_VERCEL_URL ??
-                  'https://xdiscreet.vercel.app') + `/avatars/${val}.png`
-              );
+              onChange(baseUrl + `/avatars/${val}.png`);
               onDeleteImage();
             }}
             className={cn(
@@ -92,12 +93,7 @@ export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
             )}
           >
             <Avatar className='h-6 w-6'>
-              <AvatarImage
-                src={
-                  (process.env.NEXT_PUBLIC_VERCEL_URL ??
-                    'https://xdiscreet.vercel.app') + `/avatars/${val}.png`
-                }
-              />
+              <AvatarImage src={baseUrl + `/avatars/${val}.png`} />
               <AvatarFallback>
                 <UserCircle2 className='text-muted-foreground' />
               </AvatarFallback>
