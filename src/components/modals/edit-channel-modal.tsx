@@ -90,13 +90,13 @@ export default function EditChannelModal() {
         serverId: server?.id ?? '',
       });
 
-      const { data } = await axios.patch<Server>(
+      await axios.patch<Server>(
         `/api/socket/channels/${channel?.id}?${query}`,
         values
       );
 
       form.reset();
-      router.push(`/servers/${data.id}`);
+      router.refresh();
       onClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {

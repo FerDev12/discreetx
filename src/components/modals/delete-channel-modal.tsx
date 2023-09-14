@@ -49,7 +49,7 @@ export default function DeleteChannelModal() {
       await axios.delete(`/api/socket/channels/${channel?.id}?${query}`);
       onClose();
       router.refresh();
-      router.push(`/servers/${server?.id}`);
+      router.replace(`/servers/${server?.id}`);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);

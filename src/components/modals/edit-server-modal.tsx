@@ -31,6 +31,7 @@ import {
   useModalStore,
 } from '@/hooks/stores/use-modal-store';
 import { editServer } from '@/actions/server/edit';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
@@ -38,6 +39,7 @@ const formSchema = z.object({
 });
 
 export default function EditServerModal() {
+  const router = useRouter();
   const { isOpen, onClose, type, data } = useModalStore();
   const { server } = data as EditServerModalData;
 
@@ -75,6 +77,7 @@ export default function EditServerModal() {
       await editServer(formData);
 
       form.reset();
+      router.refresh();
       onClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
