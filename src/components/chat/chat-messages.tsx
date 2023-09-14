@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Member, Profile } from '@prisma/client';
+import { Member, Message, Profile } from '@prisma/client';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatInput } from './chat-input';
@@ -27,7 +27,7 @@ const DATE_FORMAT = 'd MMM yyyy, HH:mm';
 
 type ChatMessagesProps = {
   name: string;
-  currentMember: MemberWithProfile;
+  currentMember: Member;
   chatId: string;
   paramValue: string;
 } & (
@@ -98,8 +98,10 @@ export function ChatMessages({
       confetti?.addConfetti();
       setShowWelcomeMessage(true);
       setAnimateWelcomeMessage('animate-transform');
+
       if (timer) {
         clearTimeout(timer);
+
         timer = setTimeout(() => {
           setShowWelcomeMessage(false);
         }, 5000);
@@ -111,11 +113,11 @@ export function ChatMessages({
     };
   }, [currentMember.createdAt, confetti, props.type]);
 
-  const messages: MessageWithMemberWithProfile[] = useMemo(
+  const messages: (Message & { member: Member })[] = useMemo(
     () =>
       (
         data?.pages.flat() as {
-          items: MessageWithMemberWithProfile[];
+          items: (Message & { member: Member })[];
           nextCursor: string | null;
         }[]
       )?.flatMap(({ items }) => items) ?? [],
@@ -133,7 +135,7 @@ export function ChatMessages({
     count: optimisticMessages.length,
   });
 
-  const addOptimisticMessage = (message: MessageWithMemberWithProfile) =>
+  const addOptimisticMessage = (message: Message & { member: Member }) =>
     setOptimisticMessages((state) => [message, ...state]);
 
   const deleteOptimisiticMessage = (messageId: string) =>
@@ -171,71 +173,67 @@ export function ChatMessages({
 
   return (
     <>
-      <div
-        className={cn(
-          'fixed top-0 left-1/2 -translate-x-1/2 border border-t-0 border-teal-500 rounded-b-sm py-2 px-4 bg-zinc-50 dark:bg-zinc-900 -translate-y-full',
-          showWelcomeMessage && 'translate-y-0',
-          animateWelcomeMessage
-        )}
-      >
-        <h2 className='text-md text-center font-semibold'>
-          Welcome,{' '}
-          <span className='text-teal-500'>{currentMember.profile.name}</span>!!!
-          🥳🎉🎊
-        </h2>
-      </div>
-
-      <ScrollArea
-        viewPortRef={chatRef}
-        viewPortClass='h-full'
-        className='p-4 h-full'
-      >
-        <div className='h-full'>
-          {!hasNextPage && <div className='flex-1' />}
-
-          {!hasNextPage && <ChatWelcome type={props.type} name={name} />}
-
-          {hasNextPage && (
-            <div className='flex justify-center'>
-              {isFetchingNextPage ? (
-                <Loader2 className='h-6 w-6 text-zinc-500 animate-spin my-4' />
-              ) : (
-                <button
-                  onClick={() => fetchNextPage()}
-                  className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition text-xs my-4'
-                >
-                  Load previous messages
-                </button>
-              )}
-            </div>
+      {showWelcomeMessage && (
+        <div
+          className={cn(
+            'fixed top-0 left-1/2 -translate-x-1/2 border border-t-0 border-teal-500 rounded-b-sm py-2 px-4 bg-zinc-50 dark:bg-zinc-900 -translate-y-full',
+            showWelcomeMessage && 'translate-y-0',
+            animateWelcomeMessage
           )}
-
-          <ul className='flex flex-col-reverse mt-auto'>
-            {optimisticMessages.map((message) => (
-              <ChatItem
-                key={message.id}
-                id={message.id}
-                content={message.content}
-                fileUrl={message.fileUrl}
-                sent={message.sent}
-                deleted={message.deleted}
-                timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
-                isUpdated={
-                  'edited' in message
-                    ? !!message.edited
-                    : message.updatedAt !== message.createdAt
-                }
-                currentMember={currentMember}
-                member={message.member as Member & { profile: Profile }}
-                socketUrl={socketUrl}
-                socketQuery={socketQuery}
-                deleteOptimisticMessage={deleteOptimisiticMessage}
-              />
-            ))}
-          </ul>
-
-          <div ref={bottomRef} />
+        >
+          <h2 className='text-md text-center font-semibold'>
+            Welcome,{' '}
+            <span className='text-teal-500'>{currentMember.username}</span>!!!
+            🥳🎉🎊
+          </h2>
         </div>
+      )}
+
+      <ScrollArea viewPortRef={chatRef} className='p-4 h-full'>
+        {!hasNextPage && <div className='flex-1' />}
+
+        {!hasNextPage && <ChatWelcome type={props.type} name={name} />}
+
+        {hasNextPage && (
+          <div className='flex justify-center'>
+            {isFetchingNextPage ? (
+              <Loader2 className='h-6 w-6 text-zinc-500 animate-spin my-4' />
+            ) : (
+              <button
+                onClick={() => fetchNextPage()}
+                className='text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition text-xs my-4'
+              >
+                Load previous messages
+              </button>
+            )}
+          </div>
+        )}
+
+        <ul className='flex flex-col-reverse mt-auto'>
+          {optimisticMessages.map((message) => (
+            <ChatItem
+              key={message.id}
+              id={message.id}
+              content={message.content}
+              fileUrl={message.fileUrl}
+              sent={message.sent}
+              deleted={message.deleted}
+              timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+              isUpdated={
+                'edited' in message
+                  ? !!message.edited
+                  : message.updatedAt !== message.createdAt
+              }
+              currentMember={currentMember}
+              member={message.member as Member & { profile: Profile }}
+              socketUrl={socketUrl}
+              socketQuery={socketQuery}
+              deleteOptimisticMessage={deleteOptimisiticMessage}
+            />
+          ))}
+        </ul>
+
+        <div ref={bottomRef} />
       </ScrollArea>
 
       {props.type === 'channel' ? (

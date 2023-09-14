@@ -11,13 +11,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
+import { Member, Message } from '@prisma/client';
 
 interface MessageFileModalProps {
   apiUrl: string;
   query: Record<string, string>;
   channelId: string;
-  member: MemberWithProfile;
-  addOptimisticMessage: (message: MessageWithMemberWithProfile) => void;
+  member: Member;
+  addOptimisticMessage: (message: Message & { member: Member }) => void;
 }
 
 export function MessageFileUpload({

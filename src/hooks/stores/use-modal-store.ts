@@ -3,7 +3,14 @@ import {
   MessageWithMemberWithProfile,
   ServerWithMembersWithProfiles,
 } from '@/types';
-import { CallType, Channel, ChannelType, Member, Server } from '@prisma/client';
+import {
+  CallType,
+  Channel,
+  ChannelType,
+  Member,
+  Message,
+  Server,
+} from '@prisma/client';
 import { create } from 'zustand';
 
 // export type ModalType =
@@ -97,8 +104,8 @@ export interface MessageFileModalData {
   apiUrl: string;
   query: Record<string, string>;
   channelId: string;
-  member: MemberWithProfile;
-  addOptimisticMessage: (message: MessageWithMemberWithProfile) => void;
+  member: Member;
+  addOptimisticMessage: (message: Message & { member: Member }) => void;
 }
 
 type ModalDataType =

@@ -130,8 +130,8 @@ export default async function CallIdPage({
         currentMember={currentMember}
         otherMember={otherMember}
         serverId={serverId}
-        name={otherMember.profile.name}
-        imageUrl={otherMember.profile.imageUrl}
+        name={otherMember.username}
+        imageUrl={otherMember.avatarUrl}
         callActive={call.active}
         callId={call.id}
         callType={call.type}

@@ -16,6 +16,11 @@ const formSchema = z.object({
     .string()
     .url('Value is not a valid url')
     .min(1, { message: 'Server image is required' }),
+  username: z.string().min(1, { message: 'Username is required' }),
+  avatarUrl: z
+    .string()
+    .url('Value is not a valid url')
+    .min(1, { message: 'Avatar is required' }),
 });
 
 export async function createServer(formData: FormData) {
@@ -29,13 +34,15 @@ export async function createServer(formData: FormData) {
     const formResult = formSchema.safeParse({
       name: formData.get('name'),
       imageUrl: formData.get('imageUrl'),
+      username: formData.get('username'),
+      avatarUrl: formData.get('avatarUrl'),
     });
 
     if (!formResult.success) {
       throw new ValidationError(formResult.error.errors);
     }
 
-    const { name, imageUrl } = formResult.data;
+    const { name, imageUrl, username, avatarUrl } = formResult.data;
 
     const server = await db.server.create({
       data: {
@@ -52,7 +59,14 @@ export async function createServer(formData: FormData) {
           ],
         },
         members: {
-          create: [{ profileId: profile.id, role: MemberRole.ADMIN }],
+          create: [
+            {
+              profileId: profile.id,
+              role: MemberRole.ADMIN,
+              username,
+              avatarUrl,
+            },
+          ],
         },
       },
     });

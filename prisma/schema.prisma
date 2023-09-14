@@ -17,7 +17,7 @@ model Profile {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   servers   Server[]
-  members   Member[] 
+  members   Member[]
   channels  Channel[]
 }
 
@@ -30,7 +30,7 @@ model Server {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   profile       Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  members       Member[] 
+  members       Member[]
   channels      Channel[]
   conversations Conversation[]
 
@@ -39,8 +39,8 @@ model Server {
 
 model Member {
   id                     String          @id @default(uuid())
-  username String 
-  avatarUrl String
+  username               String
+  avatarUrl              String
   role                   MemberRole      @default(GUEST)
   profileId              String
   serverId               String
@@ -54,9 +54,9 @@ model Member {
   createdAt              DateTime        @default(now())
   updatedAt              DateTime        @updatedAt
 
+  @@unique([username, serverId])
   @@index([profileId])
   @@index([serverId])
-  @@unique([username, serverId])
 }
 
 model Channel {

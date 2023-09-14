@@ -55,11 +55,7 @@ export default async function MemberIdPage({
       },
     },
     include: {
-      members: {
-        include: {
-          profile: true,
-        },
-      },
+      members: true,
     },
   });
 
@@ -98,9 +94,9 @@ export default async function MemberIdPage({
       <ChatHeader
         serverId={serverId}
         conversationId={conversation.id}
-        name={otherMember.profile.name}
+        name={otherMember.username}
         type='conversation'
-        imageUrl={otherMember.profile.imageUrl}
+        imageUrl={otherMember.avatarUrl}
         currentMember={currentMember}
         otherMember={otherMember}
         callActive={activeCall?.active}
@@ -112,7 +108,7 @@ export default async function MemberIdPage({
         type='conversation'
         currentMember={currentMember}
         otherMember={otherMember}
-        name={otherMember.profile.name}
+        name={otherMember.username}
         chatId={conversation.id}
         apiUrl='/api/direct-messages'
         paramKey='conversationId'

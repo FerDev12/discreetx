@@ -4,7 +4,7 @@ import { Video, VideoOff } from 'lucide-react';
 import { ActionTooltip } from '../action-tooltip';
 import { useConversationStore } from '@/hooks/stores/use-conversation-store';
 import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
-import { CallType } from '@prisma/client';
+import { CallType, Member } from '@prisma/client';
 import { MemberWithProfile } from '@/types';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -22,7 +22,7 @@ export function ChatVideoButton({
   callActive?: boolean;
   serverId: string;
   conversationId: string;
-  otherMember: MemberWithProfile;
+  otherMember: Member;
 }) {
   const { activeCall, setActiveCall } = useConversationStore();
   const { onOpen } = useModalStore();
@@ -39,7 +39,7 @@ export function ChatVideoButton({
         data: {
           conversationId,
           serverId,
-          name: otherMember.profile.name,
+          name: otherMember.username,
           type: CallType.VIDEO,
         },
       });

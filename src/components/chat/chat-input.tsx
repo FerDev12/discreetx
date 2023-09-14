@@ -15,15 +15,15 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { cn } from '@/lib/utils';
-import { Member } from '@prisma/client';
+import { Member, Message } from '@prisma/client';
 
 type ChatInputProps = {
   apiUrl: string;
   query: Record<string, any>;
   name: string;
-  currentMember: MemberWithProfile;
+  currentMember: Member;
   chatId: string;
-  addOptimisticMessage: (message: MessageWithMemberWithProfile) => void;
+  addOptimisticMessage: (message: Message & { member: Member }) => void;
 } & (
   | {
       type: 'channel';

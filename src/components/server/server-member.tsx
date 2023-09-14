@@ -5,14 +5,13 @@ import { Member, MemberRole } from '@prisma/client';
 import { ShieldAlert, ShieldCheck } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
-import { UserAvatar } from '../user-avatar';
+import { UserAvatar } from '@/components/user-avatar';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../ui/tooltip';
-import { MemberWithSimpleProfile } from '@/types';
+} from '@/components/ui/tooltip';
 
 const roleIconMap = new Map<MemberRole, ReactNode>();
 roleIconMap.set(MemberRole.GUEST, null);
@@ -30,8 +29,8 @@ export function ServerMember({
   badgeCount,
   currentMember,
 }: {
-  currentMember: MemberWithSimpleProfile;
-  member: MemberWithSimpleProfile;
+  currentMember: Member;
+  member: Member;
   badgeCount?: number;
 }) {
   const params = useParams();
@@ -59,7 +58,7 @@ export function ServerMember({
     >
       <div className='flex items-center gap-x-2'>
         <UserAvatar
-          src={member.profile.imageUrl}
+          src={member.avatarUrl}
           className='w-8 h-8 md:w-8 md:h-8'
           badgeCount={badgeCount}
         />
@@ -73,7 +72,7 @@ export function ServerMember({
                 'text-teal-500 dark:text-teal-500'
             )}
           >
-            {member.profile.name}
+            {member.username}
           </p>
           {member.id === currentMember.id && (
             <span className='text-[8px]'>{'(YOU)'}</span>

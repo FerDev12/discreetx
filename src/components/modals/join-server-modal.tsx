@@ -13,18 +13,26 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Member, Server } from '@prisma/client';
-import { Loader2, ServerIcon } from 'lucide-react';
+import { ServerIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '../ui/input';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem } from '../ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
+import { MemberFileUpload } from '../member-file-upload';
 
 const formSchema = z.object({
-  name: z.string().min(1, { message: 'Name is required' }),
-  imageUrl: z.string().url().min(1, { message: 'Image is requried' }),
+  username: z.string().min(1, { message: 'Username is required' }),
+  avatarUrl: z.string().url().min(1, { message: 'Image is requried' }),
 });
 
 export function JoinServerModal({
@@ -40,8 +48,8 @@ export function JoinServerModal({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      imageUrl: '',
+      username: '',
+      avatarUrl: '',
     },
   });
 
@@ -63,7 +71,7 @@ export function JoinServerModal({
     router.push('/');
   };
 
-  const onJoin = async () => {
+  const onJoin = async (values: z.infer<typeof formSchema>) => {
     if (isLoading) return;
 
     try {
@@ -74,7 +82,7 @@ export function JoinServerModal({
         inviteCode: server.inviteCode,
       });
 
-      await axios.post(`/api/socket/members?${query}`);
+      await axios.post(`/api/socket/members?${query}`, values);
 
       router.refresh();
       router.push(`/servers/${server.id}`);
@@ -95,7 +103,7 @@ export function JoinServerModal({
         className='dark:bg-zinc-900 border-2 border-teal-500  overflow-hidden'
         hideCloseButton
       >
-        <DialogHeader className='pt-8 px-6 items-center'>
+        <DialogHeader className='pt-8 px-6 items-center mb-4'>
           <div className='flex flex-col gap-y-4 mb-4'>
             <Avatar className='h-12 w-12'>
               <AvatarImage src={server.imageUrl} alt='Server image' />
@@ -107,42 +115,55 @@ export function JoinServerModal({
             <h2 className='text-lg text-teal-500 text-center'>{server.name}</h2>
           </div>
 
-          {!joinServer ? (
-            <>
-              <DialogTitle className='text-2xl text-center font-bold'>
-                Join Server?
-              </DialogTitle>
+          <DialogTitle className='text-2xl text-center font-bold'>
+            Join Server?
+          </DialogTitle>
 
-              <DialogDescription className='text-sm text-muted-foreground'>
-                {server.members.length} members
-              </DialogDescription>
-            </>
-          ) : (
-            <>
-              <DialogTitle className='text-2xl text-center font-bold'>
-                How do you want to be called?
-              </DialogTitle>
-
-              <Form {...form}>
-                <form
-                  id='form_join-server'
-                  onSubmit={form.handleSubmit(onJoin)}
-                >
-                  <FormField
-                    name='name'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input type='text' {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </form>
-              </Form>
-            </>
-          )}
+          <DialogDescription className='text-sm text-muted-foreground'>
+            {server.members.length} members
+          </DialogDescription>
         </DialogHeader>
+
+        {joinServer && (
+          <Form {...form}>
+            <form
+              id='form_join-server'
+              onSubmit={form.handleSubmit(onJoin)}
+              className='flex flex-col items-center space-y-8'
+            >
+              <FormField
+                control={form.control}
+                name='username'
+                render={({ field }) => (
+                  <FormItem className='w-full'>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='text'
+                        placeholder='How do you want to be called?'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='avatarUrl'
+                render={({ field }) => (
+                  <FormItem className='w-full'>
+                    <FormControl>
+                      <MemberFileUpload onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        )}
 
         <DialogFooter>
           {!joinServer ? (

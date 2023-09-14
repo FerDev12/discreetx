@@ -55,11 +55,6 @@ export default async function ChannelIdPage({
             id: channelId,
           },
         },
-        members: {
-          include: {
-            profile: true,
-          },
-        },
       },
     }),
     db.member.findFirst({

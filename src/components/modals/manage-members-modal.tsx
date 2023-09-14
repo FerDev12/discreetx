@@ -37,13 +37,11 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MemberRole } from '@prisma/client';
+import { Member, MemberRole, Server } from '@prisma/client';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 
 export default function MembersModal() {
-  const router = useRouter();
   const [loadingId, setLoadingId] = useState('');
   const { isOpen, type, data, onOpen, onClose } = useModalStore();
   const user = useUser();
@@ -108,6 +106,21 @@ export default function MembersModal() {
     }
   };
 
+  const orderedServerMembers = server?.members.sort((a, b) => {
+    if (
+      a.role === MemberRole.ADMIN &&
+      (b.role === MemberRole.MODERATOR || b.role === MemberRole.GUEST)
+    ) {
+      return -1;
+    }
+
+    if (a.role === MemberRole.MODERATOR && b.role === MemberRole.GUEST) {
+      return -1;
+    }
+
+    return 0;
+  });
+
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className='dark:bg-zinc-900 border-teal-500 border-2 overflow-hidden'>
@@ -123,24 +136,20 @@ export default function MembersModal() {
 
         <ScrollArea className='mt-8 max-h-[420px] pr-6'>
           <ul className='flex flex-col space-y-6'>
-            {members?.map((member) => (
+            {orderedServerMembers?.map((member) => (
               <li key={member.id} className='flex justify-between items-center'>
                 <div className='flex items-center justify-between space-x-4'>
-                  <UserAvatar src={member.profile.imageUrl} />
+                  <UserAvatar src={member.avatarUrl} />
 
                   <div className='flex flex-col space-y-1'>
                     <div className='flex space-x-2 items-center'>
-                      <p className='text-md'>{member.profile.name} </p>
+                      <p className='text-md'>{member.username} </p>
 
                       {roleIconMap.get(member.role)}
                       {member.profile.name === user?.user?.fullName && (
                         <span className='text-xs'>{'(YOU)'}</span>
                       )}
                     </div>
-
-                    <p className='text-xs text-muted-foreground'>
-                      {member.profile.email}
-                    </p>
                   </div>
                 </div>
                 {server?.profileId !== member.profileId &&

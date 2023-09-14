@@ -217,7 +217,7 @@ export function ChatItem({
             onClick={onMemberClick}
             className='cursor-pointer hover:drop-shadow-md transition'
           >
-            <UserAvatar src={member.profile.imageUrl} />
+            <UserAvatar src={member.avatarUrl} />
           </div>
 
           <div className='flex flex-col w-full'>
@@ -230,7 +230,7 @@ export function ChatItem({
                     isOwner && 'dark:text-teal-300/90 text-teal-700/90'
                   )}
                 >
-                  {member.profile.name}
+                  {member.username}
                 </p>
 
                 <ActionTooltip label={member.role}>
