@@ -101,11 +101,11 @@ export function ChatMessages({
 
       if (timer) {
         clearTimeout(timer);
-
-        timer = setTimeout(() => {
-          setShowWelcomeMessage(false);
-        }, 5000);
       }
+
+      timer = setTimeout(() => {
+        setShowWelcomeMessage(false);
+      }, 5000);
     }
 
     return () => {
