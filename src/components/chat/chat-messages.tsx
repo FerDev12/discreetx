@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { Loader2, ServerCrash } from 'lucide-react';
+import { Loader2, ServerCrash, X } from 'lucide-react';
 import {
   ElementRef,
   experimental_useOptimistic,
@@ -105,7 +105,7 @@ export function ChatMessages({
 
       timer = setTimeout(() => {
         setShowWelcomeMessage(false);
-      }, 5000);
+      }, 10000);
     }
 
     return () => {
