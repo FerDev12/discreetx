@@ -74,6 +74,7 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
 
     const onMemberUpdated = (member?: Member) => {
       if (!member) return;
+      if (isOpen && type === ModalType.MANAGE_MEMBERS) return;
       if (member.profileId === profileId) {
         queryClient.refetchQueries([`server:${serverId}:channels`]);
       }

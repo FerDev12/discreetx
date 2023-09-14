@@ -100,7 +100,7 @@ export default function AnswerCallModal() {
       <DialogContent className='dark:bg-zinc-900 border-2 border-indigo-500 overflow-hidden'>
         <DialogHeader className='pt-8 px-6'>
           <DialogTitle className='text-2xl text-center font-bold'>
-            Anser {callType?.toLowerCase()} call from {from?.name}?
+            Answer {callType?.toLowerCase()} call from {from?.name}?
           </DialogTitle>
         </DialogHeader>
 

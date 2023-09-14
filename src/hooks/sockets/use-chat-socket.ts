@@ -1,11 +1,8 @@
 import { useSocket } from '@/components/providers/socket-provider';
-import { Call, Conversation, Member, Message, Profile } from '@prisma/client';
+import { Member, Message, Profile } from '@prisma/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useConversationStore } from '../stores/use-conversation-store';
-import { ModalType, useModalStore } from '../stores/use-modal-store';
-import { useParams, useRouter } from 'next/navigation';
-import { MemberWithProfile } from '@/types';
 
 type ChatSocketProps = {
   addKey: string;

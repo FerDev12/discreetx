@@ -63,6 +63,7 @@ export default function MembersModal() {
 
       const query = new URLSearchParams({
         serverId: server?.id ?? '',
+        memberId,
       });
 
       const { data } = await axios.patch(

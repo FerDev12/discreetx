@@ -1,11 +1,13 @@
 'use client';
 
 import { ReactNode } from 'react';
+
 import { ThemeProvider } from './theme-provider';
 import { ModalProvider } from './modal-provider';
-import { Toaster } from '@/components/ui/toaster';
 import { SocketProvider } from './socket-provider';
 import { QueryProvider } from './query-provider';
+import { Toaster } from '@/components/ui/toaster';
+import { Notifications } from '@/components/notification';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -15,6 +17,7 @@ export function Providers({ children }: { children: ReactNode }) {
           <ModalProvider />
           {children}
           <Toaster />
+          <Notifications />
         </ThemeProvider>
       </QueryProvider>
     </SocketProvider>

@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ServerIcon } from 'lucide-react';
+import { Loader2, ServerIcon } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -45,6 +45,7 @@ export function JoinServerModal({
   const [isLoading, setIsLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [joinServer, setJoinServer] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,10 +63,6 @@ export function JoinServerModal({
       setJoinServer(false);
     }
   }, [searchParams]);
-
-  if (!isMounted) {
-    return null;
-  }
 
   const handleClose = () => {
     router.push('/');
@@ -96,6 +93,10 @@ export function JoinServerModal({
       setIsLoading(false);
     }
   };
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Dialog open onOpenChange={handleClose}>
@@ -217,7 +218,8 @@ export function JoinServerModal({
                 variant='primary'
                 disabled={isLoading}
               >
-                Join Server!
+                {isLoading ? 'Joining...' : 'Join Server!'}
+                {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
               </Button>
             </>
           )}
