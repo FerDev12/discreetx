@@ -13,22 +13,28 @@ type MediaRoomProps = {
   chatId: string;
   video: boolean;
   audio: boolean;
+  username: string;
 };
 
-export function MediaRoom({ chatId, video, audio, callId }: MediaRoomProps) {
-  const { user } = useUser();
+export function MediaRoom({
+  chatId,
+  video,
+  audio,
+  callId,
+  username,
+}: MediaRoomProps) {
   const router = useRouter();
   const [token, setToken] = useState('');
 
   useEffect(() => {
-    if (!user?.firstName || !user?.lastName) return;
+    // if (!user?.firstName || !user?.lastName) return;
 
-    const name = `${user.firstName} ${user.lastName}`;
+    // const name = `${user.firstName} ${user.lastName}`;
 
     (async () => {
       try {
         const resp = await fetch(
-          `/api/livekit?room=${chatId}&username=${name}`
+          `/api/livekit?room=${chatId}&username=${username}`
         );
         const data = await resp.json();
 
@@ -37,7 +43,7 @@ export function MediaRoom({ chatId, video, audio, callId }: MediaRoomProps) {
         console.error(err);
       }
     })();
-  }, [user?.firstName, user?.lastName, chatId]);
+  }, [username, chatId]);
 
   const onDisconnect = async () => {
     if (!callId) return;

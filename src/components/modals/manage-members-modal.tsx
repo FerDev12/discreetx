@@ -37,23 +37,23 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Member, MemberRole, Server } from '@prisma/client';
+import { MemberRole } from '@prisma/client';
 import axios from 'axios';
-import { useUser } from '@clerk/nextjs';
+import { useCurrentProfile } from '@/hooks/use-current-profile';
+
+const roleIconMap = new Map();
+roleIconMap.set('GUEST', null);
+roleIconMap.set(
+  'MODERATOR',
+  <ShieldCheck className='h-4 w-4 ml-3 text-indigo-500' />
+);
+roleIconMap.set('ADMIN', <ShieldAlert className='h-4 w-4 text-rose-500' />);
 
 export default function MembersModal() {
   const [loadingId, setLoadingId] = useState('');
   const { isOpen, type, data, onOpen, onClose } = useModalStore();
-  const user = useUser();
   const { server } = data as ManageMembersModalData;
-  const roleIconMap = new Map();
-  roleIconMap.set('GUEST', null);
-  roleIconMap.set(
-    'MODERATOR',
-    <ShieldCheck className='h-4 w-4 ml-3 text-indigo-500' />
-  );
-  roleIconMap.set('ADMIN', <ShieldAlert className='h-4 w-4 text-rose-500' />);
-
+  const profile = useCurrentProfile();
   const isModalOpen = isOpen && type === ModalType.MANAGE_MEMBERS;
   const members = (server as ServerWithMembersWithProfiles)?.members;
 
@@ -146,7 +146,7 @@ export default function MembersModal() {
                       <p className='text-md'>{member.username} </p>
 
                       {roleIconMap.get(member.role)}
-                      {member.profile.name === user?.user?.fullName && (
+                      {member.profile.id === profile?.id && (
                         <span className='text-xs'>{'(YOU)'}</span>
                       )}
                     </div>

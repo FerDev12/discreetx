@@ -14,6 +14,7 @@ import { redirectToSignIn } from '@clerk/nextjs';
 import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import { ServerMembers } from './server-members';
+import { getServer } from '@/lib/get-server';
 
 const iconMap = new Map<ChannelType, ReactNode>();
 iconMap.set(ChannelType.TEXT, <Hash className='mr-2 w-4 h-4' />);
@@ -38,30 +39,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
     return redirectToSignIn();
   }
 
-  const server = await db.server.findFirst({
-    where: {
-      id: serverId,
-      members: {
-        some: {
-          profileId: profile.id,
-        },
-      },
-    },
-    include: {
-      channels: true,
-      members: {
-        include: {
-          profile: {
-            select: {
-              id: true,
-              name: true,
-              imageUrl: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  const server = await getServer(serverId, profile.id);
 
   if (!server) {
     return redirect('/');

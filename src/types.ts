@@ -13,8 +13,6 @@ export type ServerWithMembersWithConversations = Server & {
 export type MemberWithSimpleProfile = Member & {
   profile: {
     id: string;
-    name: string;
-    imageUrl: string;
   };
 };
 

@@ -26,7 +26,7 @@ export async function generateMetadata({
   });
 
   return {
-    title: `# ${channel?.name}`,
+    title: `Channel | ${channel?.name}`,
   };
 }
 

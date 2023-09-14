@@ -7,6 +7,7 @@ import { SocketProvider } from '@/components/providers/socket-provider';
 import { ServerSidebar } from '@/components/server/server-sidebar';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
+import { getServer } from '@/lib/get-server';
 
 export default async function ServerIdLayout({
   children,
@@ -21,19 +22,7 @@ export default async function ServerIdLayout({
     return redirectToSignIn();
   }
 
-  const server = await db.server.findUnique({
-    where: {
-      id: params.serverId,
-      members: {
-        some: {
-          profileId: profile.id,
-        },
-      },
-    },
-    select: {
-      id: true,
-    },
-  });
+  const server = await getServer(params.serverId, profile.id);
 
   if (!server) {
     return redirect('/');

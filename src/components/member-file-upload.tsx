@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { UploadFileResponse } from 'uploadthing/client';
 import { Loader2, UserCircle2, X } from 'lucide-react';
 import { Button } from './ui/button';
@@ -55,12 +55,12 @@ export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
 
   return (
     <div className='flex flex-col items-center space-y-4'>
-      <p className='text-xs text-muted-foreground'>
+      <p className='text-sm text-muted-foreground'>
         Choose your avatar or{' '}
         <Button
           type='button'
           variant='link'
-          className='p-0 text-xs'
+          className='p-0 text-sm'
           onClick={() => {
             (
               document

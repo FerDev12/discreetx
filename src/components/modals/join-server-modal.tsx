@@ -1,8 +1,12 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ServerIcon } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
 import {
   Dialog,
@@ -12,14 +16,10 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Member, Server } from '@prisma/client';
-import { ServerIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Input } from '../ui/input';
-import * as z from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -27,8 +27,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form';
-import { MemberFileUpload } from '../member-file-upload';
+} from '@/components/ui/form';
+import { MemberFileUpload } from '@/components/member-file-upload';
 
 const formSchema = z.object({
   username: z.string().min(1, { message: 'Username is required' }),
