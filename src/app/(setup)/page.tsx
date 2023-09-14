@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { initialProfile } from '@/lib/initial-profile';
 import InitialModal from '@/components/modals/initial-modal';
 import { Metadata } from 'next';
+import { redirectToSignIn } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
   title: 'Create Your First Server',
@@ -11,6 +12,10 @@ export const metadata: Metadata = {
 
 export default async function SetupPage() {
   const profile = await initialProfile();
+
+  if (!profile) {
+    return redirectToSignIn();
+  }
 
   const server = await db.server.findFirst({
     where: {

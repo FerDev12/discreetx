@@ -141,6 +141,7 @@ export function JoinServerModal({
                     <FormControl>
                       <Input
                         type='text'
+                        autoComplete='off'
                         placeholder='How do you want to be called?'
                         {...field}
                       />
