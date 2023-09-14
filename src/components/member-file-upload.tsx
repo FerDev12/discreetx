@@ -27,7 +27,7 @@ type MemberFileUploadProps = {
   onChange: (fileUrl: string) => void;
 };
 
-const baseUrl = 'https://xdiscreet.vercel.app';
+const baseUrl = 'https://discreetx.vercel.app';
 
 export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
   const [file, setFile] = useState<UploadFileResponse | null>(null);
