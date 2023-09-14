@@ -166,37 +166,22 @@ export function ChatItem({
         deleted && 'italic text-zinc-500 dark:text-zinc-400 text-xs mt-1'
       )}
     >
-      {/* {isLink(optimisticContent) ? (
-        <a
-          href={optimisticContent}
-          className='text-indigo-500 text-sm hover:underline'
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          {optimisticContent}
-        </a>
-      ) : (
-        optimisticContent
-      )} */}
-      {optimisticContent
-        .split(' ')
-        .map((c, i) =>
-          isLink(c) ? (
+      {optimisticContent.split(' ').map((c, i) =>
+        isLink(c) ? (
+          <Fragment key={i}>
             <a
-              key={i}
               href={c}
               target='_blank'
               rel='noopener noreferrer'
               className='text-indigo-500 text-sm hover:underline'
             >
               {c}
-            </a>
-          ) : (
-            <Fragment key={i}>c</Fragment>
-          )
+            </a>{' '}
+          </Fragment>
+        ) : (
+          <Fragment key={i}>{c} </Fragment>
         )
-        .join(' ')}
-
+      )}{' '}
       {isUpdated && !deleted && (
         <span className='text-[10px] mx-2 text-zinc-500 dark:text-zinc-400'>
           {'(edited)'}
