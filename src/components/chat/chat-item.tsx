@@ -16,6 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import {
+  Fragment,
   ReactNode,
   experimental_useOptimistic,
   useEffect,
@@ -191,7 +192,7 @@ export function ChatItem({
               {c}
             </a>
           ) : (
-            c
+            <Fragment key={i}>c</Fragment>
           )
         )
         .join(' ')}
