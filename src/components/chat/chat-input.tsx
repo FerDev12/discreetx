@@ -13,7 +13,6 @@ import { ActionTooltip } from '@/components/action-tooltip';
 import { EmojiPicker } from '@/components/emoji-picker';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { cn } from '@/lib/utils';
 import { Member, Message } from '@prisma/client';
 
@@ -91,9 +90,7 @@ export function ChatInput({
         channelId: query.channelId,
         fileUrl: null,
         memberId: currentMember.id,
-        member: {
-          ...currentMember,
-        },
+        member: currentMember,
         sent: false,
         deleted: false,
         updatedAt: date,
@@ -144,18 +141,18 @@ export function ChatInput({
 
       <div className='flex justify-between items-center mt-2 px-2'>
         <div className='flex gap-x-1.5'>
+          <EmojiPicker
+            onChange={(emoji: string) => {
+              form.setValue('content', form.getValues('content') + emoji);
+            }}
+          />
+
           <MessageFileUpload
             apiUrl={apiUrl}
             query={query}
             channelId={chatId}
             member={currentMember}
             addOptimisticMessage={addOptimisticMessage}
-          />
-
-          <EmojiPicker
-            onChange={(emoji: string) => {
-              form.setValue('content', form.getValues('content') + emoji);
-            }}
           />
         </div>
 

@@ -3,6 +3,7 @@ import { ChatMessages } from '@/components/chat/chat-messages';
 import { getOrCreateConversation } from '@/lib/conversation';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
+import { getServer } from '@/lib/get-server';
 import { redirectToSignIn } from '@clerk/nextjs';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -45,19 +46,7 @@ export default async function MemberIdPage({
     return redirectToSignIn();
   }
 
-  const server = await db.server.findFirst({
-    where: {
-      id: serverId,
-      members: {
-        some: {
-          profileId: profile.id,
-        },
-      },
-    },
-    include: {
-      members: true,
-    },
-  });
+  const server = await getServer(serverId, profile.id);
 
   if (!server) {
     return redirect('/');

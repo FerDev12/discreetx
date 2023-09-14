@@ -42,72 +42,38 @@ export default async function CallIdPage({
 
   if (!profile) return redirectToSignIn();
 
-  const [serverResponse, callResponse] = await Promise.allSettled([
-    db.server.findFirst({
-      where: {
-        id: serverId,
-        conversations: {
-          some: {
-            calls: {
-              some: {
-                id: callId,
-              },
+  const call = await db.call.findUnique({
+    where: {
+      id: callId,
+      conversation: {
+        serverId,
+        OR: [
+          { memberOne: { profileId: profile.id } },
+          { memberTwo: { profileId: profile.id } },
+        ],
+      },
+    },
+    include: {
+      conversation: {
+        include: {
+          memberOne: {
+            include: {
+              profile: true,
             },
-            OR: [
-              { memberOne: { profileId: profile.id } },
-              { memberTwo: { profileId: profile.id } },
-            ],
           },
-        },
-      },
-      include: {
-        members: {
-          include: {
-            profile: true,
-          },
-        },
-      },
-    }),
-    db.call.findUnique({
-      where: {
-        id: callId,
-        conversation: {
-          serverId,
-          OR: [
-            { memberOne: { profileId: profile.id } },
-            { memberTwo: { profileId: profile.id } },
-          ],
-        },
-      },
-      include: {
-        conversation: {
-          include: {
-            memberOne: {
-              include: {
-                profile: true,
-              },
-            },
-            memberTwo: {
-              include: {
-                profile: true,
-              },
+          memberTwo: {
+            include: {
+              profile: true,
             },
           },
         },
       },
-    }),
-  ]);
+    },
+  });
 
-  if (serverResponse.status === 'rejected' || !serverResponse.value) {
+  if (!call) {
     return redirect('/');
   }
-
-  if (callResponse.status === 'rejected' || !callResponse.value) {
-    return redirect(`/servers/${serverId}/conversations/${memberId}`);
-  }
-
-  const server = serverResponse.value;
-  const call = callResponse.value;
 
   if (!call.active) {
     return redirect(`/servers/${serverId}/conversations/${memberId}`);
@@ -139,6 +105,7 @@ export default async function CallIdPage({
 
       <div className='max-h-[calc(100svh-48px)]'>
         <MediaRoom
+          username={currentMember.username}
           chatId={call.conversationId}
           callId={call.id}
           video={call.type === 'VIDEO'}

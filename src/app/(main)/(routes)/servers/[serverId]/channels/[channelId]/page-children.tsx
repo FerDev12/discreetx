@@ -1,7 +1,7 @@
 import { ChatHeader } from '@/components/chat/chat-header';
 import { ChatMessages } from '@/components/chat/chat-messages';
 import { MediaRoom } from '@/components/media-room';
-import { MemberWithProfile } from '@/types';
+import { MemberWithSimpleProfile } from '@/types';
 import { Channel, ChannelType } from '@prisma/client';
 
 export function ChannelIdPageChildren({
@@ -9,7 +9,7 @@ export function ChannelIdPageChildren({
   member,
 }: {
   channel: Channel;
-  member: MemberWithProfile;
+  member: MemberWithSimpleProfile;
 }) {
   return (
     <>
@@ -38,11 +38,21 @@ export function ChannelIdPageChildren({
       )}
 
       {channel.type === ChannelType.AUDIO && (
-        <MediaRoom chatId={channel.id} audio={true} video={false} />
+        <MediaRoom
+          username={member.username}
+          chatId={channel.id}
+          audio={true}
+          video={false}
+        />
       )}
 
       {channel.type === ChannelType.VIDEO && (
-        <MediaRoom chatId={channel.id} video={true} audio={true} />
+        <MediaRoom
+          username={member.username}
+          chatId={channel.id}
+          video={true}
+          audio={true}
+        />
       )}
     </>
   );

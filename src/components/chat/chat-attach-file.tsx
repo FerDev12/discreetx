@@ -1,6 +1,6 @@
 'use client';
 
-import { Camera, FilePlus2, FileSpreadsheetIcon, Film } from 'lucide-react';
+import { Camera, FileSpreadsheetIcon, Film, Paperclip } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,8 +10,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
-import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
 import { Member, Message } from '@prisma/client';
+import { ActionTooltip } from '../action-tooltip';
 
 interface MessageFileModalProps {
   apiUrl: string;
@@ -71,14 +71,16 @@ export function MessageFileUpload({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type='button'
-          className='h-[20px] w-[20px] transition p-0.5 flex items-center justify-center text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300'
-        >
-          <FilePlus2 />
-        </button>
-      </DropdownMenuTrigger>
+      <ActionTooltip label='Attach files'>
+        <DropdownMenuTrigger asChild>
+          <button
+            type='button'
+            className='h-[20px] w-[20px] transition p-0.5 flex items-center justify-center text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300'
+          >
+            <Paperclip />
+          </button>
+        </DropdownMenuTrigger>
+      </ActionTooltip>
 
       <DropdownMenuContent side='top'>
         <DropdownMenuLabel>Upload File</DropdownMenuLabel>

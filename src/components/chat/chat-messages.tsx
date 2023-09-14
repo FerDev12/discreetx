@@ -19,7 +19,7 @@ import { ChatWelcome } from './chat-welcome';
 import { useChatQuery } from '@/hooks/queries/use-chat-query';
 import { useChatSocket } from '@/hooks/sockets/use-chat-socket';
 import { useChatScroll } from '@/hooks/use-chat-scroll';
-import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
+import { MemberWithProfile } from '@/types';
 import { useConfeti } from '@/hooks/use-confetti';
 import { cn } from '@/lib/utils';
 
@@ -189,7 +189,8 @@ export function ChatMessages({
         </div>
       )}
 
-      <ScrollArea viewPortRef={chatRef} className='p-4 h-full'>
+      <div className='flex-1' />
+      <ScrollArea viewPortRef={chatRef} className='p-4'>
         {!hasNextPage && <div className='flex-1' />}
 
         {!hasNextPage && <ChatWelcome type={props.type} name={name} />}

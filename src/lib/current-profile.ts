@@ -8,6 +8,12 @@ export const currentProfile = async () => {
     where: {
       userId,
     },
+    select: {
+      id: true,
+      userId: true,
+      name: true,
+      imageUrl: true,
+    },
   });
   return profile;
 };
