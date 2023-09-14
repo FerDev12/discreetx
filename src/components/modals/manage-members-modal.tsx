@@ -73,7 +73,10 @@ export default function MembersModal() {
         }
       );
 
-      onOpen({ type: ModalType.MANAGE_MEMBERS, data });
+      onOpen({
+        type: ModalType.MANAGE_MEMBERS,
+        data: { server: data },
+      });
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -97,7 +100,7 @@ export default function MembersModal() {
         `/api/socket/members/${memberId}?${query}`
       );
 
-      onOpen({ type: ModalType.MANAGE_MEMBERS, data });
+      onOpen({ type: ModalType.MANAGE_MEMBERS, data: { server: data } });
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
