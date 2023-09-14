@@ -41,15 +41,11 @@ export const ourFileRouter = {
     .onUploadComplete(({ metadata, file }) => {
       console.log('[PDF UPLOAD]', { userId: metadata.userId, file: file.url });
     }),
-  // messageFile: f({
-  //   image: { maxFileSize: '4MB', maxFileCount: 10 },
-  //   'video/mp4': { maxFileSize: '64MB', maxFileCount: 1 },
-  //   pdf: { maxFileCount: 1, maxFileSize: '4MB' },
-  // })
-  //   .middleware(handleAuth)
-  //   .onUploadComplete(({ metadata, file }) =>
-  //     console.log('[FILE UPLOAD]', { userId: metadata.userId, file: file.url })
-  //   ),
+  memberAvatar: f({
+    image: { maxFileCount: 1, maxFileSize: '4MB' },
+  })
+    .middleware(handleAuth)
+    .onUploadComplete(({ metadata, file }) => console.log('[MEMBER_AVATAR]')),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
