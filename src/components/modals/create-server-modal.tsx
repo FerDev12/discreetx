@@ -1,7 +1,6 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -28,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import { ServerFileUpload } from '@/components/server-file-upload';
 import { useModalStore } from '@/hooks/stores/use-modal-store';
 import { createServer } from '@/actions/server/create';
+import { MemberFileUpload } from '../member-file-upload';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Sever name is required' }),
@@ -35,6 +35,8 @@ const formSchema = z.object({
     .string()
     .url('Value is not a valid url')
     .min(1, { message: 'Server image required' }),
+  username: z.string().min(1, { message: 'Username is required' }),
+  avatarUrl: z.string().url().min(1, { message: 'Avatar is requried' }),
 });
 
 export default function CreateServerModal() {
@@ -47,6 +49,8 @@ export default function CreateServerModal() {
     defaultValues: {
       name: '',
       fileUrl: '',
+      username: '',
+      avatarUrl: '',
     },
   });
 
@@ -63,6 +67,8 @@ export default function CreateServerModal() {
       const formData = new FormData();
       formData.append('name', values.name);
       formData.append('imageUrl', values.fileUrl);
+      formData.append('username', values.username);
+      formData.append('avatarUrl', values.avatarUrl);
       const server = await createServer(formData);
 
       if (!server) {
@@ -78,11 +84,7 @@ export default function CreateServerModal() {
       router.push(`/servers/${server.id}`);
       onClose();
     } catch (err: any) {
-      if (axios.isAxiosError(err)) {
-        console.error(err);
-      } else {
-        console.error(err);
-      }
+      console.error(err);
     }
   };
 
@@ -101,33 +103,31 @@ export default function CreateServerModal() {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-            <div className='space-y-8 px-6'>
-              <div className='flex items-center justify-center text-center'>
-                <FormField
-                  control={form.control}
-                  name='fileUrl'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <ServerFileUpload
-                          endpoint='serverImage'
-                          fileUrl={field.value}
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className='flex flex-col space-y-4 items-center'>
+              <FormField
+                control={form.control}
+                name='fileUrl'
+                render={({ field }) => (
+                  <FormItem className='w-full flex items-center justify-center'>
+                    <FormControl>
+                      <ServerFileUpload
+                        endpoint='serverImage'
+                        fileUrl={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
                 name='name'
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className='w-full'>
                     <FormLabel className='uppercase text-xs font-bold text-secondary-foreground/90'>
                       Server Name
                     </FormLabel>
@@ -146,6 +146,42 @@ export default function CreateServerModal() {
                   </FormItem>
                 )}
               />
+
+              <div className='flex flex-col space-y-8 w-full'>
+                <FormField
+                  control={form.control}
+                  name='username'
+                  render={({ field }) => (
+                    <FormItem className='w-full'>
+                      <FormLabel>Username</FormLabel>
+
+                      <FormControl>
+                        <Input
+                          type='text'
+                          {...field}
+                          autoComplete='off'
+                          disabled={isLoading}
+                          placeholder='How do you want to be called?'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='avatarUrl'
+                  render={({ field }) => (
+                    <FormItem className='w-full'>
+                      <FormControl>
+                        <MemberFileUpload onChange={field.onChange} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <DialogFooter className='flex flex-col-reverse gap-y-2 px-6 py-4 '>

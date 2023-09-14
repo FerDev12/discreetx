@@ -6,6 +6,13 @@ import { MemberRole } from '@prisma/client';
 import { UnauthorizedError } from '@/errors/unauthorized-error';
 import { BadRequestError } from '@/errors/bad-request-error';
 import { handleApiError } from '@/lib/api-error-handler';
+import { z } from 'zod';
+import { ValidationError } from '@/errors/validation-error';
+
+const bodySchema = z.object({
+  username: z.string().min(1, { message: 'Username is required' }),
+  avatarUrl: z.string().url().min(1, { message: 'Avatar is required' }),
+});
 
 export async function POST(req: Request) {
   try {
@@ -15,6 +22,14 @@ export async function POST(req: Request) {
     if (!profile) {
       throw new UnauthorizedError();
     }
+
+    const bodyResponse = bodySchema.safeParse(req.json());
+
+    if (!bodyResponse.success) {
+      throw new ValidationError(bodyResponse.error.errors);
+    }
+
+    const { username, avatarUrl } = bodyResponse.data;
 
     const server = await db.server.create({
       data: {
@@ -31,7 +46,14 @@ export async function POST(req: Request) {
           ],
         },
         members: {
-          create: [{ profileId: profile.id, role: MemberRole.ADMIN }],
+          create: [
+            {
+              profileId: profile.id,
+              role: MemberRole.ADMIN,
+              username,
+              avatarUrl,
+            },
+          ],
         },
       },
     });

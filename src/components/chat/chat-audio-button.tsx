@@ -37,7 +37,7 @@ export function ChatAudioButton({
         data: {
           serverId,
           conversationId,
-          name: otherMember.profile.name,
+          name: otherMember.username,
           type: CallType.VIDEO,
         },
       });

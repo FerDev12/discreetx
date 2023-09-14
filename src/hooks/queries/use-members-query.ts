@@ -1,15 +1,8 @@
-import {
-  MemberWithSimpleProfile,
-  ServerWithMembersWithConversations,
-} from '@/types';
-import { Member, Server } from '@prisma/client';
+import { ServerWithMembersWithConversations } from '@/types';
+import { Member } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
 
-export function useMembersQuery({
-  member,
-}: {
-  member: MemberWithSimpleProfile;
-}) {
+export function useMembersQuery({ member }: { member: Member }) {
   const fetchMembers = async () => {
     const query = new URLSearchParams({
       memberId: member.id,

@@ -7,7 +7,7 @@ import { ChatVideoButton } from './chat-video-button';
 import { ChatIsTyping } from './chat-is-typing-indicator';
 import { MemberWithProfile } from '@/types';
 // import { ChatAudioButton } from './chat-audio-button';
-import { CallType } from '@prisma/client';
+import { CallType, Member } from '@prisma/client';
 
 type ChatHeaderProps = {
   serverId: string;
@@ -17,8 +17,8 @@ type ChatHeaderProps = {
       type: 'conversation';
       conversationId: string;
       imageUrl: string;
-      currentMember: MemberWithProfile;
-      otherMember: MemberWithProfile;
+      currentMember: Member;
+      otherMember: Member;
       callId?: string;
       callActive?: boolean;
       callType?: CallType;
@@ -57,14 +57,6 @@ export function ChatHeader({
       <div className='ml-auto flex items-center gap-x-2'>
         {props.type === 'conversation' && (
           <div className='flex items-center gap-x-1'>
-            {/* <ChatAudioButton
-              callType={props.callType}
-              callId={props.callId}
-              callActive={props.callActive}
-              otherMember={props.otherMember}
-              conversationId={props.conversationId}
-              serverId={serverId}
-              /> */}
             <ChatVideoButton
               callType={props.callType}
               callId={props.callId}

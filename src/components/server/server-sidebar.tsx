@@ -51,7 +51,13 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
       channels: true,
       members: {
         include: {
-          profile: true,
+          profile: {
+            select: {
+              id: true,
+              name: true,
+              imageUrl: true,
+            },
+          },
         },
       },
     },
@@ -143,7 +149,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
                 type: 'member',
                 data: members.map((member) => ({
                   id: member.id,
-                  name: member.profile.name,
+                  name: member.username,
                   icon: roleIconMap.get(member.role),
                 })),
               },

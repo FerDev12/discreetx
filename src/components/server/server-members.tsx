@@ -2,17 +2,12 @@
 
 import { ServerMember } from './server-member';
 import { useMembersQuery } from '@/hooks/queries/use-members-query';
-import { MemberWithProfile, MemberWithSimpleProfile } from '@/types';
-import { MemberRole } from '@prisma/client';
+import { Member, MemberRole } from '@prisma/client';
 import { Loader2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 
-export function ServerMembers({
-  currentMember,
-}: {
-  currentMember: MemberWithProfile;
-}) {
+export function ServerMembers({ currentMember }: { currentMember: Member }) {
   const {
     data: server,
     isLoading,
