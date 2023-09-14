@@ -90,9 +90,7 @@ export function ChatInput({
         channelId: query.channelId,
         fileUrl: null,
         memberId: currentMember.id,
-        member: {
-          ...currentMember,
-        },
+        member: currentMember,
         sent: false,
         deleted: false,
         updatedAt: date,

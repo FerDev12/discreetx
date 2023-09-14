@@ -19,7 +19,7 @@ import { ChatWelcome } from './chat-welcome';
 import { useChatQuery } from '@/hooks/queries/use-chat-query';
 import { useChatSocket } from '@/hooks/sockets/use-chat-socket';
 import { useChatScroll } from '@/hooks/use-chat-scroll';
-import { MemberWithProfile, MessageWithMemberWithProfile } from '@/types';
+import { MemberWithProfile } from '@/types';
 import { useConfeti } from '@/hooks/use-confetti';
 import { cn } from '@/lib/utils';
 
