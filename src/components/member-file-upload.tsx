@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UploadFileResponse } from 'uploadthing/client';
 import { Loader2, UserCircle2, X } from 'lucide-react';
 import { Button } from './ui/button';
@@ -31,10 +31,17 @@ export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
   const [file, setFile] = useState<UploadFileResponse | null>(null);
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [baseUrl, setBaseUrl] = useState<string>(
+    'https://xdiscreet.vercel.app'
+  );
 
-  const baseUrl = new URL(
-    process.env.NEXT_PUBLIC_VERCEL_URL ?? 'https://xdiscreet.vercel.app'
-  ).origin;
+  useEffect(() => {
+    setBaseUrl(
+      new URL(
+        process.env.NEXT_PUBLIC_VERCEL_URL ?? 'https://xdiscreet.vercel.app'
+      ).origin
+    );
+  }, []);
 
   const onDeleteImage = async () => {
     if (!file) return;
