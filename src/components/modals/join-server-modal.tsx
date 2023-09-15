@@ -113,7 +113,9 @@ export function JoinServerModal({
               </AvatarFallback>
             </Avatar>
 
-            <h2 className='text-lg text-teal-500 text-center'>{server.name}</h2>
+            <h2 className='text-xl text-teal-500 text-center font-semibold'>
+              {server.name}
+            </h2>
           </div>
 
           <DialogTitle className='text-2xl text-center font-bold'>

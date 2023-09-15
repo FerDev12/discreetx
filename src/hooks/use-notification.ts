@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import { create } from 'zustand';
 
 type Notification = {
@@ -5,20 +6,32 @@ type Notification = {
   title: string;
   description: string;
   variant?: 'default' | 'destructive';
+  href?: string;
+  avatarUrl?: string;
 };
 
 type NotificationStore = {
   notifications: Notification[];
-  add: (notification: Notification) => void;
+  add: (notification: {
+    title: string;
+    description?: string;
+    variant?: 'default' | 'destructive';
+    href?: string;
+    avatarUrl?: string;
+  }) => void;
   pop: () => void;
   close: (id: string) => void;
 };
 
 export const useNotificationStore = create<NotificationStore>((set) => ({
   notifications: [],
-  add: (notification: Notification) =>
+  add: (noti) =>
     set((state) => {
-      state.notifications.push(notification);
+      state.notifications.push({
+        ...noti,
+        id: randomBytes(8).toString('hex'),
+        description: noti.description ?? '',
+      });
       console.log(state.notifications[0]);
       return { ...state, notifications: [...state.notifications] };
     }),
