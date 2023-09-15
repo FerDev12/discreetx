@@ -6,18 +6,18 @@ type Notification = {
   title: string;
   description: string;
   variant?: 'default' | 'destructive';
+  href?: string;
+  avatarUrl?: string;
 };
 
 type NotificationStore = {
   notifications: Notification[];
-  add: ({
-    title,
-    description,
-    variant,
-  }: {
+  add: (notification: {
     title: string;
     description?: string;
     variant?: 'default' | 'destructive';
+    href?: string;
+    avatarUrl?: string;
   }) => void;
   pop: () => void;
   close: (id: string) => void;

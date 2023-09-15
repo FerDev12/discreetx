@@ -9,8 +9,9 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from '../ui/command';
+} from '@/components/ui/command';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 type ServerSearchProps = {
   data: {
@@ -89,9 +90,16 @@ export function ServerSearch({ data }: ServerSearchProps) {
             data.length ? (
               <CommandGroup key={label} heading={label}>
                 {data.map(({ id, icon, name }) => (
-                  <CommandItem key={id} onClick={() => onClick({ id, type })}>
+                  <CommandItem key={id} className='cursor-pointer relative'>
                     {icon}
                     <span>{name}</span>
+                    <Link
+                      href={`/servers/${params?.serverId}/${
+                        type === 'channel' ? 'channels' : 'conversations'
+                      }/${id}`}
+                      className='absolute inset-0'
+                      onClick={() => setOpen(false)}
+                    ></Link>
                   </CommandItem>
                 ))}
               </CommandGroup>
