@@ -40,5 +40,5 @@ export function useNotificationsSocket({
     return () => {
       socket.off(notificationsKey, onNotification);
     };
-  }, [socket, queryClient, serverId, profileId]);
+  }, [socket, queryClient, serverId, profileId, add]);
 }
