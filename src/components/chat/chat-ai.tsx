@@ -106,15 +106,18 @@ export function ChatAI({
     if (!value.length) return;
 
     try {
-      const { data } = await axios.post('/api/openai/check-spelling', {
+      setGenerating(true);
+      const { data } = await axios.post('/api/openai/check-grammar', {
         prompt: value,
       });
-      setValue(data.response);
+      setValue(data.response.replaceAll('"', ''));
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         return console.error(err.response?.data);
       }
       console.error(err);
+    } finally {
+      setGenerating(false);
     }
   };
 

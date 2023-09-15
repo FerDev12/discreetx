@@ -1,12 +1,12 @@
-import { UnauthorizedError } from '@/errors/unauthorized-error';
-import { ValidationError } from '@/errors/validation-error';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
+import OpenAI from 'openai';
+import { z } from 'zod';
+
 import { handleApiError } from '@/lib/api-error-handler';
 import { currentProfile } from '@/lib/current-profile';
-// import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { z } from 'zod';
-import { ServerRuntime } from 'next';
+import { UnauthorizedError } from '@/errors/unauthorized-error';
+import { ValidationError } from '@/errors/validation-error';
+import { NextResponse } from 'next/server';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -16,9 +16,6 @@ const openai = new OpenAI({
 const bodySchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt is required' }),
 });
-
-export const runtime: ServerRuntime =
-  process.env.NODE_ENV === 'production' ? 'edge' : 'nodejs';
 
 export async function POST(req: Request) {
   try {
@@ -38,20 +35,18 @@ export async function POST(req: Request) {
 
     const res = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      max_tokens: 500,
-      stream: true,
       messages: [
         {
-          role: 'user',
-          content: `Create a short response for the following message: "${prompt}"`,
+          role: 'assistant',
+          content: `Check the grammar of the following text and return a corrected version: "${prompt}"`,
         },
       ],
     });
 
-    const stream = OpenAIStream(res);
+    const content = res.choices[0].message.content;
 
-    return new StreamingTextResponse(stream);
+    return NextResponse.json({ response: content });
   } catch (err: any) {
-    return handleApiError(err, '[OPENAI_GENERATE_RESPONSE]');
+    return handleApiError(err, '[OPENAI_CHECK_GRAMMAR]');
   }
 }
