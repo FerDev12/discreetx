@@ -20,7 +20,7 @@ const nextConfig = {
     serverActions: true,
   },
   images: {
-    domains: ['uploadthing.com'],
+    domains: ['uploadthing.com', 'oaidalleapiprodscus.blob.core.windows.net'],
   },
 };
 

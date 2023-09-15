@@ -107,6 +107,8 @@ export default function MembersModal() {
       } else {
         console.error(err);
       }
+    } finally {
+      setLoadingId('');
     }
   };
 

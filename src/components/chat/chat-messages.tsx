@@ -135,6 +135,8 @@ export function ChatMessages({
     count: optimisticMessages.length,
   });
 
+  useEffect(() => console.log(messages), [messages]);
+
   const addOptimisticMessage = (message: Message & { member: Member }) =>
     setOptimisticMessages((state) => [message, ...state]);
 
@@ -189,10 +191,8 @@ export function ChatMessages({
         </div>
       )}
 
-      <div className='flex-1' />
+      {!hasNextPage && <div className='flex-1' />}
       <ScrollArea viewPortRef={chatRef} className='p-4'>
-        {!hasNextPage && <div className='flex-1' />}
-
         {!hasNextPage && <ChatWelcome type={props.type} name={name} />}
 
         {hasNextPage && (
@@ -245,6 +245,14 @@ export function ChatMessages({
           currentMember={currentMember}
           apiUrl={socketUrl}
           query={socketQuery}
+          lastMessage={
+            !messages.length
+              ? undefined
+              : {
+                  memberId: messages.at(0)?.memberId ?? '',
+                  content: messages.at(0)?.content ?? '',
+                }
+          }
           addOptimisticMessage={addOptimisticMessage}
         />
       ) : (
@@ -256,6 +264,14 @@ export function ChatMessages({
           otherMember={props.otherMember}
           apiUrl={socketUrl}
           query={socketQuery}
+          lastMessage={
+            !messages.length
+              ? undefined
+              : {
+                  memberId: messages.at(-1)?.memberId ?? '',
+                  content: messages.at(-1)?.content ?? '',
+                }
+          }
           addOptimisticMessage={addOptimisticMessage}
         />
       )}

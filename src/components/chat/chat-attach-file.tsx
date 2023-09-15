@@ -72,13 +72,8 @@ export function MessageFileUpload({
   return (
     <DropdownMenu>
       <ActionTooltip label='Attach files'>
-        <DropdownMenuTrigger asChild>
-          <button
-            type='button'
-            className='h-[20px] w-[20px] transition p-0.5 flex items-center justify-center text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300'
-          >
-            <Paperclip />
-          </button>
+        <DropdownMenuTrigger type='button'>
+          <Paperclip className='w-5 h-5 text-muted-foreground hover:text-teal-500' />
         </DropdownMenuTrigger>
       </ActionTooltip>
 
@@ -88,26 +83,26 @@ export function MessageFileUpload({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          className='px-3 py-2 text-sm cursor-pointer hover:text-teal-500'
+          className='px-3 py-2 text-sm cursor-pointer hover:text-teal-500 dark:hover:text-teal-500'
           onClick={onUploadImage}
         >
-          <Camera className='w-4 h-4 text-teal-500 mr-2' />
+          <Camera className='w-4 h-4  mr-2' />
           Upload Image
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          className='px-3 py-2 text-sm cursor-pointer hover:text-rose-500'
+          className='px-3 py-2 text-sm cursor-pointer hover:text-rose-500 dark:hover:text-rose-500'
           onClick={onUploadVideo}
         >
-          <Film className='w-4 h-4 text-rose-500 mr-2' />
+          <Film className='w-4 h-4 mr-2' />
           Upload Video
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          className='px-3 py-2 text-sm cursor-pointer hover:text-indigo-500'
+          className='px-3 py-2 text-sm cursor-pointer hover:text-indigo-500 dark:hover:text-indigo-500'
           onClick={onUploadPdf}
         >
-          <FileSpreadsheetIcon className='w-4 h-4 text-indigo-500 mr-2' />
+          <FileSpreadsheetIcon className='w-4 h-4 mr-2' />
           Upload PDF File
         </DropdownMenuItem>
       </DropdownMenuContent>

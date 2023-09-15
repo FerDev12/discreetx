@@ -86,8 +86,8 @@ export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
               onDeleteImage();
             }}
             className={cn(
-              `p-0.5 border-2 border-slate-900 dark:border-slate-100 hover:border-teal-500 rounded-full transition-colors`,
-              selectedAvatar === val && 'border-teal-500'
+              `p-0.5 border-2 border-slate-900 dark:border-slate-100 hover:border-teal-500 dark:hover:border-teal-500 rounded-full transition-colors`,
+              selectedAvatar === val && 'border-teal-500 dark:border-teal-500'
             )}
           >
             <Avatar className='h-6 w-6'>

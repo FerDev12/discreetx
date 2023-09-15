@@ -16,6 +16,7 @@ import DeleteMessageModal from '@/components/modals/delete-message-modal';
 import CreateCallModal from '@/components/modals/create-call-modal';
 import AnswerCallModal from '@/components/modals/answer-call-mdoal';
 import CallEndedModal from '@/components/modals/call-ended-modal';
+import { GenerateImageModal } from '../modals/generate-image-modal';
 
 export function ModalProvider() {
   const [isMounted, setIsMounted] = useState(false);
@@ -44,6 +45,7 @@ export function ModalProvider() {
       <MessageFileModal />
       <MembersModal />
       <LeaveServerModal />
+      <GenerateImageModal />
     </>
   );
 }

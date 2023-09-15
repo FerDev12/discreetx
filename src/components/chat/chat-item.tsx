@@ -154,7 +154,9 @@ export function ChatItem({
   const canEditMessage = !deleted && isOwner && !fileUrl;
   const isPDF = fileType === 'pdf' && fileUrl;
   const isImage =
-    ['jpg', 'jpeg', 'png', 'webd'].includes(fileType ?? '') && fileUrl;
+    (['jpg', 'jpeg', 'png', 'webd'].includes(fileType ?? '') ||
+      fileUrl?.includes('oaidalleapiprodscus.blob.core.windows.net')) &&
+    fileUrl;
   const isVideo =
     ['mov', 'mp4', 'flv', 'wmv', 'ogg', 'webm'].includes(fileType ?? '') &&
     fileUrl;
