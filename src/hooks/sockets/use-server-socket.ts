@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { ModalType, useModalStore } from '../stores/use-modal-store';
 import { useConversationStore } from '../stores/use-conversation-store';
+import { useNotificationStore } from '../use-notification';
 
 type UseServerSocketProps = {
   serverId: string;
@@ -28,6 +29,7 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
   const queryClient = useQueryClient();
   const { activeCall, setActiveCall } = useConversationStore();
   const { onOpen, onClose, isOpen, type } = useModalStore();
+  const { add } = useNotificationStore();
 
   // KEYS
   const answerCallKey = `server:${serverId}:call:${profileId}:answer`;
@@ -49,6 +51,7 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
 
     const onChannelCreated = (channel?: Channel) => {
       if (channel?.profileId === profileId) return;
+      add({ title: `Channel ${channel?.name} created!` });
       router.refresh();
     };
 
@@ -70,6 +73,11 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
     const onMemberAdded = (member?: Member) => {
       if (!member || member.profileId === profileId) return;
       queryClient.refetchQueries([`server:${serverId}:channels`]);
+      add({
+        title: `${member.username} just joined!`,
+        description: '',
+        variant: 'default',
+      });
     };
 
     const onMemberUpdated = (member?: Member) => {
@@ -147,6 +155,7 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
         ) {
           return onClose();
         }
+        add({ title: 'Call cancelled' });
       }
     };
 
@@ -206,6 +215,7 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
     callEditedKey,
     callEndedKey,
     activeCall,
+    add,
     onOpen,
     onClose,
     setActiveCall,
