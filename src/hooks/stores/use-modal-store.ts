@@ -28,6 +28,7 @@ export enum ModalType {
   CREATE_CALL = 'createCall',
   ANSWER_CALL = 'answerCall',
   CALL_ENDED = 'callEnded',
+  GENERATE_IMAGE = 'generateImage',
 }
 
 interface CreateServerMdoalData {}
@@ -93,6 +94,14 @@ export interface MessageFileModalData {
   addOptimisticMessage: (message: Message & { member: Member }) => void;
 }
 
+export interface GenerateImageModalData {
+  apiUrl: string;
+  query: Record<string, string>;
+  channelId: string;
+  member: Member;
+  addOptimisticMessage: (message: Message & { member: Member }) => void;
+}
+
 type ModalDataType =
   | { type: null; data: {} }
   | { type: ModalType.CREATE_SERVER; data: {} }
@@ -108,7 +117,8 @@ type ModalDataType =
   | { type: ModalType.MANAGE_MEMBERS; data: ManageMembersModalData }
   | { type: ModalType.INVITE; data: InviteModalData }
   | { type: ModalType.DELETE_MESSAGE; data: DeleteMessageModalData }
-  | { type: ModalType.MESSAGE_FILE; data: MessageFileModalData };
+  | { type: ModalType.MESSAGE_FILE; data: MessageFileModalData }
+  | { type: ModalType.GENERATE_IMAGE; data: GenerateImageModalData };
 
 export type ModalStore = {
   isOpen: boolean;

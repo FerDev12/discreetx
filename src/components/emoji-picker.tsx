@@ -19,7 +19,7 @@ export function EmojiPicker({ onChange }: EmojiPickerProps) {
     <Popover open={open} onOpenChange={setOpen}>
       <ActionTooltip label='Add emoji'>
         <PopoverTrigger>
-          <Smile className='text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 h-5 w-5' />
+          <Smile className='w-5 h-5 text-muted-foreground hover:text-teal-500' />
         </PopoverTrigger>
       </ActionTooltip>
 

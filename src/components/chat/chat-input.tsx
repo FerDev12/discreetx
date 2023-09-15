@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Member, Message } from '@prisma/client';
+import { ChatAI } from './chat-ai';
 
 type ChatInputProps = {
   apiUrl: string;
@@ -112,7 +113,7 @@ export function ChatInput({
   });
 
   return (
-    <footer className='relative pt-4 px-4 pb-2 bg-[#e3e5e8] dark:bg-[#1e1f22]'>
+    <footer className='relative pt-4 px-4 pb-4 bg-[#e3e5e8] dark:bg-[#1e1f22]'>
       <Form {...form}>
         <form id='form_send-message' onSubmit={onSubmit}>
           <FormField
@@ -140,7 +141,7 @@ export function ChatInput({
       </Form>
 
       <div className='flex justify-between items-center mt-2 px-2'>
-        <div className='flex gap-x-1.5'>
+        <div className='flex gap-x-2'>
           <EmojiPicker
             onChange={(emoji: string) => {
               form.setValue('content', form.getValues('content') + emoji);
@@ -148,6 +149,14 @@ export function ChatInput({
           />
 
           <MessageFileUpload
+            apiUrl={apiUrl}
+            query={query}
+            channelId={chatId}
+            member={currentMember}
+            addOptimisticMessage={addOptimisticMessage}
+          />
+
+          <ChatAI
             apiUrl={apiUrl}
             query={query}
             channelId={chatId}

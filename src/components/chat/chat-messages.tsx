@@ -189,10 +189,8 @@ export function ChatMessages({
         </div>
       )}
 
-      <div className='flex-1' />
+      {!hasNextPage && <div className='flex-1' />}
       <ScrollArea viewPortRef={chatRef} className='p-4'>
-        {!hasNextPage && <div className='flex-1' />}
-
         {!hasNextPage && <ChatWelcome type={props.type} name={name} />}
 
         {hasNextPage && (

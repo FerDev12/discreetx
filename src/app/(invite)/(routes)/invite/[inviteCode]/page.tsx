@@ -39,7 +39,6 @@ export default async function InviteCodePage({ params }: InviteCodePageProps) {
   const protocol = headersList.get('x-forwarded-proto') || '';
   const pathname = headersList.get('x-invoke-path') || '';
   const fullUrl = `${protocol}://${domain}${pathname}`;
-  console.log({ fullUrl });
 
   const profile = await currentProfile();
 

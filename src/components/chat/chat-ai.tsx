@@ -1,6 +1,12 @@
 'use client';
 
-import { Camera, FileSpreadsheetIcon, Film, Paperclip } from 'lucide-react';
+import {
+  ImageIcon,
+  MessageSquarePlusIcon,
+  ScrollTextIcon,
+  ShellIcon,
+} from 'lucide-react';
+import { ActionTooltip } from '../action-tooltip';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +17,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
 import { Member, Message } from '@prisma/client';
-import { ActionTooltip } from '../action-tooltip';
 
-interface MessageFileModalProps {
+interface ChatAIProps {
   apiUrl: string;
   query: Record<string, string>;
   channelId: string;
@@ -21,20 +26,21 @@ interface MessageFileModalProps {
   addOptimisticMessage: (message: Message & { member: Member }) => void;
 }
 
-export function MessageFileUpload({
+export function ChatAI({
   apiUrl,
   query,
   channelId,
   member,
   addOptimisticMessage,
-}: MessageFileModalProps) {
+}: ChatAIProps) {
   const { onOpen } = useModalStore();
 
-  const onUploadImage = () =>
+  const onGenerateResponse = () => {};
+
+  const onGenerateImage = () =>
     onOpen({
-      type: ModalType.MESSAGE_FILE,
+      type: ModalType.GENERATE_IMAGE,
       data: {
-        type: 'image',
         apiUrl,
         query,
         channelId,
@@ -43,67 +49,43 @@ export function MessageFileUpload({
       },
     });
 
-  const onUploadVideo = () =>
-    onOpen({
-      type: ModalType.MESSAGE_FILE,
-      data: {
-        type: 'video',
-        apiUrl,
-        query,
-        channelId,
-        member,
-        addOptimisticMessage,
-      },
-    });
-
-  const onUploadPdf = () =>
-    onOpen({
-      type: ModalType.MESSAGE_FILE,
-      data: {
-        type: 'pdf',
-        apiUrl,
-        query,
-        channelId,
-        member,
-        addOptimisticMessage,
-      },
-    });
+  const onCheckSpelling = () => {};
 
   return (
     <DropdownMenu>
-      <ActionTooltip label='Attach files'>
-        <DropdownMenuTrigger type='button'>
-          <Paperclip className='w-5 h-5 text-muted-foreground hover:text-teal-500' />
+      <ActionTooltip label='AI Assistant'>
+        <DropdownMenuTrigger>
+          <ShellIcon className='w-5 h-5 text-muted-foreground hover:text-teal-500 transition-colors' />
         </DropdownMenuTrigger>
       </ActionTooltip>
 
       <DropdownMenuContent side='top'>
-        <DropdownMenuLabel>Upload File</DropdownMenuLabel>
+        <DropdownMenuLabel>Options</DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
           className='px-3 py-2 text-sm cursor-pointer hover:text-teal-500 dark:hover:text-teal-500'
-          onClick={onUploadImage}
+          onClick={onGenerateResponse}
         >
-          <Camera className='w-4 h-4  mr-2' />
-          Upload Image
+          <MessageSquarePlusIcon className='w-4 h-4 mr-2' />
+          Generate a response
         </DropdownMenuItem>
 
         <DropdownMenuItem
           className='px-3 py-2 text-sm cursor-pointer hover:text-rose-500 dark:hover:text-rose-500'
-          onClick={onUploadVideo}
+          onClick={onGenerateImage}
         >
-          <Film className='w-4 h-4 mr-2' />
-          Upload Video
+          <ImageIcon className='w-4 h-4 mr-2' />
+          Generate an image
         </DropdownMenuItem>
 
         <DropdownMenuItem
           className='px-3 py-2 text-sm cursor-pointer hover:text-indigo-500 dark:hover:text-indigo-500'
-          onClick={onUploadPdf}
+          onClick={onCheckSpelling}
         >
-          <FileSpreadsheetIcon className='w-4 h-4 mr-2' />
-          Upload PDF File
+          <ScrollTextIcon className='w-4 h-4 mr-2' />
+          Check Spelling
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
