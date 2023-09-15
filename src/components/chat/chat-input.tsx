@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Member, Message } from '@prisma/client';
 import { ChatAI } from './chat-ai';
+import { Textarea } from '../ui/textarea';
 
 type ChatInputProps = {
   apiUrl: string;
@@ -23,6 +24,10 @@ type ChatInputProps = {
   name: string;
   currentMember: Member;
   chatId: string;
+  lastMessage?: {
+    memberId: string;
+    content: string;
+  };
   addOptimisticMessage: (message: Message & { member: Member }) => void;
 } & (
   | {
@@ -45,6 +50,7 @@ export function ChatInput({
   type,
   currentMember,
   chatId,
+  lastMessage,
   addOptimisticMessage,
 }: ChatInputProps) {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,6 +84,8 @@ export function ChatInput({
       body: JSON.stringify({ isTyping }),
     }).catch((err) => console.error(err));
   }, [type, isTyping, chatId, currentMember.id]);
+
+  const setValue = (value: string) => form.setValue('content', value);
 
   const onSubmit = handleSubmit(async (values: z.infer<typeof formSchema>) => {
     try {
@@ -113,7 +121,7 @@ export function ChatInput({
   });
 
   return (
-    <footer className='relative pt-4 px-4 pb-4 bg-[#e3e5e8] dark:bg-[#1e1f22]'>
+    <footer className='relative pt-4 px-8 pb-4 bg-[#e3e5e8] dark:bg-[#1e1f22]'>
       <Form {...form}>
         <form id='form_send-message' onSubmit={onSubmit}>
           <FormField
@@ -122,15 +130,14 @@ export function ChatInput({
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
+                  <Textarea
                     {...field}
-                    type='text'
                     autoComplete='off'
                     placeholder={`Message ${
                       type === 'conversation' ? name : `#${name}`
                     }`}
                     className={cn(
-                      'px-8 bg-zinc-50 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-400'
+                      'px-4 bg-zinc-50 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-400 min-h-[40px] max-h-full text-sm pb-0 mb-0'
                     )}
                   />
                 </FormControl>
@@ -162,6 +169,9 @@ export function ChatInput({
             channelId={chatId}
             member={currentMember}
             addOptimisticMessage={addOptimisticMessage}
+            value={form.getValues('content')}
+            setValue={setValue}
+            lastMessage={lastMessage}
           />
         </div>
 

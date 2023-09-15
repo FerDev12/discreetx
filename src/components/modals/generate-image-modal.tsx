@@ -54,10 +54,10 @@ export function GenerateImageModal() {
   const onGenerate = async (values: FormSchema) => {
     try {
       // Take description and call endpoint
-      // const {
-      //   data: { imageUrl },
-      // } = await axios.post('/api/openai/generate-image', values);
-      // setUrl(imageUrl);
+      const {
+        data: { imageUrl },
+      } = await axios.post('/api/openai/generate-image', values);
+      setUrl(imageUrl);
       console.log(values);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
@@ -107,28 +107,32 @@ export function GenerateImageModal() {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent>
-        <DialogHeader className='text-center'>
-          <ImageIcon className='w-6 h-6 text-rose-400' />
-          <DialogTitle>Generate Image</DialogTitle>
-          <DialogDescription>
-            Describe your image as best as you can 😊
-          </DialogDescription>
+      <DialogContent className='dark:bg-zinc-900 border-2 border-teal-500 p-0 overflow-hidden'>
+        <DialogHeader className='pt-8 px-6 flex flex-col items-center space-y-4'>
+          <ImageIcon className='w-10 h-10 text-rose-400 text-center' />
+          <div className='flex flex-col items-center space-y-2'>
+            <DialogTitle className='text-center'>Generate Image</DialogTitle>
+            <DialogDescription className='text-center'>
+              Describe your image as best as you can 😊
+            </DialogDescription>
+          </div>
         </DialogHeader>
 
-        <div className='flex items-center justify-center text-center'>
+        <div className='flex items-center justify-center text-center w-full px-6'>
           {url.length === 0 ? (
             <Form {...form}>
               <form
                 id='generate-image-form'
+                className='w-full'
                 onSubmit={form.handleSubmit(onGenerate)}
               >
                 <FormField
+                  control={form.control}
                   name='prompt'
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className='w-full'>
                       <FormControl>
-                        <Textarea {...field}></Textarea>
+                        <Textarea className='w-full' {...field}></Textarea>
                       </FormControl>
                     </FormItem>
                   )}
@@ -147,15 +151,14 @@ export function GenerateImageModal() {
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className='flex flex-col-reverse gap-y-2 px-6 py-4'>
           <Button variant='ghost' type='button' onClick={handleClose}>
             Cancel
           </Button>
           {url.length === 0 ? (
             <Button type='submit' form='generate-image-form' variant='primary'>
+              {isLoading && <Loader2 className='w-4 h-4 animate-spin mr-2' />}
               {isLoading ? 'Generating...' : 'Generate!'}
-              {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
-              Generate!
             </Button>
           ) : (
             <Button variant='primary' type='button' onClick={onSend}>

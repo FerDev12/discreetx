@@ -243,6 +243,14 @@ export function ChatMessages({
           currentMember={currentMember}
           apiUrl={socketUrl}
           query={socketQuery}
+          lastMessage={
+            !messages.length
+              ? undefined
+              : {
+                  memberId: messages.at(0)?.memberId ?? '',
+                  content: messages.at(0)?.content ?? '',
+                }
+          }
           addOptimisticMessage={addOptimisticMessage}
         />
       ) : (
@@ -254,6 +262,14 @@ export function ChatMessages({
           otherMember={props.otherMember}
           apiUrl={socketUrl}
           query={socketQuery}
+          lastMessage={
+            !messages.length
+              ? undefined
+              : {
+                  memberId: messages.at(-1)?.memberId ?? '',
+                  content: messages.at(-1)?.content ?? '',
+                }
+          }
           addOptimisticMessage={addOptimisticMessage}
         />
       )}

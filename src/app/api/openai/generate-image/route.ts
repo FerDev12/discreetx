@@ -3,8 +3,8 @@ import { ValidationError } from '@/errors/validation-error';
 import { handleApiError } from '@/lib/api-error-handler';
 import { currentProfile } from '@/lib/current-profile';
 import { z } from 'zod';
-import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
