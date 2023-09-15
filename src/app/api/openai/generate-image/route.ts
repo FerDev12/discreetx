@@ -6,6 +6,11 @@ import { z } from 'zod';
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
 
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  organization: process.env.OPENAI_ORG_ID,
+});
+
 const bodySchema = z.object({
   prompt: z
     .string()
@@ -20,11 +25,6 @@ export async function POST(req: Request) {
     if (!profile) {
       throw new UnauthorizedError();
     }
-
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      organization: process.env.OPENAI_ORG_ID,
-    });
 
     const bodyResponse = bodySchema.safeParse(await req.json());
 

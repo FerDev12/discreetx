@@ -54,10 +54,11 @@ export function GenerateImageModal() {
   const onGenerate = async (values: FormSchema) => {
     try {
       // Take description and call endpoint
-      const {
-        data: { imageUrl },
-      } = await axios.post('/api/openai/generate-image', values);
-      setUrl(imageUrl);
+      // const {
+      //   data: { imageUrl },
+      // } = await axios.post('/api/openai/generate-image', values);
+      // setUrl(imageUrl);
+      console.log(values);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         return console.error(err.response?.data);
