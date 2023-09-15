@@ -1,5 +1,7 @@
 'use client';
 
+import axios from 'axios';
+import { useCompletion } from 'ai/react';
 import {
   ImageIcon,
   Loader,
@@ -7,7 +9,10 @@ import {
   ScrollTextIcon,
   ShellIcon,
 } from 'lucide-react';
-import { ActionTooltip } from '../action-tooltip';
+import { useEffect, useState } from 'react';
+import * as z from 'zod';
+
+import { ActionTooltip } from '@/components/action-tooltip';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,12 +22,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ModalType, useModalStore } from '@/hooks/stores/use-modal-store';
+import { useToast } from '@/components/ui/use-toast';
 import { Member, Message } from '@prisma/client';
-import axios from 'axios';
-import { useCompletion } from 'ai/react';
-import { useToast } from '../ui/use-toast';
-import { useEffect, useState } from 'react';
-import * as z from 'zod';
 
 const urlSchema = z.string().url();
 
@@ -146,24 +147,22 @@ export function ChatAI({
       </ActionTooltip>
 
       <DropdownMenuContent side='top'>
-        <DropdownMenuLabel>Options</DropdownMenuLabel>
+        <DropdownMenuLabel>AI Actions</DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
-        <ActionTooltip label='Generate a response based on the last message you received from another user'>
-          <DropdownMenuItem
-            className='px-3 py-2 text-sm cursor-pointer hover:text-teal-500 dark:hover:text-teal-500'
-            onClick={onGenerateResponse}
-            disabled={
-              !lastMessage ||
-              lastMessage.memberId === member.id ||
-              isUrl(lastMessage.content)
-            }
-          >
-            <MessageSquarePlusIcon className='w-4 h-4 mr-2' />
-            Generate a response
-          </DropdownMenuItem>
-        </ActionTooltip>
+        <DropdownMenuItem
+          className='px-3 py-2 text-sm cursor-pointer hover:text-teal-500 dark:hover:text-teal-500'
+          onClick={onGenerateResponse}
+          disabled={
+            !lastMessage ||
+            lastMessage.memberId === member.id ||
+            isUrl(lastMessage.content)
+          }
+        >
+          <MessageSquarePlusIcon className='w-4 h-4 mr-2' />
+          Generate a response
+        </DropdownMenuItem>
 
         <DropdownMenuItem
           className='px-3 py-2 text-sm cursor-pointer hover:text-rose-500 dark:hover:text-rose-500'
@@ -173,26 +172,19 @@ export function ChatAI({
           Generate an image
         </DropdownMenuItem>
 
-        <ActionTooltip
-          label='Checks for spelling mistakes in your message before it is sent'
-          side='right'
+        <DropdownMenuItem
+          className='px-3 py-2 text-sm cursor-pointer hover:text-indigo-500 dark:hover:text-indigo-500 flex space-x-2 items-center'
+          onClick={onCheckSpelling}
+          disabled={!value.length}
         >
-          <DropdownMenuItem
-            className='px-3 py-2 text-sm cursor-pointer hover:text-indigo-500 dark:hover:text-indigo-500 flex space-x-2 items-center'
-            onClick={onCheckSpelling}
-            disabled={!value.length}
-          >
-            <ScrollTextIcon className='w-4 h-4' />
-            <p>
-              Check Spelling{' '}
-              {!value.length && (
-                <span className='text-xs[10px]'>
-                  {'(Write something first)'}
-                </span>
-              )}
-            </p>
-          </DropdownMenuItem>
-        </ActionTooltip>
+          <ScrollTextIcon className='w-4 h-4' />
+          <p>
+            Check Spelling{' '}
+            {!value.length && (
+              <span className='text-xs[10px]'>{'(Write something first)'}</span>
+            )}
+          </p>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

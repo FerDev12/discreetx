@@ -250,13 +250,13 @@ export function ChatItem({
                   href={fileUrl}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary h-48 w-48'
+                  className='relative rounded-md my-2 bg-transparent flex items-center h-64 overflow-hidden'
                 >
                   <Image
                     src={fileUrl}
                     alt={content}
                     fill
-                    className='object-cover'
+                    className='object-contain object-left'
                   />
                 </a>
                 {fileUrl !== optimisticContent && messageContent}
@@ -284,7 +284,7 @@ export function ChatItem({
 
             {isVideo && (
               <div className='mt-2'>
-                <div className='relative z-10 hover:border-red-500 hover:border-2 rounded-sm h-44 w-80 overflow-hidden'>
+                <div className='relative z-10 hover:border-red-500 hover:border-2 rounded-sm h-64 overflow-hidden aspect-video'>
                   <video
                     controls
                     muted

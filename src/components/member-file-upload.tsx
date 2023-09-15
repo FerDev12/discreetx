@@ -128,9 +128,7 @@ export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
       <div className='hidden ut-button-container'>
         <UploadButton
           endpoint='memberAvatar'
-          onUploadBegin={() => {
-            setUploadingImage(true);
-          }}
+          onUploadBegin={() => setUploadingImage(true)}
           onClientUploadComplete={(res) => {
             setUploadingImage(false);
             const file = res?.at(0);

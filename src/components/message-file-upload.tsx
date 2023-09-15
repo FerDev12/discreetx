@@ -95,13 +95,13 @@ export function MessageFileUpload({
         >
           <X className='w-3 h-3' />
         </Button>
-        <div className='overflow-hidden rounded-sm h-44 w-80 border border-zinc-800 dark:border-zinc-200 mx-auto'>
+        <div className='overflow-hidden rounded-sm h-52 aspect-video border border-zinc-800 dark:border-zinc-200 mx-auto'>
           <video
+            className='h-full w-full'
             autoPlay
             muted
             controls
             src={file.url}
-            className='w-full h-full'
           ></video>
         </div>
 
@@ -117,8 +117,13 @@ export function MessageFileUpload({
   if (!!file && isImage) {
     return (
       <div>
-        <div className='relative w-48 h-48 border border-zinc-800 dark:border-zinc-200'>
-          <Image fill src={file.url} alt='Upload' className='rounded-md' />
+        <div className='relative h-64 border border-zinc-800 dark:border-zinc-200'>
+          <Image
+            fill
+            src={file.url}
+            alt='Upload'
+            className='object-contain object-center'
+          />
           <Button
             size='icon'
             variant='destructive'
