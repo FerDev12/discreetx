@@ -51,7 +51,11 @@ export default async function InviteCodePage({ params }: InviteCodePageProps) {
       inviteCode: params.inviteCode,
     },
     include: {
-      members: true,
+      members: {
+        select: {
+          profileId: true,
+        },
+      },
     },
   });
 
@@ -68,5 +72,13 @@ export default async function InviteCodePage({ params }: InviteCodePageProps) {
   }
 
   // RETURN JOIN SERVER MODAL
-  return <JoinServerModal server={server} />;
+  return (
+    <JoinServerModal
+      serverId={server.id}
+      inviteCode={params.inviteCode}
+      name={server.name}
+      memberCount={server.members.length}
+      imageUrl={server.imageUrl}
+    />
+  );
 }

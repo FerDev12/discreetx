@@ -17,7 +17,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Member, Server } from '@prisma/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,11 +34,21 @@ const formSchema = z.object({
   avatarUrl: z.string().url().min(1, { message: 'Image is requried' }),
 });
 
+type JoinServerModalParams = {
+  serverId: string;
+  name: string;
+  memberCount: number;
+  imageUrl: string;
+  inviteCode: string;
+};
+
 export function JoinServerModal({
-  server,
-}: {
-  server: Server & { members: Member[] };
-}) {
+  serverId,
+  name,
+  memberCount,
+  imageUrl,
+  inviteCode,
+}: JoinServerModalParams) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -75,14 +84,14 @@ export function JoinServerModal({
       setIsLoading(true);
 
       const query = new URLSearchParams({
-        serverId: server.id,
-        inviteCode: server.inviteCode,
+        serverId: serverId,
+        inviteCode: inviteCode,
       });
 
       await axios.post(`/api/socket/members?${query}`, values);
 
       router.refresh();
-      router.push(`/servers/${server.id}`);
+      router.push(`/servers/${serverId}`);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         console.error(err.response?.data);
@@ -105,16 +114,16 @@ export function JoinServerModal({
         hideCloseButton
       >
         <DialogHeader className='pt-8 px-6 items-center mb-4'>
-          <div className='flex flex-col gap-y-4 mb-4'>
+          <div className='flex flex-col items-center gap-y-4 mb-4'>
             <Avatar className='h-12 w-12'>
-              <AvatarImage src={server.imageUrl} alt='Server image' />
+              <AvatarImage src={imageUrl} alt='Server image' />
               <AvatarFallback>
                 <ServerIcon />
               </AvatarFallback>
             </Avatar>
 
             <h2 className='text-xl text-teal-500 text-center font-semibold'>
-              {server.name}
+              {name}
             </h2>
           </div>
 
@@ -123,7 +132,7 @@ export function JoinServerModal({
           </DialogTitle>
 
           <DialogDescription className='text-sm text-muted-foreground'>
-            {server.members.length} members
+            {memberCount} members
           </DialogDescription>
         </DialogHeader>
 
@@ -157,7 +166,7 @@ export function JoinServerModal({
                 control={form.control}
                 name='avatarUrl'
                 render={({ field }) => (
-                  <FormItem className='w-full'>
+                  <FormItem className='w-full flex flex-col items-center justify-center'>
                     <FormControl>
                       <MemberFileUpload onChange={field.onChange} />
                     </FormControl>
