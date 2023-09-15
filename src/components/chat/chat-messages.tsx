@@ -135,6 +135,8 @@ export function ChatMessages({
     count: optimisticMessages.length,
   });
 
+  useEffect(() => console.log(messages), [messages]);
+
   const addOptimisticMessage = (message: Message & { member: Member }) =>
     setOptimisticMessages((state) => [message, ...state]);
 

@@ -32,7 +32,6 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
         id: randomBytes(8).toString('hex'),
         description: noti.description ?? '',
       });
-      console.log(state.notifications[0]);
       return { ...state, notifications: [...state.notifications] };
     }),
   pop: () =>

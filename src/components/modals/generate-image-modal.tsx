@@ -25,6 +25,10 @@ import Image from 'next/image';
 import { ImageIcon, Loader2 } from 'lucide-react';
 import { randomBytes } from 'crypto';
 
+const urlSchema = z.string().url();
+
+const isUrl = (value: string) => urlSchema.safeParse(value).success;
+
 const formSchema = z.object({
   prompt: z.string().min(1, { message: 'Description is required' }),
 });
@@ -58,7 +62,6 @@ export function GenerateImageModal() {
         data: { imageUrl },
       } = await axios.post('/api/openai/generate-image', values);
       setUrl(imageUrl);
-      console.log(values);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         return console.error(err.response?.data);
@@ -68,28 +71,35 @@ export function GenerateImageModal() {
   };
 
   const onSend = async () => {
+    if (!url.length) return;
+    if (!isUrl(url)) return;
+
     try {
-      const params = new URLSearchParams({
-        ...query,
-      });
       setIsSending(true);
       const date = new Date();
+
       addOptimisticMessage({
         id: randomBytes(8).toString('hex'),
         content: url,
         fileUrl: url,
         member,
-        channelId: channelId ? channelId : randomBytes(8).toString('hex'),
+        channelId,
         deleted: false,
         memberId: member.id,
         sent: false,
         createdAt: date,
         updatedAt: date,
       });
+
+      const params = new URLSearchParams({
+        ...query,
+      });
+
       await axios.post(`${apiUrl}?${params}`, {
         content: url,
         fileUrl: url,
       });
+
       handleClose();
     } catch (err: any) {
       if (axios.isAxiosError(err)) {

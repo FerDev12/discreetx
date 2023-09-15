@@ -22,6 +22,11 @@ import axios from 'axios';
 import { useCompletion } from 'ai/react';
 import { useToast } from '../ui/use-toast';
 import { useEffect, useState } from 'react';
+import * as z from 'zod';
+
+const urlSchema = z.string().url();
+
+const isUrl = (value: string) => urlSchema.safeParse(value).success;
 
 interface ChatAIProps {
   apiUrl: string;
@@ -76,7 +81,10 @@ export function ChatAI({
   }, [setValue, completion, generating]);
 
   const onGenerateResponse = async () => {
-    if (!lastMessage?.content.length) return;
+    if (!lastMessage) return;
+    if (lastMessage.memberId === member.id) return;
+    if (!lastMessage.content.length) return;
+    if (isUrl(lastMessage.content)) return;
 
     try {
       complete(lastMessage.content);
@@ -146,7 +154,11 @@ export function ChatAI({
           <DropdownMenuItem
             className='px-3 py-2 text-sm cursor-pointer hover:text-teal-500 dark:hover:text-teal-500'
             onClick={onGenerateResponse}
-            disabled={!lastMessage || lastMessage.memberId === member.id}
+            disabled={
+              !lastMessage ||
+              lastMessage.memberId === member.id ||
+              isUrl(lastMessage.content)
+            }
           >
             <MessageSquarePlusIcon className='w-4 h-4 mr-2' />
             Generate a response
