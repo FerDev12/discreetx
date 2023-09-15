@@ -103,15 +103,13 @@ export default async function CallIdPage({
         callType={call.type}
       />
 
-      <div className='max-h-[calc(100svh-48px)]'>
-        <MediaRoom
-          username={currentMember.username}
-          chatId={call.conversationId}
-          callId={call.id}
-          video={call.type === 'VIDEO'}
-          audio={call.type === 'AUDIO'}
-        />
-      </div>
+      <MediaRoom
+        username={currentMember.username}
+        chatId={call.conversationId}
+        callId={call.id}
+        video={call.type === 'VIDEO'}
+        audio={call.type === 'AUDIO'}
+      />
     </>
   );
 }
