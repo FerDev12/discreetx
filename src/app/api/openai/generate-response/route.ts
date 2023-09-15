@@ -1,12 +1,13 @@
+// import { NextResponse } from 'next/server';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
+import { ServerRuntime } from 'next';
+import OpenAI from 'openai';
+import { z } from 'zod';
+
 import { UnauthorizedError } from '@/errors/unauthorized-error';
 import { ValidationError } from '@/errors/validation-error';
 import { handleApiError } from '@/lib/api-error-handler';
 import { currentProfile } from '@/lib/current-profile';
-// import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { z } from 'zod';
-import { ServerRuntime } from 'next';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

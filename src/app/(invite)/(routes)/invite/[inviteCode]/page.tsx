@@ -43,7 +43,7 @@ export default async function InviteCodePage({ params }: InviteCodePageProps) {
   const profile = await currentProfile();
 
   if (!profile) {
-    return redirectToSignIn({ returnBackUrl: `${fullUrl}` });
+    return redirectToSignIn({ returnBackUrl: pathname });
   }
 
   const server = await db.server.findFirst({
