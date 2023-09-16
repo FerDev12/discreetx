@@ -52,11 +52,13 @@ export function GenerateImageModal() {
 
   const handleClose = () => {
     onClose();
+    setUrl('');
     form.reset();
   };
 
   const onGenerate = async (values: FormSchema) => {
     try {
+      form.reset();
       // Take description and call endpoint
       const {
         data: { imageUrl },

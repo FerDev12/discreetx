@@ -6,6 +6,7 @@ import { UnauthorizedError } from '@/errors/unauthorized-error';
 import { ValidationError } from '@/errors/validation-error';
 import { handleApiError } from '@/lib/api-error-handler';
 import { currentProfile } from '@/lib/current-profile';
+import { ServerRuntime } from 'next/types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -18,6 +19,9 @@ const bodySchema = z.object({
     .min(1, { message: 'Prompt is required' })
     .max(500, { message: 'Keep it short' }),
 });
+
+export const runtime: ServerRuntime =
+  process.env.NODE_ENV === 'production' ? 'edge' : 'nodejs';
 
 export async function POST(req: Request) {
   try {

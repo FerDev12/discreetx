@@ -6,6 +6,7 @@ import { handleApiError } from '@/lib/api-error-handler';
 import { currentProfile } from '@/lib/current-profile';
 import { UnauthorizedError } from '@/errors/unauthorized-error';
 import { ValidationError } from '@/errors/validation-error';
+import { ServerRuntime } from 'next';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -15,6 +16,9 @@ const openai = new OpenAI({
 const bodySchema = z.object({
   prompt: z.string().min(1, { message: 'Prompt is required' }),
 });
+
+export const runtime: ServerRuntime =
+  process.env.NODE_ENV === 'production' ? 'edge' : 'nodejs';
 
 export async function POST(req: Request) {
   try {
@@ -36,8 +40,8 @@ export async function POST(req: Request) {
       model: 'gpt-3.5-turbo',
       messages: [
         {
-          role: 'assistant',
-          content: `Check the grammar of the following text and return a corrected version: "${prompt}"`,
+          role: 'user',
+          content: `Check the spelling of the following text and return a corrected version: "${prompt}"`,
         },
       ],
     });

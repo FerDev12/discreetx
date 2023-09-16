@@ -208,7 +208,7 @@ export function ChatItem({
             <UserAvatar src={member.avatarUrl} />
           </div>
 
-          <div className='flex flex-col w-full'>
+          <div className='flex flex-col space-y-2 w-full'>
             <div className='flex items-center gap-x-2'>
               <div className='flex items-center'>
                 <p
@@ -245,12 +245,12 @@ export function ChatItem({
             </div>
 
             {isImage && (
-              <div>
+              <div className='flex flex-col space-y-2'>
                 <a
                   href={fileUrl}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='relative rounded-md my-2 bg-transparent flex items-center h-64 overflow-hidden'
+                  className='relative mb-2 bg-transparent flex items-center h-64 aspect-auto overflow-hidden'
                 >
                   <Image
                     src={fileUrl}
@@ -259,41 +259,39 @@ export function ChatItem({
                     className='object-contain object-left'
                   />
                 </a>
+
                 {fileUrl !== optimisticContent && messageContent}
               </div>
             )}
 
             {isPDF && (
-              <div className='mt-2'>
-                <a>
-                  <div className='relative flex items-center p-2 mt-2 rounded-md bg-bakcground/10 bg-indigo-50'>
-                    <FileIcon className='h-10 w-10 fill-indigo-200 stroke-indigo-400 ' />
-                    <a
-                      href={fileUrl}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='ml-2 text-start text-sm text-indigo-500 dark:text-indigo-400 hover:underline'
-                    >
-                      PDF File
-                    </a>
-                  </div>
-                </a>
+              <div className='flex flex-col space-y-2'>
+                <div className='relative flex items-center p-2 rounded-md bg-bakcground/10 bg-indigo-50'>
+                  <FileIcon className='h-10 w-10 fill-indigo-200 stroke-indigo-400 ' />
+                  <a
+                    href={fileUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='ml-2 text-start text-sm text-indigo-500 dark:text-indigo-400 hover:underline'
+                  >
+                    PDF File
+                  </a>
+                </div>
                 {fileUrl !== content && messageContent}
               </div>
             )}
 
             {isVideo && (
-              <div className='mt-2'>
+              <div className='flex flex-col space-y-2'>
                 <div className='relative z-10 hover:border-red-500 hover:border-2 rounded-sm h-64 overflow-hidden aspect-video'>
                   <video
                     controls
                     muted
                     src={fileUrl}
                     className='absolute inset-0'
-                  >
-                    {/* <source src={fileUrl} type={`video/${fileType}`}></source> */}
-                  </video>
+                  ></video>
                 </div>
+
                 {fileUrl !== content && messageContent}
               </div>
             )}

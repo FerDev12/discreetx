@@ -81,7 +81,6 @@ export function ChatAI({
 
   const onGenerateResponse = async () => {
     if (!lastMessage) return;
-    if (lastMessage.memberId === member.id) return;
     if (!lastMessage.content.length) return;
     if (isUrl(lastMessage.content)) return;
 
@@ -154,7 +153,7 @@ export function ChatAI({
           onClick={onGenerateResponse}
           disabled={
             !lastMessage ||
-            lastMessage.memberId === member.id ||
+            !lastMessage.content.length ||
             isUrl(lastMessage.content)
           }
         >

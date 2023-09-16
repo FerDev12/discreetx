@@ -130,14 +130,16 @@ export function ChatInput({
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Textarea
+                  <Input
                     {...field}
+                    type='text'
+                    autoCorrect='on'
                     autoComplete='off'
                     placeholder={`Message ${
                       type === 'conversation' ? name : `#${name}`
                     }`}
                     className={cn(
-                      'px-4 bg-zinc-50 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-400 min-h-[40px] h-full max-h-full text-sm pb-0 mb-0'
+                      'px-4 bg-zinc-50 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-400  text-sm '
                     )}
                   />
                 </FormControl>
