@@ -150,12 +150,11 @@ export function GenerateImageModal() {
               </form>
             </Form>
           ) : (
-            <div className='w-48 h-48 relative rounded-sm'>
+            <div className='aspect-square h-64 relative rounded-sm overflow-hidden'>
               <Image
                 src={url}
                 alt={form.getValues('prompt') ?? 'AI generated image'}
                 fill
-                className='rounded-sm'
               />
             </div>
           )}

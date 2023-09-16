@@ -5,7 +5,6 @@ import { UserAvatar } from '@/components/user-avatar';
 import { SocketIndicator } from '@/components/socket-indicator';
 import { ChatVideoButton } from './chat-video-button';
 import { ChatIsTyping } from './chat-is-typing-indicator';
-import { MemberWithProfile } from '@/types';
 // import { ChatAudioButton } from './chat-audio-button';
 import { CallType, Member } from '@prisma/client';
 

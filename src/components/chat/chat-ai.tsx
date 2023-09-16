@@ -70,9 +70,7 @@ export function ChatAI({
         });
       }
     },
-    onFinish: () => {
-      setGenerating(false);
-    },
+    onFinish: () => setGenerating(false),
   });
 
   useEffect(() => {

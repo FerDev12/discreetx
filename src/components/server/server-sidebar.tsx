@@ -11,7 +11,6 @@ import { ServerChannel } from '@/components/server/server-channel';
 import { ServerSocket } from './server-socket';
 import { currentProfile } from '@/lib/current-profile';
 import { redirectToSignIn } from '@clerk/nextjs';
-import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import { ServerMembers } from './server-members';
 import { getServer } from '@/lib/get-server';
