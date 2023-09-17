@@ -1,34 +1,17 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Discreet X
 
-## Getting Started
+## Discreet X is a showcase project based off of Discord.
 
-First, run the development server:
+Discreet X focuses on keeping all users anonymous by choosing whatever username and profile picture on a given server and never exposing their real credentials.
+Users can enjoy of realtime messaging features, group chats, group calls and one to one chats and calls.
+All while also providing an AI enhanced experience for intelligent chat responses as well as prompt based image generation.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+### The main technologies used for this project are:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- **Next.js 13**: For SSR, routing and caching.
+- **Prisma**: As an ORM.
+- **Planetscale (mySQL)**: For a persistent database storage.
+- **Socket.io**: For real-time messaging and events.
+- **LiveKit**: For video and audio conferences.
+- **Clerk.js**: For auth and user management.
+- **Tailwind css**: For styling.
