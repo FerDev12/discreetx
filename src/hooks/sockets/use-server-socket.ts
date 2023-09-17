@@ -72,7 +72,8 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
 
     const onMemberAdded = (member?: Member) => {
       if (!member || member.profileId === profileId) return;
-      queryClient.refetchQueries([`server:${serverId}:channels`]);
+
+      queryClient.refetchQueries([`server:${serverId}:members`]);
       add({
         title: `${member.username} just joined!`,
         description: '',
@@ -84,7 +85,7 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
       if (!member) return;
       if (isOpen && type === ModalType.MANAGE_MEMBERS) return;
       if (member.profileId === profileId) {
-        queryClient.refetchQueries([`server:${serverId}:channels`]);
+        queryClient.refetchQueries([`server:${serverId}:members`]);
       }
     };
 

@@ -37,7 +37,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MemberRole } from '@prisma/client';
+import { Member, MemberRole } from '@prisma/client';
 import axios from 'axios';
 import { useCurrentProfile } from '@/hooks/use-current-profile';
 
@@ -98,6 +98,10 @@ export default function MembersModal() {
 
       const { data } = await axios.delete(
         `/api/socket/members/${memberId}?${query}`
+      );
+
+      data.members = data.members.filter(
+        (member: Member) => member.id !== memberId
       );
 
       onOpen({ type: ModalType.MANAGE_MEMBERS, data: { server: data } });
