@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: 'user',
-          content: `Check the spelling of the following text and return a corrected version: "${prompt}"`,
+          content: `Check the grammar and spelling of the following text and return a corrected version if possible, if not return the orignial text: "${prompt}"`,
         },
       ],
     });

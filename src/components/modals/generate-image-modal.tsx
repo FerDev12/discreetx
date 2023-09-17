@@ -20,10 +20,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Textarea } from '../ui/textarea';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { ImageIcon, Loader2, X } from 'lucide-react';
-import { randomBytes } from 'crypto';
+import { randomBytes, setFips } from 'crypto';
+import { Input } from '../ui/input';
 
 const urlSchema = z.string().url();
 
@@ -49,6 +50,21 @@ export function GenerateImageModal() {
 
   const { apiUrl, query, member, channelId, addOptimisticMessage } =
     data as GenerateImageModalData;
+
+  const isLoading = form.formState.isSubmitting || isSending;
+
+  const open = isOpen && type === ModalType.GENERATE_IMAGE;
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        document.getElementById('image_prompt')?.focus();
+        (
+          document.getElementById('image_prompt') as HTMLTextAreaElement
+        )?.select();
+      }, 0);
+    }
+  }, [form, isOpen]);
 
   const handleClose = () => {
     onClose();
@@ -113,10 +129,6 @@ export function GenerateImageModal() {
     }
   };
 
-  const isLoading = form.formState.isSubmitting || isSending;
-
-  const open = isOpen && type === ModalType.GENERATE_IMAGE;
-
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className='dark:bg-zinc-900 border-2 border-teal-500 p-0 overflow-hidden'>
@@ -131,49 +143,57 @@ export function GenerateImageModal() {
         </DialogHeader>
 
         <div className='flex items-center justify-center text-center w-full px-6'>
-          {url.length === 0 ? (
-            <Form {...form}>
-              <form
-                id='generate-image-form'
-                className='w-full'
-                onSubmit={form.handleSubmit(onGenerate)}
-              >
-                <FormField
-                  control={form.control}
-                  name='prompt'
-                  render={({ field }) => (
-                    <FormItem className='w-full'>
-                      <FormControl>
+          <Form {...form}>
+            <form
+              id='generate-image-form'
+              className='w-full'
+              onSubmit={form.handleSubmit(onGenerate)}
+            >
+              <FormField
+                control={form.control}
+                name='prompt'
+                render={({ field }) => (
+                  <FormItem className='w-full'>
+                    <FormControl>
+                      {url.length > 0 ? (
+                        <div className='flex items-center justify-center'>
+                          <div className='relative'>
+                            <div className='aspect-square h-64 relative rounded-sm overflow-hidden'>
+                              <Image
+                                src={url}
+                                alt={
+                                  form.getValues('prompt') ??
+                                  'AI generated image'
+                                }
+                                fill
+                              />
+                            </div>
+                            <button
+                              className='absolute -top-1 -right-1 z-10 p-1 rounded-full bg-rose-500'
+                              onClick={() => {
+                                setUrl('');
+                              }}
+                            >
+                              <X className='w-3 h-3 rounded-full text-rose-50' />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
                         <Textarea
-                          disabled={isLoading}
-                          className='w-full'
                           {...field}
-                        ></Textarea>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </form>
-            </Form>
-          ) : (
-            <div className='relative'>
-              <div className='aspect-square h-64 relative rounded-sm overflow-hidden'>
-                <Image
-                  src={url}
-                  alt={form.getValues('prompt') ?? 'AI generated image'}
-                  fill
-                />
-              </div>
-              <button
-                className='absolute -top-1 -right-1 z-10 p-1 rounded-full bg-rose-500'
-                onClick={() => {
-                  setUrl('');
-                }}
-              >
-                <X className='w-3 h-3 rounded-full' />
-              </button>
-            </div>
-          )}
+                          id='image_prompt'
+                          autoComplete='off'
+                          autoCorrect='on'
+                          disabled={isLoading}
+                          className='max-w-full'
+                        />
+                      )}
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
         </div>
 
         <DialogFooter className='flex flex-col-reverse gap-y-2 px-6 py-4'>
@@ -187,8 +207,8 @@ export function GenerateImageModal() {
             </Button>
           ) : (
             <Button variant='primary' type='button' onClick={onSend}>
+              {isLoading && <Loader2 className='w-4 h-4 animate-spin mr-2' />}
               {isLoading ? 'Sending...' : 'Send'}
-              {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
             </Button>
           )}
         </DialogFooter>
