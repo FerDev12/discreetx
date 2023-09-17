@@ -71,7 +71,11 @@ export async function GET(req: Request) {
       });
     }
 
-    const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY ?? '');
+    const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY ?? '', {
+      encoding: 'base64',
+      pbkdf2Iterations: 10000,
+      saltLength: 10,
+    });
 
     for (let i = 0; i < messages.length; i++) {
       const { content, fileUrl, deleted } = messages[i];

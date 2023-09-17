@@ -24,7 +24,7 @@ export async function NavigationSidebar() {
       },
     },
     orderBy: {
-      createdAt: 'desc',
+      name: 'asc',
     },
   });
 

@@ -1,10 +1,10 @@
 import { JoinServerModal } from '@/components/modals/join-server-modal';
-import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
 import { redirectToSignIn } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
+import { initialProfile } from '@/lib/initial-profile';
 
 type InviteCodePageProps = {
   params: {
@@ -35,12 +35,12 @@ export default async function InviteCodePage({ params }: InviteCodePageProps) {
   }
 
   const headersList = headers();
-  const domain = headersList.get('x-forwarded-host') || '';
-  const protocol = headersList.get('x-forwarded-proto') || '';
+  // const domain = headersList.get('x-forwarded-host') || '';
+  // const protocol = headersList.get('x-forwarded-proto') || '';
+  // const fullUrl = `${protocol}://${domain}${pathname}`;
   const pathname = headersList.get('x-invoke-path') || '';
-  const fullUrl = `${protocol}://${domain}${pathname}`;
 
-  const profile = await currentProfile();
+  const profile = await initialProfile();
 
   if (!profile) {
     return redirectToSignIn({ returnBackUrl: pathname });

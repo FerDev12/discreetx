@@ -139,7 +139,11 @@ export async function GET(req: Request) {
 
     const messages = conversation.directMessages;
 
-    const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY ?? '');
+    const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY ?? '', {
+      encoding: 'base64',
+      pbkdf2Iterations: 10000,
+      saltLength: 10,
+    });
 
     for (let i = 0; i < messages.length; i++) {
       const { content, fileUrl, deleted, read, id, member } = messages[i];
@@ -164,7 +168,5 @@ export async function GET(req: Request) {
     return NextResponse.json({ items: messages, nextCursor });
   } catch (err: any) {
     return handleApiError(err, '[DIRECT_MESSAGES_GET]');
-    // console.error('[DIRECT_MESSAGES_GET]', err);
-    // return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
