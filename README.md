@@ -15,3 +15,5 @@ All while also providing an AI enhanced experience for intelligent chat response
 - **LiveKit**: For video and audio conferences.
 - **Clerk.js**: For auth and user management.
 - **Tailwind css**: For styling.
+
+**_Discreet X is not a commercial project. This project will not be regularly maintained and is intended to be a fun project for family and friends. Please do not share any sensitive information._**

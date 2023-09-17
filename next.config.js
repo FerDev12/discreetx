@@ -11,8 +11,7 @@ const nextConfig = {
     return [
       {
         source: '/api/socket/:path*',
-        destination:
-          'https://nextjs-socket-io-server-production.up.railway.app/api/socket/:path*',
+        destination: `${process.env.SOCKET_IO_API_URL}/api/socket/:path*`,
       },
     ];
   },
