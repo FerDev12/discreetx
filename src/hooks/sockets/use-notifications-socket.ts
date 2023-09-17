@@ -13,12 +13,12 @@ export function useNotificationsSocket({
   profileId: string;
 }) {
   const queryClient = useQueryClient();
-  const { socket } = useSocket();
+  const { socket, isConnected } = useSocket();
   const { add } = useNotificationStore();
   const params = useParams();
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !isConnected) return;
 
     const notificationsKey = `server:${serverId}:notifications:${profileId}`;
     const onNotification = (directMessage?: {
@@ -46,5 +46,13 @@ export function useNotificationsSocket({
     return () => {
       socket.off(notificationsKey, onNotification);
     };
-  }, [socket, queryClient, params?.memberId, serverId, profileId, add]);
+  }, [
+    socket,
+    isConnected,
+    queryClient,
+    params?.memberId,
+    serverId,
+    profileId,
+    add,
+  ]);
 }

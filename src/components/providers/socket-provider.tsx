@@ -30,22 +30,35 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (socketRef.current) return;
 
+    fetch('/api/socket/io');
+
     socketRef.current = ClientIO(process.env.NEXT_PUBLIC_SITE_URL ?? '', {
+      // @ts-ignore
+      origins: '*',
       path: '/api/socket/io',
       addTrailingSlash: false,
     });
 
-    const onConnect = () => setIsConnected(true);
-    const onDisconnect = () => setIsConnected(false);
-    const onError = (err: unknown) => console.error('[SOCKET_ERROR]', err);
+    const onDisconnect = (reason: any) => {
+      console.log('DISCONNECTED');
+      console.log(reason);
+      setIsConnected(false);
+    };
 
-    socketRef.current.on('disconnect', onDisconnect);
+    const onError = (err: unknown) => console.error('[SOCKET_ERROR]', err);
+    const onConnect = () => {
+      console.log('CONNECTED');
+      socketRef.current?.on('error', onError);
+      socketRef.current?.on('disconnect', onDisconnect);
+      setIsConnected(true);
+    };
+
     socketRef.current.on('connect', onConnect);
-    socketRef.current.on('error', onError);
 
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
+        setIsConnected(false);
       }
     };
   }, []);

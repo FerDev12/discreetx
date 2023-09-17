@@ -24,11 +24,11 @@ export function useChatSocket({
   queryKey,
   typingKey,
 }: ChatSocketProps) {
-  const { socket } = useSocket();
+  const { socket, isConnected } = useSocket();
   const queryClient = useQueryClient();
   const { setIsTyping } = useConversationStore();
   useEffect(() => {
-    if (!socket) {
+    if (!socket || !isConnected) {
       return;
     }
 
@@ -90,10 +90,10 @@ export function useChatSocket({
       socket.off(addKey, addKeyListener);
       socket.off(updateKey, updateKeyListener);
     };
-  }, [socket, queryClient, addKey, updateKey, queryKey]);
+  }, [socket, queryClient, addKey, updateKey, queryKey, isConnected]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !isConnected) return;
     if (!typingKey) return;
 
     const typingKeyListener = (isTyping: boolean) => setIsTyping(isTyping);
@@ -102,5 +102,5 @@ export function useChatSocket({
     return () => {
       socket.off(typingKey, typingKeyListener);
     };
-  }, [typingKey, socket, setIsTyping]);
+  }, [typingKey, socket, setIsTyping, isConnected]);
 }

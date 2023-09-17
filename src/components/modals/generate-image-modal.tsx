@@ -22,7 +22,7 @@ import { Textarea } from '../ui/textarea';
 import axios from 'axios';
 import { useState } from 'react';
 import Image from 'next/image';
-import { ImageIcon, Loader2 } from 'lucide-react';
+import { ImageIcon, Loader2, X } from 'lucide-react';
 import { randomBytes } from 'crypto';
 
 const urlSchema = z.string().url();
@@ -58,11 +58,11 @@ export function GenerateImageModal() {
 
   const onGenerate = async (values: FormSchema) => {
     try {
-      form.reset();
       // Take description and call endpoint
       const {
         data: { imageUrl },
       } = await axios.post('/api/openai/generate-image', values);
+
       setUrl(imageUrl);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
@@ -144,7 +144,11 @@ export function GenerateImageModal() {
                   render={({ field }) => (
                     <FormItem className='w-full'>
                       <FormControl>
-                        <Textarea className='w-full' {...field}></Textarea>
+                        <Textarea
+                          disabled={isLoading}
+                          className='w-full'
+                          {...field}
+                        ></Textarea>
                       </FormControl>
                     </FormItem>
                   )}
@@ -152,12 +156,22 @@ export function GenerateImageModal() {
               </form>
             </Form>
           ) : (
-            <div className='aspect-square h-64 relative rounded-sm overflow-hidden'>
-              <Image
-                src={url}
-                alt={form.getValues('prompt') ?? 'AI generated image'}
-                fill
-              />
+            <div className='relative'>
+              <div className='aspect-square h-64 relative rounded-sm overflow-hidden'>
+                <Image
+                  src={url}
+                  alt={form.getValues('prompt') ?? 'AI generated image'}
+                  fill
+                />
+              </div>
+              <button
+                className='absolute -top-1 -right-1 z-10 p-1 rounded-full bg-rose-500'
+                onClick={() => {
+                  setUrl('');
+                }}
+              >
+                <X className='w-3 h-3 rounded-full' />
+              </button>
             </div>
           )}
         </div>

@@ -23,7 +23,7 @@ type ServerEventData =
   | { type: 'member:deleted'; data?: Member };
 
 export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
-  const { socket } = useSocket();
+  const { socket, isConnected } = useSocket();
   const router = useRouter();
   const params = useParams();
   const queryClient = useQueryClient();
@@ -37,7 +37,7 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
   const callEndedKey = `server:${serverId}:call:${profileId}:ended`;
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !isConnected) return;
 
     const onServerDeleted = () => {
       router.replace(`/`);
@@ -207,6 +207,7 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
     router,
     params,
     socket,
+    isConnected,
     profileId,
     serverId,
     isOpen,

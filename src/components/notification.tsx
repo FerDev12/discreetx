@@ -11,10 +11,6 @@ export function Notifications() {
   const { close, notifications, pop } = useNotificationStore();
 
   useEffect(() => {
-    console.log(notifications);
-  }, [notifications]);
-
-  useEffect(() => {
     let interval = timeout.current;
 
     if (!notifications.length && interval) {
