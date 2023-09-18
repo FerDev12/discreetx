@@ -2,6 +2,9 @@
 
 import { Search } from 'lucide-react';
 import { ReactNode, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+
 import {
   CommandDialog,
   CommandEmpty,
@@ -10,8 +13,6 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 
 type ServerSearchProps = {
   data: {

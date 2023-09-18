@@ -1,19 +1,19 @@
 import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from 'lucide-react';
+import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
+import { redirectToSignIn } from '@clerk/nextjs';
 
-import { Channel, ChannelType, MemberRole } from '@prisma/client';
+import { ServerMembers } from './server-members';
+import { ServerSocket } from './server-socket';
 import { ServerHeader } from '@/components/server/server-header';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { ServerSearch } from '@/components/server/server-search';
 import { ServerSection } from '@/components/server/server-section';
 import { ServerChannel } from '@/components/server/server-channel';
-import { ServerSocket } from './server-socket';
-import { currentProfile } from '@/lib/current-profile';
-import { redirectToSignIn } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { ServerMembers } from './server-members';
 import { getServer } from '@/lib/get-server';
+import { currentProfile } from '@/lib/current-profile';
+import { Channel, ChannelType, MemberRole } from '@prisma/client';
 
 const iconMap = new Map<ChannelType, ReactNode>();
 iconMap.set(ChannelType.TEXT, <Hash className='mr-2 w-4 h-4' />);

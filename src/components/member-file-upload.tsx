@@ -8,6 +8,7 @@ import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { UploadButton } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
+import { useToast } from './ui/use-toast';
 
 const colors = [
   'red',
@@ -33,6 +34,7 @@ export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
   const [file, setFile] = useState<UploadFileResponse | null>(null);
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const { toast } = useToast();
 
   const onDeleteImage = async () => {
     if (!file) return;
@@ -138,7 +140,14 @@ export function MemberFileUpload({ onChange }: MemberFileUploadProps) {
               onChange(file.url);
             }
           }}
-          onUploadError={() => setUploadingImage(false)}
+          onUploadError={(err) => {
+            setUploadingImage(false);
+            toast({
+              title: 'File Uplaod Failed',
+              description: err.message,
+              variant: 'destructive',
+            });
+          }}
         />
       </div>
     </div>

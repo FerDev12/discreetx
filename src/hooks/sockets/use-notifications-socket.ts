@@ -28,15 +28,19 @@ export function useNotificationsSocket({
       memberId: string;
     }) => {
       queryClient.refetchQueries([`server:${serverId}:members`]);
-      queryClient.refetchQueries([`server:${serverId}:channels`]);
 
       if (!!directMessage) {
         if (params?.memberId === directMessage?.memberId) {
           return;
         }
+
         add({
-          title: `${directMessage.from} sent you a message`,
-          description: directMessage.message,
+          type: 'default',
+          data: {
+            title: `${directMessage.from} sent you a message`,
+            description: directMessage.message,
+            href: `/servers/${serverId}/conversations/${directMessage.memberId}`,
+          },
         });
       }
     };

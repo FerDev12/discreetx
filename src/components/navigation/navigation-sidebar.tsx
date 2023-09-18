@@ -1,12 +1,14 @@
-import { currentProfile } from '@/lib/current-profile';
-import { db } from '@/lib/db';
+import { UserButton } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
+
+import { NavigationItem } from './navitagion-item';
+import { NavigationSearch } from './navigation-search';
 import { NavigationAction } from '@/components/navigation/navigation-action';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { NavigationItem } from './navitagion-item';
-import { ModeToggle } from '../mode-toggle';
-import { UserButton } from '@clerk/nextjs';
+import { ModeToggle } from '@/components/mode-toggle';
+import { currentProfile } from '@/lib/current-profile';
+import { db } from '@/lib/db';
 
 export async function NavigationSidebar() {
   const profile = await currentProfile();
@@ -23,6 +25,11 @@ export async function NavigationSidebar() {
         },
       },
     },
+    select: {
+      id: true,
+      name: true,
+      imageUrl: true,
+    },
     orderBy: {
       name: 'asc',
     },
@@ -33,6 +40,8 @@ export async function NavigationSidebar() {
       <NavigationAction />
 
       <Separator className='h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto' />
+
+      <NavigationSearch servers={servers} />
 
       <ScrollArea className='flex-1 w-full'>
         <ul>

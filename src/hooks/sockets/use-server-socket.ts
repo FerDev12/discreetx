@@ -51,7 +51,6 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
 
     const onChannelCreated = (channel?: Channel) => {
       if (channel?.profileId === profileId) return;
-      add({ title: `Channel ${channel?.name} created!` });
       router.refresh();
     };
 
@@ -75,9 +74,11 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
 
       queryClient.refetchQueries([`server:${serverId}:members`]);
       add({
-        title: `${member.username} just joined!`,
-        description: '',
-        variant: 'default',
+        type: 'default',
+        data: {
+          title: `${member.username} just joined!`,
+          description: '',
+        },
       });
     };
 
@@ -128,13 +129,25 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
         return;
       }
 
-      onOpen({
-        type: ModalType.ANSWER_CALL,
+      // onOpen({
+      //   type: ModalType.ANSWER_CALL,
+      //   data: {
+      //     callId: call.id,
+      //     conversationId: call.conversationId,
+      //     from,
+      //     type: 'VIDEO',
+      //   },
+      // });
+      add({
+        type: 'call',
         data: {
-          callId: call.id,
-          conversationId: call.conversationId,
-          from,
-          type: 'VIDEO',
+          call: call,
+          from: {
+            memberId: from.id,
+            username: from.name,
+            avatarUrl: from.imageUrl,
+          },
+          serverId,
         },
       });
     };
@@ -156,7 +169,13 @@ export function useServerSocket({ serverId, profileId }: UseServerSocketProps) {
         ) {
           return onClose();
         }
-        add({ title: 'Call cancelled' });
+        add({
+          type: 'default',
+          data: {
+            title: 'Call cancelled',
+            description: '',
+          },
+        });
       }
     };
 

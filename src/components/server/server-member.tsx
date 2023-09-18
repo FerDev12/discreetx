@@ -1,10 +1,9 @@
 'use client';
 
-import { cn } from '@/lib/utils';
-import { Member, MemberRole } from '@prisma/client';
 import { ShieldAlert, ShieldCheck } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
+
 import { UserAvatar } from '@/components/user-avatar';
 import {
   Tooltip,
@@ -12,6 +11,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+import { Member, MemberRole } from '@prisma/client';
 
 const roleIconMap = new Map<MemberRole, ReactNode>();
 roleIconMap.set(MemberRole.GUEST, null);

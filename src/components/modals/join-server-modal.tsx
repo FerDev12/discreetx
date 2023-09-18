@@ -51,17 +51,8 @@ export function JoinServerModal({
 }: JoinServerModalParams) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isLoading, setIsLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [joinServer, setJoinServer] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: '',
-      avatarUrl: '',
-    },
-  });
 
   useEffect(() => setIsMounted(true), []);
 
@@ -75,32 +66,6 @@ export function JoinServerModal({
 
   const handleClose = () => {
     router.push('/');
-  };
-
-  const onJoin = async (values: z.infer<typeof formSchema>) => {
-    if (isLoading) return;
-
-    try {
-      setIsLoading(true);
-
-      const query = new URLSearchParams({
-        serverId: serverId,
-        inviteCode: inviteCode,
-      });
-
-      await axios.post(`/api/socket/members?${query}`, values);
-
-      router.refresh();
-      router.push(`/servers/${serverId}`);
-    } catch (err: any) {
-      if (axios.isAxiosError(err)) {
-        console.error(err.response?.data);
-      } else {
-        console.log(err);
-      }
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   if (!isMounted) {
@@ -137,106 +102,154 @@ export function JoinServerModal({
         </DialogHeader>
 
         {joinServer && (
-          <Form {...form}>
-            <form
-              id='form_join-server'
-              onSubmit={form.handleSubmit(onJoin)}
-              className='flex flex-col items-center space-y-8'
-            >
-              <FormField
-                control={form.control}
-                name='username'
-                render={({ field }) => (
-                  <FormItem className='w-full'>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        type='text'
-                        autoComplete='off'
-                        placeholder='How do you want to be called?'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='avatarUrl'
-                render={({ field }) => (
-                  <FormItem className='w-full flex flex-col items-center justify-center'>
-                    <FormControl>
-                      <MemberFileUpload onChange={field.onChange} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
+          <JoinServerForm
+            serverId={serverId}
+            inviteCode={inviteCode}
+            setJoinServer={setJoinServer}
+          />
         )}
 
-        <DialogFooter>
-          {!joinServer ? (
-            <>
-              <Button
-                type='button'
-                variant='ghost'
-                disabled={isLoading}
-                onClick={handleClose}
-              >
-                No
-              </Button>
-              <Button
-                type='button'
-                variant='primary'
-                disabled={isLoading}
-                onClick={() => {
-                  history.pushState(
-                    {
-                      join: true,
-                    },
-                    ''
-                  );
-                  setJoinServer(true);
-                }}
-              >
-                Yes
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                type='button'
-                variant='ghost'
-                disabled={isLoading}
-                onClick={() => {
-                  history.pushState(
-                    {
-                      join: false,
-                    },
-                    ''
-                  );
-                  setJoinServer(false);
-                }}
-              >
-                Back
-              </Button>
-              <Button
-                type='submit'
-                form='form_join-server'
-                variant='primary'
-                disabled={isLoading}
-              >
-                {isLoading ? 'Joining...' : 'Join Server!'}
-                {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
-              </Button>
-            </>
-          )}
-        </DialogFooter>
+        {!joinServer && (
+          <DialogFooter>
+            <Button type='button' variant='ghost' onClick={handleClose}>
+              No
+            </Button>
+            <Button
+              type='button'
+              variant='primary'
+              onClick={() => {
+                history.pushState(
+                  {
+                    join: true,
+                  },
+                  ''
+                );
+                setJoinServer(true);
+              }}
+            >
+              Yes
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function JoinServerForm({
+  serverId,
+  inviteCode,
+  setJoinServer,
+}: {
+  serverId: string;
+  inviteCode: string;
+  setJoinServer: (join: boolean) => void;
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: '',
+      avatarUrl: '',
+    },
+  });
+
+  const onJoin = async (values: z.infer<typeof formSchema>) => {
+    if (isLoading) return;
+
+    try {
+      setIsLoading(true);
+
+      const query = new URLSearchParams({
+        serverId: serverId,
+        inviteCode: inviteCode,
+      });
+
+      await axios.post(`/api/socket/members?${query}`, values);
+
+      router.refresh();
+      router.push(`/servers/${serverId}`);
+    } catch (err: any) {
+      if (axios.isAxiosError(err)) {
+        console.error(err.response?.data);
+      } else {
+        console.log(err);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Form {...form}>
+        <form
+          id='form_join-server'
+          onSubmit={form.handleSubmit(onJoin)}
+          className='flex flex-col items-center space-y-8'
+        >
+          <FormField
+            control={form.control}
+            name='username'
+            render={({ field }) => (
+              <FormItem className='w-full'>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input
+                    type='text'
+                    autoComplete='off'
+                    placeholder='How do you want to be called?'
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='avatarUrl'
+            render={({ field }) => (
+              <FormItem className='w-full flex flex-col items-center justify-center'>
+                <FormControl>
+                  <MemberFileUpload onChange={field.onChange} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+
+      <DialogFooter>
+        <Button
+          type='button'
+          variant='ghost'
+          disabled={isLoading}
+          onClick={() => {
+            history.pushState(
+              {
+                join: false,
+              },
+              ''
+            );
+            setJoinServer(false);
+          }}
+        >
+          Back
+        </Button>
+        <Button
+          type='submit'
+          form='form_join-server'
+          variant='primary'
+          disabled={isLoading}
+        >
+          {isLoading ? 'Joining...' : 'Join Server!'}
+          {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
+        </Button>
+      </DialogFooter>
+    </>
   );
 }

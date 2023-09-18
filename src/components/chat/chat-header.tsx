@@ -3,8 +3,8 @@ import { Hash } from 'lucide-react';
 import { MobileToggle } from '@/components/mobile-toggle';
 import { UserAvatar } from '@/components/user-avatar';
 import { SocketIndicator } from '@/components/socket-indicator';
-import { ChatVideoButton } from './chat-video-button';
-import { ChatIsTyping } from './chat-is-typing-indicator';
+import { ChatVideoButton } from '@/components/chat/chat-video-button';
+import { ChatIsTyping } from '@/components/chat/chat-is-typing-indicator';
 import { CallType, Member } from '@prisma/client';
 
 type ChatHeaderProps = {
